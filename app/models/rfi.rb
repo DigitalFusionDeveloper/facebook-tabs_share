@@ -1,17 +1,18 @@
 class RFI
   include App::Document
 
-  belongs_to(:beer)
-  field(:beer_name, :type => String)
+  field(:beer_slug, :type => String)
 
   field(:name, :type => String)
   field(:email, :type => String)
   field(:postal_code, :type => String)
   field(:mobile_phone, :type => String)
 
+  belongs_to(:beer)
+
   before_validation do |rfi|
-    if rfi.beer_name.nil? and rfi.beer
-      rfi.beer_name ||= rfi.beer.name
+    if rfi.beer_slug.nil? and rfi.beer
+      rfi.beer_slug ||= rfi.beer.slug
     end
   end
 end

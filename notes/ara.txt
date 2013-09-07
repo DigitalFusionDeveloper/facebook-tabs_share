@@ -1,67 +1,12 @@
 todo:
 
-- site
-  - /blog 
-    - Site::Post model/admin
+  - rfi form needs to ajax submit and replace itself
 
-    - Site::BlogController
-      - /blog, /blog/year/month/day/foo-bar, /blog/index
+  - demo page for noah in public
 
-      - views/site/blog/post.html.erb
-      - views/site/blog/posts.html.erb
-      - views/site/blog/index.html.erb
+  - update readme
 
-
-
-  - some de-structions/notes/help?
-    - per content type
-    - for data
-    - css in general
-
-  - eruby syntax js/cm help...
-
-  - teh Job show page refreshes
-
+  - reports?
 
 
 done:
-  - to_map issue
-  - a non-application site layout ?
-    - meta tagz in header
-    - first image on page? (og)
-  - content is searchable?
-  - Site menu needs divider
-  - repair relative assets!
-  - a global site data editor?
-  - user.session.map !?  wtf.
-  - restore public
-  - fix Page editor...!
-  - default file extention needs to be per model..
-  - simple published? support
-    - simple impl via current_user ?
-    - set expires header
-    - 404 + 'title'
-    - custom 404 page...
-  - non-image uploads have bunk name ?
-  - shared/_uploads can disassociate uploads?
-    - passing in params[:deleted_upload_ids]
-  - author support
-  - can *clone* a content?
-  - search integration?
-    - :title+:keywords+:tags+:fulltext
-    - Site.search
-  - to_text
-  - locals for rendering
-  - saving a page clears the cache by default!?
-    - Site.clear_cache! -> App.clear_cache!
-  - assets/off/of/pags
-  - BUG: reload!; load 'lib/upload/variant.rb'; u = Upload.upload!('README.md'); u.to_s3; u.to_s3!
-  - site_path (Helper)
-  - organize code lib/site.rb has no controllers?
-  - content is cached by default?
-  - clearable cache...
-  - @page.data
-  - Site.data
-  - presenters for content types
-  - more content
-  - content is editiable
