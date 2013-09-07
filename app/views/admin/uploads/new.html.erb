@@ -1,0 +1,5 @@
+<%= link_to raw("&larr; All Uploads"), url_for(:action => :index) %>
+<br>
+
+<%= render :partial => 'shared/upload', :locals => {:config => {:tmp => false}}  %>
+<br>

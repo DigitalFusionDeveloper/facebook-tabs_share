@@ -1,0 +1,25 @@
+<!-- flash -->
+
+  <script>
+    jQuery(function(){
+      var list = <%= j messages! %>;
+
+      jQuery.each(list, function(index, pair){
+        var message = pair[0];
+        var options = pair[1];
+
+        App.flash(message, options);
+      });
+    });
+  </script>
+
+<!-- csrf -->
+
+  <script>
+    jQuery(function() {
+      jQuery.getJSON('/csrf.json', function(csrf) {
+        jQuery("meta[name='csrf-token']").attr('content', csrf.token);
+        jQuery("meta[name='csrf-param']").attr('content', csrf.param);
+      });
+    })
+  </script>

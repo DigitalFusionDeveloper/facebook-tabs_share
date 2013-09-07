@@ -1,0 +1,128 @@
+<%
+
+#
+  readonly = false
+
+  current_user_is_su = Current.user.roles.detect('su')
+  user_is_su = @user.roles.detect('su')
+
+  if user_is_su and not current_user_is_su
+    readonly = true
+  end
+
+#
+  editing_self = Current.user.id == @user.id
+
+#
+  legend = raw(@user.persisted? ? "Editing User: &ldquo;#{ @user.email }&rdquo;" : "New User")
+
+%>
+
+
+<%= link_to raw("&larr; All Users"), url_for(:action => :index) %>
+<br>
+
+<%= form @user, :id => :admin_user_form do |f| %>
+  <fieldset>
+    <legend>
+      <%= legend %>
+    </legend>
+
+    <%= f.errors %>
+
+    <%=
+      link_to(
+        'Login As This User<em>!</em>'.html_safe, 
+        url_for(:action => :show, :id => @user.id, :login => '/dashboard'),
+        :title => 'login as this user',
+        :target => '_blank',
+        :class => 'label'
+      )
+    %>
+
+    <%=
+      link_to(
+        'Welcome This User Back<em>!</em>'.html_safe,
+        url_for(:action => :welcome, :id => @user.id),
+        :title => 'welcome this user back',
+        :class => 'label'
+      )
+    %>
+    <br>
+    <br>
+
+
+    <dt>
+      <%= f.label :email %>
+    </dt>
+    <dd>
+      <%= f.input :email, :autofocus => @user.new_record?, :readonly => (!current_user_is_su and @user.persisted?)  %>
+    </dd>
+
+    <dt>
+      <%= f.label :password %>
+    </dt>
+    <dd>
+      <%= f.input :password, :type => :password, :placeholder => 'password never shown' %>
+    </dd>
+
+    <dt>
+      <%= f.label :first_name %>
+    </dt>
+    <dd>
+      <%= f.input :first_name %>
+    </dd>
+
+    <dt>
+      <%= f.label :last_name %>
+    </dt>
+    <dd>
+      <%= f.input :last_name %>
+    </dd>
+
+    <dt>
+      <%= f.label :roles %>
+    </dt>
+    <dd>
+      <table>
+        <% User.roles.each do |role| %>
+          <tr>
+            <td>
+              <%= f.checkbox :roles, role, :readonly => @user.readonly_role?(role), :disabled => @user.readonly_role?(role) %>
+            </td>
+            <td>
+              &nbsp; <%= role %>
+            </td>
+          </tr>
+        <% end %>
+      </table>
+    </dd>
+
+    <% if current_user_is_su %>
+    <dt>
+      <%= f.label :session %>
+    </dt>
+    <dd>
+      <%= @user.session.to_yaml %>
+    </dd>
+    <% end %>
+  <fieldset>
+
+  <br>
+  <%= f.submit :Save, :class => 'btn btn-success' %>
+<% end %>
+
+
+<% content_for :script do %>
+  <script>
+    jq(function(){
+      var form = jq('#admin_user_form');
+
+      <% if readonly %>
+        form.find('input').attr('readonly', 'readonly');
+        form.find('textarea').attr('readonly', 'readonly');
+        form.find('button').attr('readonly', 'readonly');
+      <% end %>
+    });
+  </script>
+<% end %>

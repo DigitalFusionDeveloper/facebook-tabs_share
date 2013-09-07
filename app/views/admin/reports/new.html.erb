@@ -1,0 +1,52 @@
+<%= link_to raw("&larr; Reports"), url_for(:action => :index) %>
+<br>
+<br>
+
+<% if @step == 0 %>
+
+  <%= form(url_for(:action => :create), :class => 'app small', :id => 'kind_form') do |f| %>
+
+    <h4 class='instructions'>
+      Select a report kind:
+    </h4>
+
+    <dl>
+      <dt>
+        Kind
+      </dt>
+      <dd>
+        <%= select_tag(:kind, options_for_select(Report.kinds)) %>
+      </dd>
+    </dl>
+
+    <hr>
+    <%= submit_tag(:Submit, :class => 'btn btn-success') %>
+    <%= hidden_field_tag(:step, 0) %>
+  <% end %>
+
+<% end %>
+
+
+<% if @step == 1 %>
+
+  <%= form(url_for(:action => :create), :class => 'app small') do %>
+    <%
+      form = @generator.form
+    %>
+
+    <%= form.errors %>
+
+    <h4 class='instructions'>
+      Create a <%= @kind.inspect %> report:
+    </h4>
+
+    <%= @generator.form_fields %>
+
+    <hr>
+    <%= form.submit :class => 'btn btn-success' %>
+    <%= hidden_field_tag(:step, 1) %>
+    <%= hidden_field_tag(:kind, @kind) %>
+  <% end %>
+
+<% end %>
+

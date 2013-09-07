@@ -1,0 +1,37 @@
+<%= form do %>
+  <div>
+
+    <%= link_to '(refresh)' %>
+    <br>
+
+    <br>
+    <input name='foo' value='bar'>
+    <br>
+    <div style='width:33%;'>
+      <input name='files' type='file' class='s3uploader'>
+    </div>
+    <br>
+    <input type='submit' value='Submit'>
+
+
+    <% if @data and @uploads%>
+      <br>
+      <li>
+      <% @uploads.each do |upload| %>
+        <ul>
+          <%= image_tag(upload.url) %>
+        </ul>
+      <% end %>
+      </li>
+      <br>
+      <hr>
+      <pre>
+        <%= @data.inspect %>
+      </pre>
+    <% end %>
+
+  </div>
+
+  <%= render :partial => 'shared/s3_upload' %>
+<% end %>
+

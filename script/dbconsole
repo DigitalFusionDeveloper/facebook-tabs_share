@@ -1,0 +1,33 @@
+#! /usr/bin/env ruby
+ 
+settings = Map.for(Settings.for(File.join(Rails.root, 'config', 'mongo.yml')))
+config = settings.get(Rails.env, :sessions, :default)
+
+connection = []
+
+connection.push('--username', config[:username].inspect) unless config[:username].blank?
+connection.push('--password', config[:password].inspect) unless config[:password].blank?
+connection.push('--ssl') if(config[:options] && config[:options][:ssl])
+
+
+database = config[:database]
+host = Array(config[:host] || config[:hosts]).first
+
+connection.push(File.join(host, database))
+
+args = connection.join(' ')
+
+command = "mongo #{ args }"
+
+exec(command)
+
+
+
+BEGIN {
+  dirname, basename = File.split(File.expand_path(__FILE__))
+  script_dir = dirname
+  rails_root = File.dirname(script_dir)
+
+  Dir.chdir(rails_root)
+  load File.join(rails_root, 'config/application.rb')
+}

@@ -1,0 +1,18 @@
+#! /usr/bin/env ruby
+
+shitty = [ 
+  'console.' + 'log',
+  'binding.' + 'pry',
+  'debugger'
+]
+
+diffs = [
+  `git diff --staged`
+]
+
+diffs.each do |diff|
+  shitty.each do |shit|
+    re = %r/#{ Regexp.escape(shit) }/i
+    abort "#{ shit.inspect } shit detected!" if diff[re]
+  end
+end

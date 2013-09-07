@@ -1,0 +1,21 @@
+<div class="row-fluid">
+  <%= form(request.fullpath, :class => 'span4 offset4') do %>
+    <%= errors_for(@errors) %>
+
+    <div class="instructions">
+      Please, enter your email and password.
+    </div>
+
+    <%= label_tag 'Email' %>
+    <%= text_field_tag :email, @email, :autofocus => @email.blank? %>
+
+    <%= render :partial => 'auth/password' %>
+
+    <br />
+    <br />
+    <%= submit_tag :Login, :class => 'btn', :style => 'width:100%;' %>
+    <br />
+    <br />
+    forgot your <%= link_to 'password', password_path(:email => @email) %>?
+  <% end %>
+</div>

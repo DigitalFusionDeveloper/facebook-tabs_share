@@ -1,0 +1,173 @@
+<%
+  domid = "file-uploader-#{ App.uuid }"
+%>
+
+<script>
+  App.upload_after_complete = function(response){
+    console.dir(response);
+    return true;
+  };
+</script>
+
+<!--
+  stylez
+-->
+
+  <% content_for :style do %>
+    <style>
+      .qq-upload-list li.qq-upload-success {
+        background-color: #ccc;
+        display: none;
+      }
+    </style>
+  <% end %>
+
+
+<!--
+  where uploaded files appear
+-->
+
+  <table id='uploads' class='table table-striped' style='width:50%;margin:1em 0em;'>
+    <script name='upload-row' class='template' type='text/template'>
+
+      <tr>
+
+        <td style='vertical-align:top;'>
+          {{#is_image}}
+            <a href="#upload-modal-{{ original_id }}" data-toggle="modal">
+              <img src="{{ url }}" alt="{{ filename }}" style="max-width:100px;max-height:100px;padding-right:1em;" />
+            </a>
+          {{/is_image}}
+
+          {{^is_image}}
+            <div style="padding:8px;min-width:42px;height:42px;background-color:#ccc;color:white;text-align:center;vertical-align:middle;">
+              {{ filename }}
+            </div>
+          {{/is_image}}
+        <td>
+
+        <td style='width:100%;vertical-align:top;'>
+          <small>
+          <ul style='margin-top:0; list-style: none; margin-left: 0; padding-left: 1em; text-indent: -1em;'>
+          {{#variants}}
+
+          {{#is_image}}
+            <li>
+              <a href="#upload-modal-{{ id }}" data-toggle="modal">{{ name }}/{{ filename  }}</a>
+
+                <div class="modal" id="upload-modal-{{ id }}" style="display:none;">
+
+                  <div class="modal-header">
+                    <a class="close" data-dismiss="modal">×</a>
+
+                    <h3 style="text-align: center;">
+                      <a href="{{ url }}" target="_blank" title="Open In A New Window">{{ name }}/{{ filename  }}</a>
+                    </h3>
+                  </div>
+
+                  <div class="modal-body" style="text-align:center;">
+                    <img src="{{ url }}" style="max-height:300px" />
+                  </div>
+
+                  <div class="modal-footer">
+                    <a href="#" class="close btn" data-dismiss="modal">Close</a>
+                  </div>
+                </div>
+
+            </li>
+          {{/is_image}}
+
+          {{^is_image}}
+            <a href="{{ url }}" target="_blank" title="Open In A New Window">{{ name }}/{{ filename  }}</a>
+          {{/is_image}}
+
+          {{/variants}}
+          </ul>
+          </small>
+        <td>
+
+      </tr>
+
+    </script>
+  </table>
+
+
+<!--
+  the uploader widget
+-->
+
+  <div id="<%= domid %>" style='width:50%;'>
+    <noscript>
+        <p>Please enable JavaScript to use file uploader.</p>
+        <!-- or put a simple form for upload here -->
+    </noscript>
+  </div>
+
+
+
+
+<!--
+  teh js
+-->
+
+  <script>
+
+
+    <% 
+      
+      session_key =
+        Rails.application.config.session_options[:key] 
+
+      upload_params = {
+        session_key          => URI.escape(cookies[session_key]),
+
+        'authenticity_token' => URI.escape(form_authenticity_token)
+      }
+      
+    %>
+
+
+    jq(function(){
+      var options = {};
+
+        options['element'] = document.getElementById(<%= j domid %>);
+
+        options['params'] = <%= j upload_params %>;
+
+        options['action'] = <%= j uploads_path %>;
+
+        options['debug'] = true;
+
+        options['autoUpload'] = true;
+
+        options['inputName'] = 'filename';
+
+        options['uploadButtonText'] = 'Upload Files';
+
+        //options['allowedExtensions'] = ['jpg', 'png'];
+
+        options['showMessage'] = function(msg){ App.flash(msg, {'css.class':'alert-error'}) };
+
+        options['onComplete'] = function(id, filename, response){
+
+          response['original_id'] = response.variants[0].id;
+
+          if(App.upload_after_complete){
+            var bool = App.upload_after_complete(response);
+            if(!bool){ return; }
+          };
+
+          var template = Template('upload-row');
+
+          var row = template.render(response);
+
+          var table = jq('#uploads');
+
+          table.append(row);
+        };
+
+      var uploader = new qq.FileUploader(options);
+    });
+
+
+  </script>

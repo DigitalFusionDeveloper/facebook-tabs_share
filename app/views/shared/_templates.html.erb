@@ -1,0 +1,10 @@
+<!-- templates -->
+
+  <!-- flash -->
+  <%= template_for 'flash-list-item' do %>
+    <div class='alert message'>
+      <a class='dismiss close' href='javascript:void(42)'>&#215;</a>
+      {{{ message }}}
+    </div>
+  <% end %>
+

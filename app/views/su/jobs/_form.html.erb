@@ -1,0 +1,11 @@
+<h4><%= link_to raw('&larr; Jobs'), su_jobs_path %></h4>
+<br />
+<br />
+<br />
+<pre>
+  <%= 
+    map = @job.to_map
+    map[:failures] = Array(@job[:failures]).map(&:to_map)
+    map.inspect
+  %>
+</pre>

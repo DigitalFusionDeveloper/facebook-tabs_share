@@ -1,0 +1,38 @@
+<%
+  options = @users.map{|u| [u.email, u.email]}
+  selected = [effective_user.email, effective_user.email]
+%>
+
+
+<%= form do %>
+
+  <div>
+    <dl>
+      <dt>Real User</dt>
+      <dd> <%= real_user.email %> </dd>
+
+      <dt>Effective User</dt>
+      <dd> 
+        <%= select_tag :email, options_for_select(options, :selected => selected), 'id' => 'user', 'style' => 'margin-top:0.5em;width:21em;display:inline;' %>
+      </dd>
+
+    </dl>
+  </div>
+
+
+<script>
+  jq(function(){
+    var user_select = jq('select#user');
+
+    user_select.change(function(){
+      this.form.submit();
+    });
+  });
+</script>
+    
+<% end %>
+
+
+
+
+

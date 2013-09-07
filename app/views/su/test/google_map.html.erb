@@ -1,0 +1,6 @@
+<%= @location.formatted_address %>
+<br>
+<br>
+<div class="gmap" data-mobile-expand="true" data-lat="<%= @location.lat %>" data-lng="<%= @location.lng %>" data-zoom="14" style="width:420px; height:420px;"></div>
+<%= render :partial => 'shared/google_maps' %>
+

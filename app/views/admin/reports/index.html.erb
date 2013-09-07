@@ -1,0 +1,79 @@
+
+<% unless current_action == 'show' %>
+
+<%= link_to raw("New Report &rarr;"), url_for(:action => :new) %>
+<br>
+<br>
+
+<% else %>
+
+<%= link_to raw("&larr; All Reports"), url_for(:action => :index) %>
+<br>
+<br>
+
+<% end %>
+
+<table class='table table-striped'>
+  <% @reports.each do |report| %>
+  <tr>
+    <th>
+      Ttitle
+    </th>
+    <th>
+      Created
+    </th>
+    <th>
+      Config
+    </th>
+    <th>
+      Downloads
+    </th>
+  </tr>
+
+  <tr>
+
+    <td>
+      <%= link_to report.title, url_for(:action => :show, :id => report.id) %>
+    </td>
+
+    <td>
+      <%= time_ago_in_words report.created_at %> ago
+    </td>
+
+    <td>
+      <% if report.config.values.all?(&:blank?) %>
+        ~
+      <% else %>
+        <ul>
+        <% report.config.each do |key, val|; next if val.blank? %>
+          <li>
+            <%= key %>: <%= val %>
+          </li>
+        <% end %>
+        </ul>
+      <% end %>
+    </td>
+
+    <td>
+      <ol>
+      <% report.attachments.each do |attachment| %>
+        <li>
+          <%= link_to attachment.filename, admin_report_attachment_path(report.id, attachment.id), :target => :_report %>
+          <small>
+            <%= link_to '(download)', admin_report_attachment_path(report.id, attachment.id, :download => attachment.filename) %>
+          </small>
+        </li>
+      <% end %>
+      </ol>
+    </td>
+
+  </tr>
+  <% end %>
+</table>
+
+<% unless current_action == 'show' %>
+
+<br>
+<%= paginate @reports %>
+
+<% end %>

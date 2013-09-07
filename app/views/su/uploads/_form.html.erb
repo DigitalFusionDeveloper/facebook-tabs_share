@@ -1,0 +1,81 @@
+<nav>
+  <h4>
+    <%= link_to raw('&larr; Uploads'), url_for(:action => :index) %>
+  </h4>
+</nav>
+<br />
+
+<%=
+  form_for(
+    @upload,
+    :url => url_for(:action => @upload.new_record? ? :create : :update),
+    :style => 'margin-top:3em'
+  ) do |form|
+%>
+  <%= errors_for(@upload) %>
+  <br />
+
+  <% unless @upload.new_record? %>
+    <dl>
+
+      <dt>
+        Name 
+      </dt>
+      <dd>
+        <%= @upload.basename %>
+      </dd>
+
+      <dt>
+        Tmp
+      </dt>
+      <dd>
+        <%= @upload.tmp %>
+      </dd>
+
+      <dt>
+        Updated
+      </dt>
+      <dd>
+        <%= time_ago_in_words @upload.updated_at %> ago
+      </dd>
+
+      <dt>
+        Variants
+      </dt>
+      <dd>
+        <table>
+        <% @upload.variants.each do |variant| %>
+          <tr>
+          <td style='padding:1em;vertical-align:top;'>
+            <%=
+              link_to(variant.url, variant.url, :target => :_blank)
+            %>
+          </td>
+          </tr>
+          <tr>
+          <td style='padding:1em;vertical-align:top;'>
+<br />
+            <%=
+              if variant.image?
+                link_to(
+                  image_tag(variant.url(:small), :style => 'max-width:100px'),
+                  variant.url,
+                  :target => :_blank
+                )
+              end
+            %>
+          </td>
+          </tr>
+        <% end %>
+        </table>
+      </dd>
+    </dl>
+  <% end %>
+  <br />
+
+  <%= form.file_field :file %>
+  <%= form.hidden_field :cache if @upload.persisted? %>
+
+  <hr />
+  <%= form.submit %>
+<% end %>

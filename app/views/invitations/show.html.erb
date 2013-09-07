@@ -1,0 +1,24 @@
+<h3>Invitation <%= @invitation.id %></h3>
+<hr />
+
+<div class="row-fluid">
+  <div class="span6">
+      <%= form(:class => "signup") do %>
+        <div class="notice">
+          <p>
+            <%= @invitation.email %>
+          </p>
+          <p>
+            <%= @invitation.message %>
+          </p>
+          <p><em>Please either accept or decline his invitation.</em></p>
+        </div>
+
+        <br /> <br />
+        <%= link_to 'Accept this invitation.', accept_invitation_path(@invitation), :class => 'btn btn-success' %>
+        <br /> <br />
+        <%= link_to 'Decline this invitation.', decline_invitation_path(@invitation), :class => 'btn btn-warning' %>
+      <% end %>
+    </div>
+  </div><!-- eo .six .columns .centered -->
+</div><!-- eo .row -->

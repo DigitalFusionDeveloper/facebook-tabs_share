@@ -1,0 +1,357 @@
+<%
+  domid = "file-uploader-#{ App.uuid }"
+
+  if defined?(config)
+    config = Map.for(config)
+  else
+    config = Map.new
+  end
+%>
+
+<script>
+  if(!window.Upload){
+    Upload = {};
+
+    Upload.callbacks = {};
+
+    Upload.callbacks.complete = function(response){
+      return true;
+    };
+
+    Upload.callbacks.embed = function(content){
+      return true;
+    };
+
+    Upload.callbacks.remove = function(content){
+      return true;
+    };
+
+    Upload.callbacks.unremove = function(content){
+      return true;
+    };
+  };
+</script>
+
+<!--
+  stylez
+-->
+
+  <% content_for :style do %>
+    <style>
+      .qq-upload-button {
+        background-color: #999;
+        border-radius: 5px;
+        -moz-border-radius: 5px;
+      }
+      .qq-upload-list li.qq-upload-success {
+        background-color: #ccc;
+        display: none;
+      }
+      .qq-upload-file ,
+      .qq-upload-size
+      {
+        display: none;
+      }
+      .qq-upload-button {
+        width: 100%;
+      }
+    </style>
+  <% end %>
+
+<!--
+  where uploaded files appear
+-->
+
+  <table id='uploads' class='table table-striped' style='width:100%;margin:0em 0em;'>
+    <script name='upload-row' class='template' type='text/template'>
+
+      <tr>
+        <td style='vertical-align:top;'>
+          {{#if is_image}}
+
+            <a href="javascript:void(42)" class="upload-preview" data-preview="{{ url }}">
+              <img src="{{ url }}" alt="{{ filename }}" style="max-width:100px;max-height:100px;padding-right:1em;" />
+            </a>
+
+          {{/if}}
+
+          {{#unless is_image}}
+
+            <nobr style="display:block;padding:1em;min-width:8em;height:3em;background-color:#ccc;color:white;text-align:white-space:nowrap;center;vertical-align:middle;">
+              {{ filename }}
+            </nobr>
+
+          {{/unless}}
+
+          <input class="upload-ids" name="upload_ids[]" type="hidden" value="{{ id }}" />
+        </td>
+
+        <td style='width:100%;vertical-align:top;'>
+          <ul class='unstyled'>
+            {{#each variants}}
+
+              <li>
+
+                {{#if is_image}}
+
+                  [<a href="{{ url }}" target="_blank"> view </a> | <a href="javascript:void(42)" data-toggle="collapse" data-target="#collapse-{{ id }}"> embed </a> | <a href="{{ url }}" class="upload-lightbox" title="{{ name }}/{{ filename }}">preview</a>]
+
+                {{/if}}
+
+                {{#unless is_image}}
+
+                  [<a href="{{ url }}" target="_blank"> view </a> | <a href="javascript:void(42)" data-toggle="collapse" data-target="#collapse-{{ id }}"> embed </a>]
+
+                {{/unless}}
+
+
+                {{ name }}/{{ filename }}
+
+
+                <div id="collapse-{{ id }}" class="collapse out">
+                  <table class='unstyled'>
+
+                  {{#if is_image}}
+                    <tr>
+                      <td style='text-align:right;'>markdown</td>
+                      <td>&rarr;</td>
+                      <td>
+                        <a class='upload-embed markdown' href='javascript:void(42)'>
+                          ![{{ filename }}]({{ url }})
+                          <span class='upload-embed-content markdown' style='display:none'>![{{ filename }}]({{ url }})</span>
+                        </a>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style='text-align:right;'>html</td>
+                      <td>&rarr;</td>
+                      <td>
+                        <a class='upload-embed html' href='javascript:void(42)'>
+                          &lt;img src="{{ url }}" /&gt
+                          <span class='upload-embed-content html' style='display:none'><img src="{{ url }}"></span>
+                        </a>
+                      </td>
+                    </tr>
+
+                  {{/if}}
+
+                    <tr>
+                      <td style='text-align:right;'>url</td>
+                      <td>&rarr;</td>
+                      <td>
+                        <a class='upload-embed raw' href='javascript:void(42)'>
+                          {{ url }}
+                          <span class='upload-embed-content raw' style='display:none'>{{ url }}</span>
+                        </a>
+                      </td>
+                    </tr>
+
+                  </table>
+                </div>
+
+              </li>
+
+            {{/each}}
+          </ul>
+        <td>
+
+        <td style='vertical-align:top;'>
+          <span style='font-weight:bolder;font-size:1.2em;'>
+            <a href='javascript:void(42)' title='remove {{ filename }}' class='upload-remove' data-id='{{ id }}'>&times;</a>
+          </span>
+        </td>
+      </tr>
+
+    </script>
+  </table>
+
+
+<!--
+  the uploader widget
+-->
+  <table style='width:12em;'>
+  <tr>
+  <td>
+  <div id="<%= domid %>" style=''>
+    <noscript>
+        <p>Please enable JavaScript to use file uploader.</p>
+        <!-- or put a simple form for upload here -->
+    </noscript>
+  </div>
+  </tr>
+  </td>
+  </table>
+
+
+<!--
+  teh js
+-->
+
+  <script>
+
+
+    <% 
+      
+      session_key =
+        Rails.application.config.session_options[:key] 
+
+      upload_params = {
+        session_key          => URI.escape(cookies[session_key]),
+
+        'authenticity_token' => URI.escape(form_authenticity_token),
+
+        'resize' => true
+      }
+
+      if config[:tmp] == false
+        upload_params['tmp'] = false
+      end
+
+    %>
+
+
+    jq(function(){
+    //
+      var template = Template('upload-row');
+      var target = jq('#uploads');
+
+    //
+      <% 
+        if false
+           uploads = Upload.all.order_by(:created_at => :asc).limit(3)
+        end
+      %>
+
+      var uploads = <%= j( defined?(uploads) ? Array(uploads).map(&:as_json) : [] ) %>;
+
+      jQuery.each(uploads, function(){
+        var upload = this;
+        var html = template.render(upload);
+        target.append(html);
+      });
+
+      var add_behavior_iff_needed = function(scope, selector, callback){
+        var gaurd = selector + '-gaurd';
+
+        scope.find(selector).each(function(){
+          var element = jq(this);
+
+          if(!element.data(gaurd)){
+            callback(element);
+            element.data(gaurd, true);
+          };
+        });
+      };
+
+      var add_behavior = function(){
+        var scope = jq(arguments[0] || 'body');
+
+        add_behavior_iff_needed(scope, '.upload-lightbox', function(e){
+          e.colorbox({rel:'upload-lightbox', transition:"none", width:"80%", height:"80%"});
+        });
+
+        add_behavior_iff_needed(scope, '.upload-preview', function(e){
+          e.click(function(){
+            var selector = 'a.upload-lightbox[href="' + e.data('preview') + '"]';
+            jq(selector).click();
+          });
+        });
+
+        add_behavior_iff_needed(scope, '.upload-embed', function(e){
+          e.click(function(){
+            var content = e.find('.upload-embed-content').html();
+            Upload.callbacks.embed(content);
+          });
+        });
+
+        add_behavior_iff_needed(scope, '.upload-remove', function(e){
+          e.click(function(){
+
+            var id = e.data('id');
+            var tr = e.closest('tr');
+            var input = tr.find('input.upload-ids');
+
+            var title = e.attr('title');
+
+            if(e.data('removed')){
+              input.removeAttr('disabled');
+              input.removeAttr('readonly');
+
+              //tr.css({'opacity' : '1.0'});
+              tr.find('td').css({'opacity' : '1.0'});
+              e.html('&times;');
+
+              e.attr('title', title.replace(/\s*un-/, ''));
+
+              Upload.callbacks.unremove(id);
+
+              e.data('removed', false);
+            } else {
+
+              //if(confirm('Are you sure?')){
+              if(true){
+                input.attr('disabled', 'disabled');
+                input.attr('readonly', 'readonly');
+
+                //tr.css({'opacity' : '0.3'});
+                tr.find('td').css({'opacity' : '0.3'});
+                e.closest('td').css({'opacity' : '1.0'});
+                e.html('&plus;');
+
+                e.attr('title', 'un-' + title);
+
+                Upload.callbacks.remove(id);
+
+                e.data('removed', true);
+              };
+
+            }
+
+          });
+        });
+      };
+
+    //
+      var options = {};
+
+        options['element'] = document.getElementById(<%= j domid %>);
+
+        options['params'] = <%= j upload_params %>;
+
+        options['action'] = <%= j uploads_path %>;
+
+        //options['debug'] = true;
+
+        options['autoUpload'] = true;
+
+        options['inputName'] = 'filename';
+
+        options['uploadButtonText'] = 'Upload Files';
+
+        options['dragText'] = 'Drop Files';
+
+        //options['allowedExtensions'] = ['jpg', 'jpeg', 'png', 'gif'];
+
+        options['showMessage'] = function(msg){ App.flash(msg, {'css.class':'alert-error'}) };
+
+        options['onComplete'] = function(id, filename, response){
+          var bool = Upload.callbacks.complete(response);
+          if(!bool){ return; }
+
+          var html = template.render(response);
+
+          target.append(html);
+
+          add_behavior();
+        };
+
+    //
+      var uploader = new qq.FileUploader(options);
+
+    //
+      add_behavior();
+    });
+
+
+  </script>

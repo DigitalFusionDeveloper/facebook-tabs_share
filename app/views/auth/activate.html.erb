@@ -1,0 +1,21 @@
+<div class="row-fluid">
+
+  <%= form(@c, :url => request.fullpath, :class => 'span4 offset4') do |f| %>
+    <div class="instructions">
+      Set your password &mdash; we'll activate your account!
+    </div>
+
+    <%= f.errors %>
+
+    <%= f.label :email %>
+    <%= f.input :email, :readonly => true, :disabled => true %>
+
+    <%= f.label(:password){ 'Set Password' } %>
+    <%= f.input :password, :type => :password, :autofocus => true %>
+
+    <br />
+    <br />
+    <%= f.submit 'Activate My Account', :class => 'btn', :style => 'width:100%;' %>
+  <% end %>
+
+</div>

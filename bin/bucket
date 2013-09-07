@@ -1,0 +1,503 @@
+#! /usr/bin/env ruby
+
+Main {
+
+  synopsis = <<-__
+  __
+
+  description <<-__
+  __
+
+  usage[:configuration] = <<-__
+  __
+
+  examples <<-__
+  __
+
+#
+  option('bucket', 'b'){
+    argument(:required)
+  }
+
+  option('endpoint', 'e'){
+    argument(:required)
+    default('s3.amazonaws.com')
+  }
+
+  option('force', 'F'){
+    cast(:bool)
+  }
+
+  option('config', 'C'){
+    argument(:required)
+  }
+
+  option(:no_delete){
+    cast(:bool)
+    default(false)
+  }
+
+#
+  def run
+    help!
+  end
+
+#
+  mode(:Create){
+    def run
+      s3.buckets.create(bucket_name)
+      puts(bucket_name)
+    end
+  }
+
+#
+  mode(:Destroy){
+    def run
+      s3.buckets[bucket_name].delete
+    end
+  }
+
+#
+  mode(:List){
+    def run
+      s3.buckets.each do |bucket|
+        puts(bucket.name)
+      end
+    end
+  }
+
+#
+  mode(:CORS){
+    def run
+      bucket.cors = {
+        :allowed_origins => %w'*',
+        :allowed_methods => %w'GET POST PUT',
+        #:allowed_headers => %w'origin accept x-requested-with content-type',
+        :allowed_headers => %w'*',
+        #:max_age_seconds => 3600,
+      }
+
+      bucket.cors.each do |rule|
+        p rule
+      end
+    end
+  }
+
+#
+  mode(:put){
+    argument(:path)
+    argument(:key){ optional }
+
+    def run
+      path = params[:path].value
+      key = params[:key].value
+
+      key ||= key_for(path)
+
+      open(path, 'rb') do |fd|
+        object = bucket.objects[key]
+
+        content_type = extract_content_type(path)
+
+        options = {
+          :acl => :public_read,
+          :content_type => content_type
+        }
+
+        object.write(fd, options)
+        #object = bucket.objects.create(key, fd)
+        #object.acl = :public_read
+        puts(object.url_for(:read).to_s.split('?').first)
+      end
+    end
+  }
+
+#
+  mode(:get){
+    argument(:key)
+    argument(:path){ optional }
+
+    def run
+      key = params[:key].value
+      path = params[:path].value
+
+      object = bucket.objects[key]
+
+      if path
+        tmp_for(path) do |tmp|
+          open(tmp, 'wb') do |fd|
+            object.read{|chunk| fd.write(chunk)}
+          end
+        end
+      else
+        object.read{|chunk| STDOUT.write(chunk)}
+      end
+    end
+  }
+
+#
+  mode(:shell){
+    argument(:key)
+
+    def run
+      key = params[:key].value
+
+      object = bucket.objects[key]
+
+      binding.pry(:hooks => Pry::Hooks.new, :prompt => proc{|*a| "#{ key } ~> "})
+    end
+  }
+  
+
+
+#
+  mode(:url){
+    argument(:key)
+    argument(:path){ optional }
+
+    def run
+      key = params[:key].value
+      path = params[:path].value
+
+      object = bucket.objects[key]
+
+      #puts object.public_url
+      puts object.url_for(:read)
+    end
+  }
+
+#
+  mode(:delete){
+    argument(:key){
+      optional true
+      arity '*'
+    }
+
+    option(:all){
+    }
+
+    def run
+      keys = Array(params[:key].values)
+
+      if keys.empty? and params[:all].given?
+        keys = []
+
+        bucket.objects.each do |object|
+          keys.push(object.key)
+        end
+      end
+
+      keys.each do |key|
+        if key.end_with?('*')
+          prefix, splat = File.split(key)
+          bucket.objects.with_prefix(prefix).each(:limit => 128) do |object|
+            object.delete
+            puts object.key
+          end
+        else
+          object = bucket.objects[key]
+          object.delete
+          puts object.key
+        end
+      end
+    end
+  }
+
+#
+  mode(:list){
+    option(:url, :u){ argument :optional }
+    option(:content_type, :t)
+
+    def run
+      bucket.objects.each do |object|
+        summary = {object.key => (details = {})}
+
+        if params[:url].given?
+          acl = params[:url].value
+
+          if acl and acl.is_a?(String)
+            url = object.url_for(acl)
+          else
+            url = object.url_for(:read).to_s.split('?').first
+          end
+          details['url'] = url
+        end
+
+        if params[:content_type].given?
+          content_type = object.content_type
+          details['content_type'] = content_type
+        end
+
+        if details.empty?
+          puts(object.key)
+        else
+          y(summary)
+        end
+      end
+    end
+  }
+
+#
+  mode(:auto){
+    mode(:content_type){
+      def run
+        bucket.objects.each do |object|
+          summary = {object.key => (details = {})}
+
+          url = object.url_for(:read).to_s.split('?').first
+          details['url'] = url
+
+          content_type = extract_content_type(object.key)
+          details['content_type'] = content_type
+
+          acl = object.acl.to_s
+
+          object.copy_from(object, :content_type => content_type)
+
+          object.acl = acl
+
+          y(summary)
+        end
+      end
+    }
+  }
+
+#
+  mode(:display){
+    mode(:settings){
+      def run
+        y settings
+      end
+    }
+  }
+
+# program utils/hooks/config
+#
+
+  def before_run
+    AWS.config(settings)
+  end
+
+# utils
+#
+  def sekrets
+    @sekrets ||= (
+      key = IO.read(File.join(Rails.root, '.sekrets.key')).strip rescue nil
+      Sekrets.settings_for(File.join(Rails.root, 'config/sekrets.yml.enc'), :key => key)
+    )
+  end
+
+  def settings
+    @settings ||= (
+      Map.for(sekrets.aws)
+    )
+  end
+
+  def s3
+    @s3 ||= AWS::S3.new( :s3_endpoint => params[:endpoint].value )
+  end
+
+  def bucket
+    @bucket ||= s3.buckets[bucket_name]
+  end
+
+  def bucket_name
+    if params[:bucket].given?
+      params[:bucket].value
+    else
+      settings[:s3][:bucket]
+    end
+  end
+   
+  def mkdir_p!(dir)
+    FileUtils.mkdir_p(dir)
+    File.stat(dir)
+    realpath(dir)
+  end
+
+  def clean(path)
+    File.basename(path.to_s.strip).downcase.gsub(%r/[^\.\w\d_-]/o, '_').squeeze('_')
+  end
+
+  def realpath(path)
+    Pathname.new(path).realpath.to_s
+  end
+
+  def path_for(key)
+    clean(key)
+  end
+
+  def key_for(path)
+    path.to_s.dup
+  end
+
+  def tmp_for(path, &block)
+    FileUtils.mkdir_p(Pathname.new(path).expand_path.dirname)
+
+    tmp = "#{ path }.#{ Process.ppid }.#{ Process.pid }.tmp"
+
+    block.call(tmp)
+  ensure
+    FileUtils.mv(tmp, path) unless $!
+  end
+
+
+  def paths_for(*args)
+    path = args.flatten.compact.join('/')
+    path.gsub!(%r|[.]+/|, '/')
+    path.squeeze!('/')
+    path.sub!(%r|^/|, '')
+    path.sub!(%r|/$|, '')
+    paths = path.split('/')
+  end
+
+  def absolute_path_for(*args)
+    ('/' + paths_for(*args).join('/')).squeeze('/')
+  end
+
+  def relative_path_for(*args)
+    absolute_path_for(*args).sub(%r{^/+}, '')
+  end
+
+  def tmpdir(&block)
+    return Dir.tmpdir unless block
+    basename = [Process.ppid.to_s, Process.pid.to_s, Thread.current.object_id.abs.to_s, Time.now.to_f, rand.to_s].join('-')
+    dirname = File.join(tmpdir, basename)
+    FileUtils.mkdir_p(dirname)
+
+    begin
+      Dir.chdir(dirname) do
+        return block.call(Dir.pwd)
+      end
+    ensure
+      FileUtils.rm_rf(dirname) rescue "system rm -rf #{ dirname.inspect }"
+    end
+  end
+
+  def y(object, options = {})
+    io = options[:io] || STDOUT
+    indent = (options[:indent] || 0).to_i
+
+    yml = object.to_yaml.gsub(/\s*\!omap\s*$/, "").gsub(/^---$\s*/, "")
+
+    if indent > 0
+      yml.gsub!(/^/, (' ' * indent))
+    end
+
+    io << yml
+  end
+
+  def extract_content_type(filename, options = {})
+    options = Map.for(options)
+
+    basename = ::File.basename(filename.to_s)
+    parts = basename.split('.')
+    parts.shift
+    ext = parts.pop
+
+    default =
+      case
+        when options[:default]==false
+          nil
+        when options[:default]==true
+          "application/octet-stream"
+        else
+          (options[:default] || "application/octet-stream").to_s
+      end
+
+    content_type = mime_types[ext] || MIME::Types.type_for(::File.basename(filename.to_s)).first
+
+    if content_type
+      content_type.to_s
+    else
+      default
+    end
+  end
+
+  def mime_types
+    {
+      'md' => 'text/x-markdown; charset=UTF-8'
+    }
+  end
+}
+
+
+
+BEGIN {
+
+# built-in ruby deps
+#
+  require 'yaml'
+  require 'stringio'
+  require 'fileutils'
+  require 'uri'
+  require 'pp'
+  require 'set'
+  require 'time'
+  require 'tmpdir'
+
+# suck Gemfile deps in
+#
+  unless defined?(Bundler)
+    require 'pathname'
+    ENV['BUNDLE_GEMFILE'] ||= File.expand_path("../../Gemfile",
+      Pathname.new(__FILE__).realpath)
+
+    require 'rubygems'
+    require 'bundler/setup'
+  end
+
+# required libs
+#
+  require 'main'
+  require 'map'
+  require 'multi_json'
+  require 'aws-sdk'
+  require 'fattr'
+  require 'sekrets'
+  require 'mime/types'
+
+  begin
+    require 'pry'
+  rescue LoadError
+    nil
+  end
+
+# load the rails env
+#
+  dirname = File.dirname(File.expand_path(__FILE__))
+  rails_root = File.dirname(dirname)
+  load(File.join(rails_root, 'config', 'env.rb'))
+
+# stub Rails object in so we can eval the config file(s)
+#
+  unless defined?(Rails)
+    module Rails
+      class StringInquirer < ::String
+        def method_missing(method, *args, &block)
+          case method.to_s
+            when /\A(.*)[?]\Z/
+              self == $1
+            else
+              super
+          end
+        end
+      end
+
+      Fattr(:env)
+      Fattr(:stage)
+      Fattr(:root)
+    end
+
+    Rails.root = rails_root
+    Rails.env = Rails::StringInquirer.new(ENV['RAILS_ENV'])
+    Rails.stage = Rails::StringInquirer.new(ENV['RAILS_STAGE']) if ENV['RAILS_STAGE']
+
+    unless defined?(RAILS_ENV)
+      RAILS_ROOT = Rails.root
+      RAILS_ENV = Rails.env
+      RAILS_STAGE = Rails.stage
+    end
+  end
+
+}

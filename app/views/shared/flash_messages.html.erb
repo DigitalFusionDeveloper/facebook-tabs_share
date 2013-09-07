@@ -1,0 +1,16 @@
+<%
+  list = messages!
+
+  unless list.blank?
+%>
+
+  <div class='flash messages'>
+  <% list.each do |msg, opts| %>
+    <div class='<%= opts[:class] || :alert %> message'>
+      <a class='dismiss close' href='javascript:void(42)'>&#215;</a>
+      <%= msg.html_safe %>
+    </div>
+  <% end %>
+  </div>
+
+<% end %>

@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+ENV[ "RAILS_EMAIL" ] = ENV[ "SMTP_DEBUG" ] = "1"
+require File.expand_path('../../config/environment',  __FILE__)
+Mailer.test( "testing+#{ App.identifier }@dojo4.com" ).deliver

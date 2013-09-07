@@ -1,0 +1,17 @@
+<%
+  return_to = flash[:return_to] || '/'
+%>
+
+<script>
+  jQuery(function(){
+    var return_to = <%= j return_to %>;
+
+    try { 
+      var device = categorizr(); 
+      alert(device);
+      jQuery.cookie('device', (device || 'desktop'), {'path' : '/'});
+    } catch(e) {};
+
+    window.location = return_to;
+  });
+</script>

@@ -1,0 +1,15 @@
+---   
+      
+cats:
+
+  help: >
+    You can read about cats here: http://beta.photobucket.com/images/cat%20gif/
+
+  values :
+    -
+      title: Cute
+      description: The cute kittens.
+    -
+      title: Fat
+      description: The fat kittens.
+

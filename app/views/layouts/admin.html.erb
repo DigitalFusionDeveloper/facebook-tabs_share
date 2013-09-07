@@ -1,0 +1,70 @@
+<!doctype html>
+<!--[if lt IE 7 ]> <html class="no-js ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]>    <html class="no-js ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]>    <html class="no-js ie8" lang="en"> <![endif]-->
+<!--[if IE 9 ]>    <html class="no-js ie9" lang="en"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+
+<%
+
+
+%>
+
+<html>
+
+  <head>
+
+    <title><%= @layout.title %></title>
+
+    <meta name="description" content="<%= App.title %>">
+    <meta name="author" content="dojo4.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <%= yield :meta %>
+
+    <% unless local_request? %>
+      <style>
+        @import url('https://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700');
+      </style>
+    <% end %>
+
+    <%= stylesheet_link_tag("admin") %>
+    <%= yield :style %>
+
+    <%= javascript_include_tag("admin") %>
+    <%= yield :script %>
+
+    <!--[if lt IE 9]>
+    <%= javascript_include_tag("html5shiv") %>
+    <![endif]-->
+
+    <%= csrf_meta_tags %>
+    <%= favicon_link_tag 'favicon.png', :rel => 'shortcut icon apple-touch-icon', :type => 'image/png' %>
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <header class="row-fluid" role="banner">
+        <%= render :partial => 'shared/header' %>
+      </header>
+
+      <section class="row-fluid main" role="main">
+        <%= render :partial => 'shared/nav' %>
+        <%= render :partial => 'shared/flash' %>
+        <%= yield(:content) + yield %>
+      </section>
+
+      <footer class="row-fluid" role="contentinfo">
+        <%= render :partial => 'shared/footer' %>
+      </footer>
+
+    </div>
+    
+    <%= render :partial => 'shared/server_info' %>
+    <%= render :partial => 'shared/google_analytics' %>
+    <%= render :partial => 'shared/templates' %>
+    <%= render :partial => 'shared/scripts' %>
+  </body>
+
+</html>

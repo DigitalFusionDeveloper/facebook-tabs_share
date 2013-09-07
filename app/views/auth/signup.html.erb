@@ -1,0 +1,29 @@
+<% if @c.created? %>
+
+  <!-- thank you messaging -->
+
+<% else %>
+
+  <div class="row-fluid">
+
+    <%= form(@c, :url => request.fullpath, :class => 'span4 offset4') do |f| %>
+      <div class="instructions">
+        Enter your email &mdash; we'll email you an activation link!
+      </div>
+
+      <%= f.errors %>
+
+      <%= f.label :email %>
+      <%= f.input :email, :autofocus => f.errors.blank? %>
+
+      <br />
+      <br />
+      <%= f.submit :class => 'btn', :style => 'width:100%' %>
+      <br />
+      <br />
+      need to <%= link_to 'login', login_path(:email => @c.email) %> instead?
+    <% end %>
+
+  </div>
+
+<% end %>

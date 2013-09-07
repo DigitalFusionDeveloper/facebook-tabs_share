@@ -1,0 +1,18 @@
+
+<%= form @rfi, :url => request.fullpath do |f| %>
+
+  <%= f.errors %>
+
+  <%= f.label :email %>
+  <%= f.input :email %>
+  <br>
+
+  <%= f.label :name %>
+  <%= f.input :name %>
+  <br>
+
+  <hr>
+  <%= f.submit %>
+
+<% end %>
+

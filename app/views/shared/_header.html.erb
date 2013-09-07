@@ -1,0 +1,25 @@
+<br>
+
+<div class='row-fluid' style='vertical-align:middle;'>
+
+  <div class='span6'>
+    <%=
+      link_to(image_tag('logo.png', :id => :logo), '/')
+    %>
+  </div>
+
+  <div class='span6' style='text-align:right;'>
+    <% unless @layout.nav_for(:auth).blank? %>
+
+      <nav role="navigation">
+        <% @layout.nav_for(:auth).map do |link| %>
+          <%= link_to link.content, link.url, link.options %><%= ' | ' unless link == link.nav.last %>
+        <% end %>
+      </nav>
+
+    <% end %>
+  </div>
+</div>
+
+<br>
+

@@ -1,0 +1,8 @@
+# support cached pages
+#
+# RewriteEngine on
+#
+# RewriteRule ^/*$ /cache/index.html [QSA]
+#
+# RewriteRule ^([^.]+)$ /cache/$1.html [QSA]
+

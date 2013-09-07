@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+
+# see: https://github.com/customink/central_logger
+#
+# see: http://blog.andrewvc.com/tailing-mongodb-capped-collections-in-ruby
+
+require File.expand_path('../../config/environment',  __FILE__)
+
+db = Rails.logger.mongo_connection
+
+collection = db[Rails.logger.mongo_collection_name]
+
+start_count = collection.count
+
+tail = Mongo::Cursor.new(collection, :tailable => true, :order => [['$natural', 1]]).skip(start_count- 1)
+
+loop do
+  if doc = tail.next_document
+    p Map.new(doc)
+  else
+    sleep(rand)
+  end
+end
+
+

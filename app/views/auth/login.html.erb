@@ -1,0 +1,25 @@
+<div class="row-fluid">
+
+  <%= form(@c, :url => request.fullpath, :class => 'span4 offset4') do |f| %>
+    <div class="instructions">
+      Welcome back!
+    </div>
+
+    <%= f.errors %>
+
+    <%= f.label :email %>
+    <%= f.input :email, :autofocus => @c.email.blank? %>
+
+    <%= f.label :password %>
+    <%= f.input :password, :type => :password, :autofocus => !@c.email.blank? %>
+
+    <br />
+    <br />
+    <%= f.submit :Login, :class => 'btn', :style => 'width:100%;' %>
+    <br />
+    <br />
+
+    need to <%= link_to 'signup', signup_path(:email => @c.email) %> instead? &mdash; <%= link_to 'forgot your password?', password_path(:email => @c.email) %>
+  <% end %>
+
+</div>

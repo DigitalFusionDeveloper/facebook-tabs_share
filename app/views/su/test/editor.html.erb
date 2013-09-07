@@ -1,0 +1,57 @@
+<!-- markup -->
+
+    <textarea id='editor'>
+        <strong title='htmlmixed'>foo</strong>
+
+        <small>bar</small>
+
+         * one
+         * two
+         * three
+    </textarea>
+
+
+<!-- stylez -->
+
+  <% content_for :style do %>
+    <%= stylesheet_link_tag('codemirror') %>
+  <% end %>
+
+
+<!-- scriptz -->
+
+
+  <% content_for :script do %>
+    <%= javascript_include_tag('editor') %>
+
+    <script>
+
+      jq(function(){
+         var editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+           lineNumbers    : false,
+           matchBrackets  : true,
+           indentUnit     : 2,
+           indentWithTabs : false,
+           enterMode      : "keep",
+           tabMode        : "shift",
+           theme          : "default",
+           lineWrapping   : true,
+           keyMap         : "vim",      // | "default"
+           mode           : "application/x-erb" // "htmlmixed"  | "markdown"
+        });
+
+
+        //editor.setSize('auto', 'auto');
+        editor.focus();
+
+        window.editor = editor;
+      });
+
+     </script>
+  <% end %>
+
+
+<!--
+  editor.setOption('mode', 'application/x-erb')
+-->
+

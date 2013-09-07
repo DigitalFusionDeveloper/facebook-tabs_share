@@ -1,0 +1,88 @@
+<script>
+  $(function(){
+  //
+    s3Uploader.ify({
+      'ajax' : true
+    });
+
+  //
+    var progress = {};
+
+  //
+    s3Uploader.callbacks['before'] = function(data){
+      var s3uploader   = data.s3uploader;
+      var url          = data.url;
+      var filename     = data.filename;
+      var content_type = data.content_type;
+
+      var html = "";
+
+      html += "<div class='upload' style='opacity: 0.5;'>";
+      html +=   "<div class='filename' style='white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-top: 1px solid #ccc; margin-top: 1em; padding-top: 0.5em;'></div>";
+
+      html +=   "<img style='display:none; margin-top: 1em; max-width: 100%;' >";
+
+      html +=   "<div class='progress active progress-warning progress-striped' style='display:block; margin-top: 1em;'>"
+      html +=     "<div class='bar' style='width: 0%'>";
+      html +=   "</div></div>";
+      html += "</div>";
+
+      $html = $(html);
+
+      var $filename = $html.find('.filename');
+      var width = s3uploader.input.width();
+
+      $filename.html(filename);
+
+      s3uploader.input.after($html);
+
+      progress[url] = $html;
+    };
+
+  //
+    s3Uploader.callbacks['progress'] = function(data){
+      var s3uploader = data.s3uploader; 
+      var url          = data.url;
+
+      var percent = data.percent;
+
+      var $html = progress[url];
+
+      var width = percent + '%';
+      var $bar = $html.find('.bar');
+      $bar.css({'width' : width});
+    };
+
+  //
+    s3Uploader.callbacks['success'] = function(data){
+      var s3uploader = data.s3uploader;
+      var url          = data.url;
+      var content_type = data.content_type;
+      var filename = data.filename;
+
+      var $html = progress[url];
+
+      $html.css({'opacity' : '1.0'});
+      $html.find('.progress').hide();
+
+      var $filename = $html.find('.filename');
+
+      var link = $('<a>');
+      link.html(filename);
+      link.attr('href', url);
+      link.attr('target', '_blank');
+      $filename.html(link);
+
+      var width = s3uploader.input.width();
+
+      if( content_type.match(/image\//) && content_type.match(/png|jpg|jpeg|gif/) ){
+        var $img = $html.find('img');
+        $img.show();
+        $img.css({'diplay' : 'block'});
+        $img.css({'max-width' : width});
+        $img.attr('src', url);
+      };
+    };
+
+  });
+</script>

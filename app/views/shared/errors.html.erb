@@ -1,0 +1,32 @@
+<div class="errors2html errors-summary">
+  <h4 class="errors-caption">Sorry, we encountered some errors:</h4>
+
+  <% unless errors.global.empty?  %>
+    <ul class="errors-global-list">
+      <% errors.global.each do |message| %>
+        <li class="errors-message">
+          <%= message %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <% unless errors.fields.empty?  %>
+    <dl class="errors-fields-list">
+      <% 
+        errors.fields.each do |key, messages|
+          title = Array(key).join(" ").titleize
+      %>
+        <dt class="errors-title">
+          <%= title %>
+        </dt>
+
+        <% Array(messages).each do |message| %>
+          <dd class="errors-message">
+            <%= message %>
+          </dd>
+        <% end %>
+      <% end %>
+    </dl>
+  <% end %>
+</div>

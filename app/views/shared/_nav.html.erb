@@ -1,0 +1,54 @@
+<%=
+
+  unless @layout.nav_for(:main).blank?
+
+    nav_{
+      ul_(:class => 'nav nav-tabs'){
+        @layout.nav_for(:main).each do |link|
+
+         active_class = (link.active ? 'active' : 'inactive')
+
+          case link.config[:type].to_s
+          #
+            when /dropdown/
+              li_(:class => "#{ active_class } dropdown"){
+                a_(:class => 'dropdown-toggle', :data_toggle => 'dropdown', :href => (link.href || '#')){
+                  tagz << link.content
+                  tagz << ' '
+                  b_(:class => 'caret'){ ' ' }
+                }
+
+                ul_(:class => 'dropdown-menu'){
+                  link.config.menu.each do |item|
+                    case
+                      when item == :_divider
+                        li_(:class => 'divider'){}
+
+                      when item.is_a?(Array)
+                        content, href, *ignored = item
+                        li_{ a_(:href => href){ content } }
+
+                      when item.is_a?(Hash)
+                        item = Map.for(item)
+                        li_{ a_(:href => item[:href]){ item[:content] } }
+
+                      else
+                        li_{ a_(:href => item.to_s){ item.to_s } }
+                    end
+                  end
+                }
+              }
+          #
+            else
+              li_(:class => "#{ active_class }"){
+                a_(:href => link.href){ link }
+              }
+          end
+
+        end
+      }
+    }
+
+  end
+
+%>

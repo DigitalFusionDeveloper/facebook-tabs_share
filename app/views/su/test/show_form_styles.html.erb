@@ -1,0 +1,59 @@
+
+<style>
+  form { margin: 0 0 40px; }
+  fieldset div { margin: 0 0 10px; }
+</style>
+
+<% %w( small medium large ).each do |size| %>
+
+  <form class="app <%= size %>">
+    <fieldset> 
+      <legend>
+         <h3>form class='app <%= size %>'</h3>
+      </legend>
+
+      <%= @errors.to_html %>
+
+      <label for='a'>Input Without Errors</label>
+      <input id='a' type='text' class='focus <%= size %>'/>
+      
+      <label for='b'>Input With Errors</label>
+      <input id='b' type='text' class='errors <%= size %>'/>
+
+      <label for='c'>Disabled Input</label>
+      <input id='c' type='text' disabled='disabled'/>
+
+      <label for='d'>Readonly Input</label>
+      <input id='d' type='text' readonly='readonly'/>
+
+      <label for='c'>Textarea Without Errors</label>
+      <textarea id='c' title='textarea'></textarea>
+
+      <label for='d'>Textarea With Errors</label>
+      <textarea id='d' title='textarea' class='errors' class='<%= size %>'></textarea>
+
+      <label for='e'>Select Without Errors</label>
+      <select id='e' name='select' class='<%= size %>'>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+      </select>
+
+      <label for='f'>Select With Errors</label>
+      <select id='f' name='select' class="errors <%= size %>">
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+      </select>
+
+    </fieldset>
+
+    <input type="submit" class="btn btn-success" />
+
+  </form>
+
+<% end %>
+
+

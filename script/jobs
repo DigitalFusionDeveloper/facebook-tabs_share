@@ -1,0 +1,86 @@
+#!/usr/bin/env ruby
+# encoding: utf-8
+
+## setup
+#
+  require(File.dirname(__FILE__) + '/../lib/background.rb')
+
+## go
+#
+  active_at  = Time.now
+  max_n_jobs = 1024
+  n_jobs     = 0
+
+  Background.process __FILE__ do
+    timeout = Rails.env.production? ? 1.hour : 5.minutes
+
+    begin
+      Mongoid.identity_map_enabled = false if defined?(Mongoid.identity_map_enabled)
+
+      Job.run do |job|
+        if job.status == "running"
+          active_at = Time.now
+          n_jobs += 1
+
+          level = :info
+          label = :RUNNING
+          n = job.attempts - 1
+        else
+          if job.status == "success"
+            level = :info
+            label = :SUCCESS
+            n = job.attempts
+          else
+            level = :warn
+            label = :FAILURE
+            n = job.attempts
+          end
+        end
+
+        info = "#{ job.id } n=#{ n }/#{ Job.max_attempts } f=#{ job.failures.size } t=#{ job.starts_at.iso8601 }"
+
+        Background.logger.send(level, "#{ label } - #{ info }")
+
+        if label == :FAILURE
+          e = job.failures.last
+          Background.logger.send(level, "#{ e.message } (#{ e.type })\n#{ e.backtrace.join(10.chr) }")
+        end
+      end
+    rescue Moped::Errors::ConnectionFailure => e
+      Background.logger.error(e)
+      exit!
+    end
+
+    if((Time.now - active_at) > timeout)
+      Background.logger.info("INACTIVE - exit")
+      exit!
+    end
+
+    if(n_jobs > max_n_jobs)
+      Background.logger.info("MAX_N_JOBS[#{ max_n_jobs }] - restart")
+      Background.restart!
+    end
+  end
+
+
+__END__
+
+
+# for resque...
+
+require 'resque'
+
+queues = (ENV['QUEUES'] || ENV['QUEUE']).to_s.split(',')
+
+begin
+  worker = Resque::Worker.new(*queues)
+  worker.verbose = ENV['LOGGING'] || ENV['VERBOSE']
+  worker.very_verbose = ENV['VVERBOSE']
+rescue Resque::NoQueueError
+  abort "set QUEUE env var, e.g. $ QUEUE=critical,high rake resque:work"
+end
+
+ENV['INTERVAL'] = 0
+
+worker.work(ENV['INTERVAL'] || 5) # interval, will block
+

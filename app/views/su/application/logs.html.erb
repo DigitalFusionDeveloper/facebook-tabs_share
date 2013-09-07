@@ -1,0 +1,30 @@
+<%= link_to 'Stop', 'javascript:void("stop")', :id => :stop %>
+<%= link_to 'Start', 'javascript:void("start")', :id => :start, :style => 'display:none' %>
+<br />
+<hr />
+
+<pre id='logs' style='font-size:normal;line-height:1em;'>
+<%= @lines.join("\n") %>
+</pre>
+
+<script>
+  jq(function(){
+    var start = jq('#start');
+    var stop = jq('#stop');
+
+    var milliseconds = 1024;
+    var id = null;
+
+    var update = function(){
+      id = setInterval(function(){
+        var lines = App.ajax('logs?silence=logger');
+        jq('#logs').html(lines.join("\n"));
+      }, milliseconds);
+    };
+
+    start.click(function(){ start.toggle(); stop.toggle(); update(); });
+    stop.click(function(){ stop.toggle(); start.toggle(); clearInterval(id); });
+
+    update();
+  });
+</script>

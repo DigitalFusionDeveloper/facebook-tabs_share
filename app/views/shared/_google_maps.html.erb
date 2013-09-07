@@ -1,0 +1,19 @@
+<script type="text/javascript">
+  function initialize_maps() {
+    window.App && window.App.initialize_maps();
+  };
+
+  function loadGoogleMaps() {
+    var type = "text/javascript";
+    var src = '//maps.googleapis.com/maps/api/js?sensor=false&callback=initialize_maps';
+    var script = document.createElement("script");
+    script.type = type;
+    script.src = src;
+    //alert(' document.location.protocol: ' +  document.location.protocol);
+    document.body.appendChild(script);
+  };
+
+  jq(function(){
+    loadGoogleMaps();
+  });
+</script>

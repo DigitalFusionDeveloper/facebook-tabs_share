@@ -1,0 +1,21 @@
+<%= link_to raw("&larr; User #{ @user.email }"), url_for(:action => :show, :id => @user.id) %>
+<br>
+
+<%= form(@user, :url => url_for(:action => :welcome, :id => @user.id), :method => :post) do |f| %>
+  <fieldset>
+    <h5>
+      Message for: &ldquo;<%= @user.email %>&rdquo;
+    </h5>
+
+    <%= f.errors %>
+
+    <%= f.label :subject %>
+    <%= f.input(:subject){ Mailer.subject_for("Welcome Back") } %>
+    <br>
+    <%= f.label :message %>
+    <%= f.textarea(:message, :autofocus => true, :rows => 16){ @user.welcome_message.html_safe } %>
+  <fieldset>
+
+  <br>
+  <%= f.submit :Send!, :class => 'btn btn-success' %>
+<% end %>

@@ -1,0 +1,31 @@
+<% if @image %>
+
+  <h3><%= @image.basename %></h3>
+  <br />
+
+  <img src="<%= @image.url(:large) %>" alt="<%= @image.basename %>"/>
+  <br />
+  <br />
+  <br />
+
+  <%= link_to('upload another file...', url_for(:id => nil)) %>
+
+<% else %>
+
+  <%= form do %>
+    <input type='file' name='upload' />
+
+    <%= @upload_cache %>
+
+    <% if url = @upload_cache.url %>
+      <br />
+      you already uploaded: <img src='<%= raw url %>' />
+    <% end %>
+
+    <br />
+    <br />
+
+    <input type='submit' />
+  <% end %>
+
+<% end %>

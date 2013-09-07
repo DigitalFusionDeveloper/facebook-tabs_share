@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+require(File.dirname(__FILE__) + '/../lib/background.rb')
+
+Background.process __FILE__ do
+  loop do
+    Background.logger.info Time.now.to_f
+    sleep(rand(10))
+  end
+end

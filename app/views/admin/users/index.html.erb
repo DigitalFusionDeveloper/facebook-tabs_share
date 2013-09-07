@@ -1,0 +1,70 @@
+
+
+<table class='grid' style='width:100%;'>
+  <tr>
+    <td style='vertical-align:top;'>
+      <%= link_to raw("New &rarr;"), url_for(:action => :new), :title => 'Create a new user' %>
+    </td>
+    <td style='vertical-align:top;text-align:right;'>
+      <form>
+        <input type="search" name="search" placeholder="search" value="<%= params[:search] %>" />
+      </form>
+    </td>
+  </tr>
+</table>
+
+
+<table class='table table-striped'>
+  <tr>
+    <th>
+      Email
+    </th>
+    <th>
+      Name
+    </th>
+    <th>
+      Roles
+    </th>
+    <th>
+      Logged In
+    </th>
+    <th>
+      Actions
+    </th>
+  </tr>
+
+  <% @users.each do |user| %>
+  <tr>
+    <td>
+      <%= link_to user.email, url_for(:action => :show, :id => user.id) %>
+    </td>
+    <td>
+      <%= user.name %>
+    </td>
+    <td>
+      <%= user.list_of_roles.map{|role| h(role)}.join('<br>').html_safe %>
+    </td>
+    <td>
+      <%= user.logged_in %>
+    </td>
+    <td>
+      <%= link_to :edit, url_for(:action => :edit, :id => user.id), :title => 'edit this user', :class => 'label' %>
+      |
+      <%= link_to :login, url_for(:action => :show, :id => user.id, :login => '/dashboard'), :title => 'login as this user', :class => 'label' %>
+      |
+      <%= link_to :welcome, url_for(:action => :welcome, :id => user.id), :title => 'welcome this user', :class => 'label' %>
+    </td>
+  </tr>
+  <% end %>
+
+</table>
+
+<br>
+<%= paginate @users %>
+
+
+<script>
+  jQuery(function(){
+    $('table.users td').css({'white-space' : 'nowrap'});
+  });
+</script>

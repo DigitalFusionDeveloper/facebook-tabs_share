@@ -1,0 +1,19 @@
+<br>
+<%= form(@settings, :url => request.fullpath, :class => 'app small') do |f| %>
+  <%= f.errors %>
+
+  <%= f.label :email %>
+  <%= f.input :email, :readonly => true, :disabled => true %>
+  <br>
+
+  <%= f.label :name %>
+  <%= f.input :name %>
+  <br>
+
+  <%= f.label :password %>
+  <%= f.input :password, :type => 'password', :placeholder => 'enter a new password to change' %>
+  <br>
+
+  <hr>
+  <%= f.submit %>
+<% end %>
