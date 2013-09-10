@@ -2,9 +2,7 @@ class FormsController < ::ApplicationController
 ##
 #
   layout 'forms'
-
   prepend_view_path 'app/views/beers'
-
   before_filter 'set_beer'
 
 ##
@@ -15,9 +13,15 @@ class FormsController < ::ApplicationController
     return if request.get?
 
     if @rfi.save
-      message.success("Thanks #{ @rfi.email }!")
+      @rfi.form.messages.success("Thanks #{ @rfi.email }!")
     else
-      message.failure("Sorry, something went wrong - Please try again later.")
+=begin
+      @rfi.errors.each do |key, list|
+        title = key.split('.').last.titleize
+        errors = list.join(', ')
+        @rfi.form.messages.error("#{ title }: #{ errors }")
+      end
+=end
     end
   end
 
@@ -51,6 +55,12 @@ protected
 
     def save
       @rfi.beer = @beer
+
+      unless attributes.email.to_s.split(/@/).size == 2
+        errors.add(:email, 'is invalid')
+      end
+
+      return false unless valid?
 
       attributes.each do |attr, value|
         @rfi[attr] = value

@@ -1,13 +1,5 @@
+<%= yield(:content) + yield %>
 
-<section class='beer-form'>
-
-  <%= render :partial => 'shared/flash' %>
-
-  <%= yield(:content) + yield %>
-
-</section>
-
-<%= javascript_include_tag 'forms' %>
-
-<%= render :partial => 'shared/templates' %>
-<%= render :partial => 'shared/scripts' %>
+<% unless request.xhr? %>
+  <%= javascript_include_tag('jquery') %>
+<% end %>

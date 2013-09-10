@@ -1,12 +1,8 @@
 todo:
-
-  - rfi form needs to ajax submit and replace itself
-
-  - demo page for noah in public
-
   - update readme
-
   - reports?
 
-
 done:
+  - rfi form needs to ajax submit and replace itself
+  - demo page for noah in public
+  - styles for flash?

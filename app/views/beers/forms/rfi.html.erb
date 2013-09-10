@@ -1,18 +1,31 @@
 
 <%= form @rfi, :url => request.fullpath do |f| %>
 
+  <%= f.messages %>
   <%= f.errors %>
+
+  <%= f.label :first_name %>
+  <%= f.input :first_name %>
+  <br>
+
+  <%= f.label :last_name %>
+  <%= f.input :last_name %>
+  <br>
 
   <%= f.label :email %>
   <%= f.input :email %>
   <br>
 
-  <%= f.label :name %>
-  <%= f.input :name %>
+  <%= f.label :mobile_phone %>
+  <%= f.input :mobile_phone %>
   <br>
+
+  <%= f.label :postal_code %>
+  <%= f.input :postal_code %>
+  <br>
+
 
   <hr>
   <%= f.submit %>
 
 <% end %>
-
