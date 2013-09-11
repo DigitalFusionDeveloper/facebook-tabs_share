@@ -1,0 +1,146 @@
+#landing_wrap {
+  width: 800px;
+  height: 700px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  background: #000 url('img/fullers-landing-bg.jpg') no-repeat 0 0;
+}
+#landing_wrap #landing-nav {
+  position: absolute;
+  width: 450px;
+  top: 75px;
+  left: 330px;
+  z-index: 20;
+}
+#landing_wrap #landing-nav ul {
+  list-style: none;
+  margin: 12px 0 0 0;
+  padding: 0;
+  text-align: center;
+}
+#landing_wrap #landing-nav ul li {
+  display: inline;
+  line-height: 150px; 
+  margin: 0 25px 0 25px;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  padding: 40px 0;
+}
+#landing_wrap #landing-nav ul li:hover {
+  cursor: pointer;
+}
+#landing_wrap #landing-nav ul li.fullers_1845 {
+  margin: 0 25px 0 60px;
+}
+#page_wrap {
+  width: 800px;
+  min-height: 800px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  background: #000 url('img/fullers-main-bg.jpg') no-repeat 0 0;
+}
+#nav {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 800px;
+  height: 120px;
+  padding-left: 25px;
+  z-index: 20;
+}
+#nav ul {
+  list-style: none;
+  margin: 16px 0 0 0;
+  padding: 0;
+  width: 780px;
+}
+#nav ul li {
+  display: inline-block;
+  width: 66px;
+  height: 90px;
+  margin: 0 28px 0 0;
+  background-color: transparent;
+  background-image: url('img/fuller-main-nav-sprite.png');
+  background-repeat: no-repeat;
+  /* Scott Kellum Text Hide */
+  text-indent: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+#nav ul li:last-child {
+  margin: 0 0px 0 0;
+}
+#nav ul li.nav-pride {
+  background-position: -1399px 0;
+}
+#nav ul li.nav-esb {
+  background-position: -1099px 0;
+}
+#nav ul li.nav-porter {
+  background-position: -1299px 0;
+}
+#nav ul li.nav-lancer {
+  background-position: -899px 0;
+}
+#nav ul li.nav-stout {
+  background-position: -999px 0;
+}
+#nav ul li.nav-dew {
+  background-position: -1199px 0;
+}
+#nav ul li.nav-fullers_1845 {
+  background-position: -799px 0;
+}
+#nav ul li.nav-vintage {
+  background-position: -1499px 0;
+}
+#nav ul li.nav-pride.inactive {
+  background-position: -600px 0;
+}
+#nav ul li.nav-esb.inactive {
+  background-position: -300px 0;
+}
+#nav ul li.nav-porter.inactive {
+  background-position: -500px 0;
+}
+#nav ul li.nav-lancer.inactive {
+  background-position: -100px 0;
+}
+#nav ul li.nav-stout.inactive {
+  background-position: -200px 0;
+}
+#nav ul li.nav-dew.inactive {
+  background-position: -400px 0;
+}
+#nav ul li.nav-fullers_1845.inactive {
+  background-position: 0 0;
+}
+#nav ul li.nav-vintage.inactive {
+  background-position: -700px 0;
+}
+#nav ul li:hover {
+  cursor: pointer;
+}
+#details {
+  position: absolute;
+  top: 116px;
+  right: 0px;
+  z-index: 20;
+  width: 800px;
+  min-height: 1400px;
+}
+
+/* bootstrap width overrides for FB 810px width */
+
+@media (min-width: 768px) and (max-width: 979px) {
+  .container {
+    width: 810px;
+  }
+
+  .span12 {
+    width: 810px;
+  }
+
+}

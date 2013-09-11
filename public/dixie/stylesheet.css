@@ -1,0 +1,83 @@
+
+#page_wrap {
+  width: 810px;
+  height: 500px;
+  position: relative;
+  background: #000 url('img/dixie-bg.jpg') no-repeat 0 0;
+}
+#nav {
+  position: absolute;
+  top: 351px;
+  left: 0px;
+  width: 611px;
+  height: 120px;
+  background-image: url('img/dixie-nav-bg.jpg');
+  z-index: 20;
+}
+#nav ul {
+  list-style: none;
+  margin: 12px 0 0 0;
+  padding: 0;
+}
+#nav ul li {
+  width: 611px;
+  height: 32px;
+  margin: 0px 0 0 24px;
+  background-color: transparent;
+  background-image: url('img/dixie-nav-sprite.jpg');
+  background-repeat: no-repeat;
+  /* Scott Kellum Text Hide */
+  text-indent: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+#nav ul li.original {
+  background-position: 0 0;
+}
+#nav ul li.jazz {
+  background-position: 0 -32px;
+}
+#nav ul li.voodoo {
+  background-position: 0 -64px;
+}
+#nav ul li.original.inactive {
+  background-position: 0 -97px;
+}
+#nav ul li.jazz.inactive {
+  background-position: 0 -129px;
+}
+#nav ul li.voodoo.inactive {
+  background-position: 0 -161px;
+}
+#nav ul li:hover {
+  cursor: pointer;
+}
+
+#logo {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 5;
+}
+
+#details {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  z-index: 10;
+  width: 540px;
+  height: 500px;
+}
+
+/* bootstrap width overrides for FB 810px width */
+
+@media (min-width: 768px) and (max-width: 979px) {
+  .container {
+    width: 810px;
+  }
+
+  .span12 {
+    width: 810px;
+  }
+
+}

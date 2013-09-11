@@ -1,0 +1,27 @@
+#details {
+    position: absolute;
+    right: 10px;
+    bottom: 0;
+    background:rgba(255,255,255,0.8);
+    -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#26ffffff,endColorstr=#ccffffff);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#ccffffff,endColorstr=#ccffffff);
+    width: 55%;
+    padding: 0.5em 1em 1.5em;
+}
+
+#details p { width: 80%; }
+
+#paulaner_nav img { width: 112px; }
+
+/* bootstrap width overrides for FB 810px width */
+
+@media (min-width: 768px) and (max-width: 979px) {
+  .container {
+    width: 810px;
+  }
+
+  .span12 {
+    width: 810px;
+  }
+
+}

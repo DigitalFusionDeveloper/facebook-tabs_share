@@ -1,0 +1,18 @@
+#page_wrap {
+  width: 810px;
+  height: auto;
+  position: relative;
+}
+
+/* bootstrap width overrides for FB 810px width */
+
+@media (min-width: 768px) and (max-width: 979px) {
+  .container {
+    width: 810px;
+  }
+
+  .span12 {
+    width: 810px;
+  }
+
+}
