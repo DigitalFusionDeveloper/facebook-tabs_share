@@ -1,6 +1,6 @@
 ---
 identifier: beer_tabs
-repository: git@github.com:dojo4/beer_tabs.git
+repository: git@github.com:dojo4/beer-tabs.git
 secret_token: ec759d3acccb0ce9c7aad88cf0c2319ec3d82723dbbb07ae5ab3d9dec8c8a4b0add9e7c72ffd34160752c6c8803da540824559901350b6c97595b2deaad459b7
 staging:
   url: http://beer-tabs.staging.dojo4.com
