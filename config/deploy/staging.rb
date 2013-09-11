@@ -1,5 +1,10 @@
 ### require 'config/capistrano_database_yml'
 #
+
+require "rvm/capistrano"
+set :rvm_type, :system
+set :rvm_ruby_string, '1.9.3'
+
 stage = fetch(:stage)
 identifier = fetch(:identifier)
 url = fetch(:url)
@@ -7,7 +12,7 @@ repository = fetch(:repository)
 
 set :application, identifier
 set :user, "dojo4"
-set :deploy_to, "/ebs/apps/#{ identifier }.#{ stage }"
+set :deploy_to, "/var/www/social.mobile-fusion.mobi/#{ identifier }.#{ stage }"
 
 set :scm, :git
 set :deploy_via, :remote_cache
@@ -20,7 +25,7 @@ set :deploy_via, :remote_cache
 set :branch, "master" unless exists?(:branch)
 set :use_sudo, false
 
-ip = "d0.dojo4.com"
+ip = "198.61.171.226"
 role :web, ip                          # Your HTTP server, Apache/etc
 role :app, ip                          # This may be the same as your `Web` server
 role :db,  ip, :primary => true # This is where Rails migrations will run

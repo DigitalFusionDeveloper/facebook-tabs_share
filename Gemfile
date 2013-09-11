@@ -127,5 +127,6 @@ group :development do
   gem 'tinder'
   gem 'capistrano'
   gem 'capistrano_colors'
+  gem 'rvm-capistrano'
   gem 'cap-ssh', :require => false
 end
