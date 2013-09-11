@@ -103,10 +103,10 @@ gem 'rails_view'
 gem 'rails_errors2html'
 
 
-#gem 'dao', :git => 'https://github.com/ahoward/dao'
-#gem 'tagz', :git => 'https://github.com/ahoward/tagz'
-gem 'dao', :path => '/Users/ahoward/git/ahoward/dao'
-gem 'tagz', :path => '/Users/ahoward/git/ahoward/tagz'
+gem 'dao', :git => 'https://github.com/ahoward/dao'
+gem 'tagz', :git => 'https://github.com/ahoward/tagz'
+#gem 'dao', :path => '/Users/ahoward/git/ahoward/dao'
+#gem 'tagz', :path => '/Users/ahoward/git/ahoward/tagz'
 
 gem 'mini_magick'
 

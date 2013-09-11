@@ -1,12 +1,6 @@
 GIT
-  remote: https://github.com/benedikt/mongoid-tree.git
-  revision: 6553e06024833d96370e2c8f48e7cd3c7d52a0fd
-  specs:
-    mongoid-tree (1.0.1)
-      mongoid (>= 3.0, <= 4.0)
-
-PATH
-  remote: /Users/ahoward/git/ahoward/dao
+  remote: https://github.com/ahoward/dao
+  revision: 2e8d9081371c42b79495207d1990cdda612c7910
   specs:
     dao (5.3.0)
       coerce (>= 0.0.3)
@@ -20,10 +14,18 @@ PATH
       uuidtools (>= 2.1.2)
       wrap (>= 1.5.0)
 
-PATH
-  remote: /Users/ahoward/git/ahoward/tagz
+GIT
+  remote: https://github.com/ahoward/tagz
+  revision: 5f49d14aeeb15758e929a4459fd4f948a6243b1a
   specs:
     tagz (9.9.2)
+
+GIT
+  remote: https://github.com/benedikt/mongoid-tree.git
+  revision: 6553e06024833d96370e2c8f48e7cd3c7d52a0fd
+  specs:
+    mongoid-tree (1.0.1)
+      mongoid (>= 3.0, <= 4.0)
 
 GEM
   remote: https://rubygems.org/
