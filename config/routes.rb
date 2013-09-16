@@ -53,11 +53,6 @@ Dojo4::Application.routes.draw do
   #     resources :products
   #   end
 
-##
-#
-  scope 'beers/:slug' do
-    match ':controller(/:action(/:id))(.:format)'
-  end
 
 ##
 #
@@ -139,8 +134,13 @@ Dojo4::Application.routes.draw do
     match 'csrf' => 'application#csrf'
     match 'flash_messages' => 'application#flash_messages'
 
+##
+#
+  scope ':beer' do
+    match ':controller(/:action(/:id))(.:format)'
+  end
 
   # This is a legacy wild controller route that's not recommended for RESTful applications.
   # Note: This route will make all actions in every controller accessible via GET requests.
-    match ':controller(/:action(/:id))(.:format)'
+  # match ':controller(/:action(/:id))(.:format)'
 end

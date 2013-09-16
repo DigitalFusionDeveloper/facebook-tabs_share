@@ -4,7 +4,7 @@ if(!window.Beer){
     Beer = new Function();
 
     Beer.contact_form = function(name, selector){
-      var url = '/beers' + '/' + name + '/forms' + '/rfi';
+      var url = '/' + name + '/forms' + '/rfi';
       var target = jQuery(selector);
 
       jQuery.ajax({

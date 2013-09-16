@@ -29,7 +29,7 @@ protected
 ##
 #
   def set_beer
-    @beer = Beer.find_by!(:slug => params[:slug])
+    @beer = Beer.find_by!(:slug => params[:beer])
   end
 
 ##
