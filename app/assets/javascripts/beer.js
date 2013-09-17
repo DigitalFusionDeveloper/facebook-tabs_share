@@ -3,8 +3,8 @@ if(!window.Beer){
 
     Beer = new Function();
 
-    Beer.contact_form = function(name, selector){
-      var url = '/' + name + '/forms' + '/rfi';
+    Beer.contact_form = function(name, type, selector){
+      var url = '/' + name + '/forms/rfi?rfi[rfi_type]=' + type;
       var target = jQuery(selector);
 
       jQuery.ajax({

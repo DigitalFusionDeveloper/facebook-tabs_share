@@ -60,6 +60,12 @@ protected
         errors.add(:email, 'is invalid')
       end
 
+      if 'request-beer' == rfi_type
+        if attributes.postal_code.blank?
+          errors.add(:postal_code, 'is required')
+        end
+      end
+
       return false unless valid?
 
       attributes.each do |attr, value|

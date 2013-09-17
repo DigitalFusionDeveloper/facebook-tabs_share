@@ -16,14 +16,21 @@
   <%= f.input :email %>
   <br>
 
-  <%= f.label :mobile_phone %>
-  <%= f.input :mobile_phone %>
-  <br>
+  <% if 'request-beer' == @rfi.rfi_type %>
+    <%= f.label :mobile_phone %>
+    <%= f.input :mobile_phone %>
+    <br>
+  <% end %>
 
   <%= f.label :postal_code %>
   <%= f.input :postal_code %>
   <br>
 
+  <% if 'request-beer' == @rfi.rfi_type %>
+    <%= f.label :location %>
+    <%= f.input :location %>
+    <br>
+  <% end %>
 
   <hr>
   <%= f.submit %>

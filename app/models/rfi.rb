@@ -2,6 +2,7 @@ class RFI
   include App::Document
 
   field(:beer_slug, :type => String)
+  field(:rfi_type, :type => String)
 
   field(:email, :type => String)
 
@@ -11,6 +12,8 @@ class RFI
 
   field(:postal_code, :type => String)
   field(:mobile_phone, :type => String)
+
+  field(:location, :type => String)
 
   belongs_to(:beer)
 
