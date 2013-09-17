@@ -137,7 +137,7 @@ Dojo4::Application.routes.draw do
 ##
 #
   scope ':beer' do
-    match ':controller(/:action(/:id))(.:format)'
+    match ':controller(/:action(/:rfi_type))(.:format)'
   end
 
   # This is a legacy wild controller route that's not recommended for RESTful applications.

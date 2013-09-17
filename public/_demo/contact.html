@@ -9,6 +9,8 @@
     <img src='./bigjugbeer3.jpg'/>
 
     <div id='beer-contact-form'></div>
+
+    <div id='beer-request-form'></div>
   </body>
 </html>
 
@@ -18,7 +20,9 @@
 <script>
   jQuery(function(){
 
-    Beer.contact_form("paulaner", "#beer-contact-form");
+    Beer.contact_form("paulaner", "communications", "#beer-contact-form");
+
+    Beer.contact_form("paulaner", "request-beer", "#beer-contact-form");
 
   });
 </script>
