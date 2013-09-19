@@ -12,4 +12,6 @@ $(document).ready(function() {
     	);
     });
     $('#nav li').addClass('inactive');
+    $('#nav li.weisse').removeClass('inactive');
+    $('#details').html($('#descriptions div.weisse-deets').html()).show();
 });
