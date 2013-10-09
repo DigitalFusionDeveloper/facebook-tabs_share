@@ -11,6 +11,7 @@ class FormsController < ::ApplicationController
   def new
     type = params[:type].to_sym
 
+    # FIXME: Need logic to pick the right conducer
     @form = RFIConducer.for(@brand, @brand.rfis.new, type, params[type])
 
     unless request.get?
@@ -26,8 +27,8 @@ class FormsController < ::ApplicationController
 =end
       end
     end
-    template = template_exists?("forms/#{type}/#{@brand.slug}") ? "forms/#{type}/#{@brand.slug}" : type
-    render template
+
+    render @form.template
   end
 
 protected
@@ -85,6 +86,10 @@ protected
         errors.relay(@rfi.errors)
         false
       end
+    end
+
+    def template
+      template_exists?("forms/#{type}/#{@brand.slug}") ? "forms/#{type}/#{@brand.slug}" : type
     end
   end
 end
