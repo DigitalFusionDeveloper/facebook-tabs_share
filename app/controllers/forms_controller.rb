@@ -2,7 +2,7 @@ class FormsController < ::ApplicationController
 ##
 #
   layout 'forms'
-  prepend_view_path 'app/views/beers'
+  prepend_view_path 'app/views/brands'
   before_filter 'set_brand'
 
 ##

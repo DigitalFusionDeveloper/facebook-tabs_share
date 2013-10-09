@@ -11,10 +11,6 @@
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="stylesheet.css" rel="stylesheet">
 
-    <script src='/assets/jquery.js'></script>
-    <script src='/assets/jquery.form.js'></script>
-    <script src='/assets/beer.js'></script>
-
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="bootstrap/js/html5shiv.js"></script>
@@ -31,7 +27,7 @@
       </header>
       <div class="row-fluid">
         <div class="form_wrapper span12">
-          <div id='beer-contact-form'></div>
+          <div id='brand-contact-form'></div>
           <div class="row-fluid">
               <div class="span10 offset1">
                 <p>Disclaimer: By entering my email I agree to receive Hacker-Pschorr emails with exclusive offers and news. By entering my mobile number I agree to receive Hacker-Pschorr text messages, with up to 6/month with exclusive offers and news. Message and data rates may apply. Text HELP for more information. Text STOP HP to 777555 to end.</p>
@@ -49,10 +45,12 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src='/assets/jquery.form.js'></script>
+    <script src='/assets/brand.js'></script>
     <script src="js/nav.js"></script>
     <script>
       jQuery(function(){
-        Beer.contact_form("paulaner", "contact", "#beer-contact-form");
+        Brand.contact_form("paulaner", "contact", "#brand-contact-form");
       });
     </script>
 
