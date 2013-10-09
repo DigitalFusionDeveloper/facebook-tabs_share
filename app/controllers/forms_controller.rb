@@ -3,12 +3,12 @@ class FormsController < ::ApplicationController
 #
   layout 'forms'
   prepend_view_path 'app/views/beers'
-  before_filter 'set_beer'
+  before_filter 'set_brand'
 
 ##
 #
   def rfi
-    @rfi = RFIConducer.for(@beer, @beer.rfis.new, params[:rfi])
+    @rfi = RFIConducer.for(@brand, @brand.rfis.new, params[:rfi])
 
     return if request.get?
 
@@ -28,8 +28,8 @@ class FormsController < ::ApplicationController
 protected
 ##
 #
-  def set_beer
-    @beer = Beer.find_by!(:slug => params[:beer])
+  def set_brand
+    @brand = Brand.find_by!(:slug => params[:brand])
   end
 
 ##
@@ -37,11 +37,11 @@ protected
   class RFIConducer < ::Dao::Conducer
     model_name :rfi
 
-    attr_accessor :beer
+    attr_accessor :brand
     attr_accessor :rfi
 
-    def initialize(beer, rfi, params = {})
-      @beer = beer
+    def initialize(brand, rfi, params = {})
+      @brand = brand
       @rfi = rfi
 
       update_attributes(
@@ -54,13 +54,13 @@ protected
     end
 
     def save
-      @rfi.beer = @beer
+      @rfi.brand = @brand
 
       unless attributes.email.to_s.split(/@/).size == 2
         errors.add(:email, 'is invalid')
       end
 
-      if 'request-beer' == rfi_type
+      if 'request-brand' == rfi_type
         if attributes.postal_code.blank?
           errors.add(:postal_code, 'is required')
         end

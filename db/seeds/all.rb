@@ -68,8 +68,8 @@
     "Hacker-Pschorr"
   ].each do |name|
 
-    seed "beer #{ name }", :unless => Beer.find_by(:name => name) do
-      Beer.create!(:name => name)
+    seed "brand #{ name }", :unless => Brand.find_by(:name => name) do
+      Brand.create!(:name => name)
     end
 
   end

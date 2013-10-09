@@ -1,7 +1,7 @@
 class RFI
   include App::Document
 
-  field(:beer_slug, :type => String)
+  field(:brand_slug, :type => String)
   field(:rfi_type, :type => String)
 
   field(:email, :type => String)
@@ -15,20 +15,20 @@ class RFI
 
   field(:location, :type => String)
 
-  belongs_to(:beer)
+  belongs_to(:brand)
 
   before_validation do |rfi|
     rfi.normalize!
   end
 
   def normalize!
-    normalize_beer!
+    normalize_brand!
     normalize_name!
   end
 
-  def normalize_beer!
-    if self.beer_slug.nil? and self.beer
-      self.beer_slug ||= self.beer.slug
+  def normalize_brand!
+    if self.brand_slug.nil? and self.brand
+      self.brand_slug ||= self.brand.slug
     end
   end
 

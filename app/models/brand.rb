@@ -1,4 +1,4 @@
-class Beer
+class Brand
   include App::Document
 
   name_fields!

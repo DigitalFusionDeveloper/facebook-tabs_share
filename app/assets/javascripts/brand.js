@@ -1,9 +1,9 @@
-if(!window.Beer){
+if(!window.Brand){
   (function(){
 
-    Beer = new Function();
+    Brand = new Function();
 
-    Beer.contact_form = function(name, type, selector){
+    Brand.contact_form = function(name, type, selector){
       var url = '/' + name + '/forms/rfi?rfi[rfi_type]=' + type;
       var target = jQuery(selector);
 
@@ -16,7 +16,7 @@ if(!window.Beer){
           target.append(html);
 
           target.find('form').each(function(i, form){
-            Beer.ajaxify_form(target, form);
+            Brand.ajaxify_form(target, form);
           });
         }
       });
@@ -24,7 +24,7 @@ if(!window.Beer){
       return(true);
     };
 
-    Beer.ajaxify_form = function(target, form){
+    Brand.ajaxify_form = function(target, form){
       form = jQuery(form);
 
       form.ajaxForm({
@@ -33,13 +33,12 @@ if(!window.Beer){
           form.replaceWith(html);
 
           target.find('form').each(function(i, form){
-            Beer.ajaxify_form(target, form);
+            Brand.ajaxify_form(target, form);
           });
         }
       });
     };
 
-    window.Beer = Beer;
-
+    window.Brand = Brand;
   })();
 };

@@ -136,7 +136,7 @@ Dojo4::Application.routes.draw do
 
 ##
 #
-  scope ':beer' do
+  scope ':brand' do
     match ':controller(/:action(/:rfi_type))(.:format)'
   end
 
