@@ -1,14 +1,20 @@
 
-#page_wrap {
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  position: relative;
   width: 810px;
   height: 648px;
+  margin: 0 auto;
   position: relative;
   background: #000 url('img/ohara-bg.jpg') no-repeat 0 0;
 }
+
 #nav {
-  position: absolute;
-  top: 101px;
-  left: 10px;
+  padding: 101px 0 0 10px;
 }
 #nav ul {
   list-style: none;
@@ -39,47 +45,31 @@
 #nav ul li.pale-ale {
   background-position: 0 -195px;
 }
-#nav ul li.stout.inactive {
+#nav ul li.stout:hover {
   background-position: 0 -260px;
 }
-#nav ul li.red.inactive {
+#nav ul li.red:hover {
   background-position: 0 -325px;
 }
-#nav ul li.leann.inactive {
+#nav ul li.leann:hover {
   background-position: 0 -390px;
 }
-#nav ul li.pale-ale.inactive {
+#nav ul li.pale-ale:hover {
   background-position: 0 -455px;
 }
 #nav ul li:hover {
   cursor: pointer;
 }
 
-#logo {
-  position: absolute;
-  bottom: 25px;
-  right: 25px;
-  z-index: 5;
+#nav ul li img {
+  display: none;
 }
-
-#details {
+#nav ul li:hover img {
+  display: block;
   position: absolute;
-  top: 1px;
-  right: 1px;
-  z-index: 10;
-  width: 525px;
-  height: 646px;
-}
-
-/* bootstrap width overrides for FB 810px width */
-
-@media (min-width: 768px) and (max-width: 979px) {
-  .container {
-    width: 810px;
-  }
-
-  .span12 {
-    width: 810px;
-  }
-
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 1px 0 0 284px;
 }
