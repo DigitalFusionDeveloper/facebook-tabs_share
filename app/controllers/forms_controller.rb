@@ -7,22 +7,27 @@ class FormsController < ::ApplicationController
 
 ##
 #
-  def rfi
-    @rfi = RFIConducer.for(@brand, @brand.rfis.new, params[:rfi])
 
-    return if request.get?
+  def new
+    type = params[:type].to_sym
 
-    if @rfi.save
-      @rfi.form.messages.success("Thanks #{ @rfi.email }!")
-    else
+    @form = RFIConducer.for(@brand, @brand.rfis.new, type, params[type])
+
+    unless request.get?
+      if @form.save
+        @form.form.messages.success("Thanks #{ @form.email }!")
+      else
 =begin
-      @rfi.errors.each do |key, list|
+      @form.errors.each do |key, list|
         title = key.split('.').last.titleize
         errors = list.join(', ')
-        @rfi.form.messages.error("#{ title }: #{ errors }")
+        @form.form.messages.error("#{ title }: #{ errors }")
       end
 =end
+      end
     end
+    template = template_exists?("forms/#{type}/#{@brand.slug}") ? "forms/#{type}/#{@brand.slug}" : type
+    render template
   end
 
 protected
@@ -38,10 +43,12 @@ protected
     model_name :rfi
 
     attr_accessor :brand
+    attr_accessor :type
     attr_accessor :rfi
 
-    def initialize(brand, rfi, params = {})
+    def initialize(brand, rfi, type, params = {})
       @brand = brand
+      @type = type
       @rfi = rfi
 
       update_attributes(
@@ -60,11 +67,11 @@ protected
         errors.add(:email, 'is invalid')
       end
 
-      if 'request-brand' == rfi_type
-        if attributes.postal_code.blank?
-          errors.add(:postal_code, 'is required')
-        end
-      end
+      # if 'request-brand' == rfi_type
+      #   if attributes.postal_code.blank?
+      #     errors.add(:postal_code, 'is required')
+      #   end
+      # end
 
       return false unless valid?
 

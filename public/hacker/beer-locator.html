@@ -16,10 +16,6 @@
       <script src="bootstrap/js/html5shiv.js"></script>
     <![endif]-->
 
-    <script src='/assets/jquery.js'></script>
-    <script src='/assets/jquery.form.js'></script>
-    <script src='/assets/beer.js'></script>
-
     <!-- Fav and touch icons -->
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
   </head>
@@ -44,10 +40,12 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src='/assets/jquery.form.js'></script>
+    <script src='/assets/brand.js'></script>
     <script src="js/nav.js"></script>
     <script>
       jQuery(function(){
-        Beer.contact_form("paulaner", "locator", "#beer-locator-form");
+        Brand.contact_form("paulaner", "locator", "#beer-locator-form");
       });
     </script>
 

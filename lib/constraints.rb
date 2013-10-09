@@ -16,4 +16,15 @@ module Constraints
   def Constraints.admin
     Admin.new
   end
+  
+  class Forms
+    ALLOWED_TYPES = %w[rfi locator]
+    def matches?(request)
+      ALLOWED_TYPES.include?(request.path_parameters[:type])
+    end
+  end
+
+  def Constraints.forms
+    Forms.new
+  end
 end
