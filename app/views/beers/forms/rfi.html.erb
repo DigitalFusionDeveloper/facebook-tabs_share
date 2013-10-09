@@ -4,35 +4,57 @@
   <%= f.messages %>
   <%= f.errors %>
 
-  <%= f.label :first_name %>
-  <%= f.input :first_name %>
-  <br>
+  <div class="row-fluid">
+    <div class="span5 offset1">
+      <%= f.label :first_name %>
+      <%= f.input :first_name, :class => 'span12', :placeholder => 'First Name' %>
+    </div>
 
-  <%= f.label :last_name %>
-  <%= f.input :last_name %>
-  <br>
+    <div class="span5">
+      <%= f.label :last_name %>
+      <%= f.input :last_name, :class => 'span12', :placeholder => 'Last Name' %>
+    </div>
+  </div>
 
-  <%= f.label :email %>
-  <%= f.input :email %>
-  <br>
+  <div class="row-fluid">
+    <div class="span5 offset1">
+      <%= f.label :email %>
+      <%= f.input :email, :class => 'span12', :placeholder => 'Email' %>
+    </div>
+    <% if 'contact' == @rfi.rfi_type %>
+      <div class="span5">
+        <%= f.label :mobile_phone %>
+        <%= f.input :mobile_phone, :class => 'span12', :placeholder => 'Mobile' %>
+      </div>
+    <% elsif 'locator' == @rfi.rfi_type %>
+      <div class="span5">
+        <%= f.label :postal_code %>
+        <%= f.input :postal_code, :class => 'span12', :placeholder => 'Postal Code' %>
+      </div>
+    <% end %>
+  </div>
 
-  <% if 'request-beer' == @rfi.rfi_type %>
-    <%= f.label :mobile_phone %>
-    <%= f.input :mobile_phone %>
-    <br>
+  <% if 'contact' == @rfi.rfi_type %>
+    <div class="row-fluid">
+      <div class="span5 offset1">
+        <%= f.label :postal_code %>
+        <%= f.input :postal_code, :class => 'span12', :placeholder => 'Postal Code' %>
+      </div>
+    </div>
   <% end %>
 
-  <%= f.label :postal_code %>
-  <%= f.input :postal_code %>
-  <br>
-
-  <% if 'request-beer' == @rfi.rfi_type %>
-    <%= f.label :location %>
-    <%= f.input :location %>
-    <br>
+  <% if 'locator' == @rfi.rfi_type %>
+    <div class="row-fluid">
+      <div class="span5 offset1">
+        <%= f.label :location %>
+        <%= f.input :location, :class => 'span12', :placeholder => 'Location' %>
+      </div>
+    </div>
   <% end %>
-
-  <hr>
-  <%= f.submit %>
+  <div class="row-fluid contact-form-button">
+    <div class="span10 offset1">
+      <%= f.submit :class => 'btn btn-primary' %>
+    </div>
+  </div>
 
 <% end %>
