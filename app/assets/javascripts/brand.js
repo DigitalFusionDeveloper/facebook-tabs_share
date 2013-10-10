@@ -4,7 +4,7 @@ if(!window.Brand){
     Brand = new Function();
 
     Brand.contact_form = function(name, type, selector){
-      var url = '/' + name + '/forms/new/' + type;
+      var url = '../' + name + '/forms/new/' + type;
       var target = jQuery(selector);
 
       jQuery.ajax({
