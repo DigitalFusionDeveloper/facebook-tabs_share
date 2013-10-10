@@ -5,44 +5,43 @@
 
   <div class="row-fluid">
     <div class="span5 offset1">
-      <%= f.label :state %>
-      <%= f.select :state, :options => %w[Need Some States], :blank => 'Select a State' %>
+      <%= f.label :first_name %>
+      <%= f.input :first_name, :class => 'span12', :placeholder => 'First Name' %>
     </div>
-    <div class="span5 contact-form-button">
-      <%= f.submit :class => 'btn btn-primary' %>
-    </div>
-  </div>
 
-  <div class="row-fluid">
-    <div class="span10 offset1">
-      - OR -
+    <div class="span5">
+      <%= f.label :last_name %>
+      <%= f.input :last_name, :class => 'span12', :placeholder => 'Last Name' %>
     </div>
   </div>
 
   <div class="row-fluid">
     <div class="span5 offset1">
+      <%= f.label :email %>
+      <%= f.input :email, :class => 'span12', :placeholder => 'Email' %>
+    </div>
+    <div class="span5">
       <%= f.label :postal_code %>
       <%= f.input :postal_code, :class => 'span12', :placeholder => 'Postal Code' %>
     </div>
-    <div class="span5 contact-form-button">
-      <%= f.submit :class => 'btn btn-primary' %>
+  </div>
+
+  <div class="row-fluid">
+    <div class="span5 offset1">
+      <%= f.label :location, '(Store Name or Bar)' %>
+      <%= f.input :location, :class => 'span12', :placeholder => 'Location' %>
     </div>
   </div>
 
   <div class="row-fluid">
     <div class="span10 offset1">
-      - OR -
+      <%= f.label :comments %>
+      <%= f.textarea :comments, :class => 'span12', :placeholder => 'Comments' %>
     </div>
   </div>
 
-
- 
-  <div class="row-fluid">
-    <div class="span5 offset1">
-        <%= f.label :address %>
-        <%= f.input :address, :class => 'span12', :placeholder => 'Address' %>
-    </div>
-    <div class="span5 contact-form-button">
+  <div class="row-fluid contact-form-button">
+    <div class="span10 offset1">
       <%= f.submit :class => 'btn btn-primary' %>
     </div>
   </div>
