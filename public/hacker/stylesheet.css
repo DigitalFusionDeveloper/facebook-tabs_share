@@ -127,6 +127,58 @@ footer img {
   vertical-align: top;
 }
 
+.dialog-wrapper {
+  background: url('img/hacker-bg-hops.jpg') no-repeat 0 0;
+  height: 323px;
+}
+
+.dialog-pane {
+  background-color: rgba(255, 255, 255, .8);
+  padding: 20px;
+  margin: 25px 0;
+  border-radius: 8px;
+  border: 1px solid #b59242;
+}
+
+.dialog-pane img {
+  display: block;
+  margin: 0 auto;
+}
+
+.dialog-pane p {
+  margin: 15px 0 0 0;
+  color: #666;
+  font-size: 20px;
+  line-height: 26px;
+  text-align: center;
+}
+
+
+.dialog-pane a {
+  color: #002d75;
+}
+
+.dialog-btn {
+  background: #fff;
+  border: 1px solid #b59242;
+  color: #002d75;
+  text-align: center;
+  font-size: 20px;
+  line-height: 26px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.dialog-btn:hover {
+  background: #fff5df;
+  color: #002d75;
+}
+
+.dialog-pane img.thanks-hero {
+  margin-top: 10px;
+  border: 1px solid #b59242;
+}
+
 /* bootstrap width overrides for FB 810px width */
 
 @media (min-width: 768px) and (max-width: 979px) {
