@@ -18,6 +18,8 @@
 //= require 's3uploader.js'
 //= require 'rpc.js'
 //
+//= require 'brand.js'
+//
 //= require 'app'
 
 
