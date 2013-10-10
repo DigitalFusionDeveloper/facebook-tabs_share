@@ -1,6 +1,14 @@
 <%
 
-  database = ENV['RAILS_DATABASE'] || "#{ App.underscore }-#{ Rails.stage || Rails.env }".gsub(/\s+/, '_')
+  stage = Rails.stage || Rails.env
+  database = "#{ App.underscore }-#{ stage }".gsub(/\s+/, '_')
+  mongo_conf = App.sekrets.get([:mongo,stage])
+  if mongo_conf.blank?
+    uri = "mongodb://localhost:27017/#{database}"
+  else
+    database = mongo_conf.database if mongo_conf.get(:database)
+    uri = "mongodb://#{mongo_conf.user}:#{mongo_conf.password}@#{mongo_conf.host}:#{mongo_conf.port}/#{database}"
+  end
 
 %>
 
@@ -11,13 +19,7 @@
   sessions:
     # Defines the default session. (required)
     default:
-      # Defines the name of the default database that Mongoid can connect to.
-      # (required).
-      database: <%= database %>
-      # Provides the hosts the default session can connect to. Must be an array
-      # of host:port pairs. (required)
-      hosts:
-        - localhost:27017
+      uri: <%= uri %>
       options:
         # Change whether the session persists in safe mode by default.
         # (default: false)
