@@ -3,11 +3,20 @@ class Brand
 
   name_fields!
 
-  has_many(:rfis)
   field(:organization, :type => String)
   field(:triggered_send_key, :type => String)
 
-  def organization
-    super || name
+  has_many(:rfis)
+
+  before_validation do |brand|
+    brand.normalize!
+  end
+
+  def normalize!
+    brand = self
+
+    if brand.organization.blank?
+      brand.organization = %w( name title slug ).map{|attr| brand[attr]}.compact.first
+    end
   end
 end
