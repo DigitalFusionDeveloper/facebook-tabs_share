@@ -60,16 +60,16 @@
 ##
 #
   [
-    "O'Hara's",
-    "Paulaner",
-    "Dixie",
-    "Fruli",
-    "Fuller's",
-    "Hacker-Pschorr"
-  ].each do |name|
+    ["O'Hara's","6119"],
+    ["Paulaner","6118"],
+    ["Dixie", "6122"],
+    ["Fruli","6123"],
+    ["Fuller's","6121"],
+    ["Hacker-Pschorr","6120"],
+  ].each do |name,key|
 
     seed "brand #{ name }", :unless => Brand.find_by(:name => name) do
-      Brand.create!(:name => name)
+      Brand.create!(:name => name, :triggered_send_key => key)
     end
 
   end

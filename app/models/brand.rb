@@ -4,4 +4,6 @@ class Brand
   name_fields!
 
   has_many(:rfis)
+  field(:triggered_send_key, :type => String)
+
 end

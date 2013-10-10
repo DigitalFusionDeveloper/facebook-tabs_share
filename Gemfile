@@ -114,6 +114,9 @@ gem 'codemirror-rails'
 
 gem 'faker'
 
+gem 'json', '~> 1.7.0'
+gem 'fuelsdk', :git => 'https://github.com/dojo4/FuelSDK-Ruby'
+
 gem 'redis'
 gem 'redis-store'
 gem 'redis-rails'
