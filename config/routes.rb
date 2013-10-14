@@ -137,7 +137,7 @@ Dojo4::Application.routes.draw do
 ##
 #
   scope ':brand' do
-    match ':controller(/:action(/:type))(.:format)', :constraints => Constraints.forms
+    match ':controller(/:action)(.:format)', :constraints => Constraints.brand
   end
 
   # This is a legacy wild controller route that's not recommended for RESTful applications.

@@ -17,14 +17,14 @@ module Constraints
     Admin.new
   end
   
-  class Forms
-    ALLOWED_TYPES = %w[rfi locator]
+  class Brand
     def matches?(request)
-      ALLOWED_TYPES.include?(request.path_parameters[:type])
+      brand = request.path_parameters[:brand]
+      Brand.exists?(brand)
     end
   end
 
-  def Constraints.forms
-    Forms.new
+  def Constraints.brand
+    Brand.new # hehe
   end
 end

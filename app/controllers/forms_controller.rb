@@ -35,7 +35,7 @@ protected
 ##
 #
   def set_brand
-    @brand = Brand.find_by!(:slug => params[:brand])
+    @brand = Brand.for(:slug => params[:brand])
   end
 
 ##
@@ -62,7 +62,7 @@ protected
     end
 
     def save
-      @rfi.brand = @brand
+      @rfi.brand_slug = @brand.slug
 
       unless attributes.email.to_s.split(/@/).size == 2
         errors.add(:email, 'is invalid')

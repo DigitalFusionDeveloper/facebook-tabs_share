@@ -15,7 +15,7 @@ class RFI
 
   field(:location, :type => String)
 
-  belongs_to(:brand)
+  #belongs_to(:brand)
 
   before_validation do |rfi|
     rfi.normalize!

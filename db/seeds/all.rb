@@ -59,27 +59,6 @@
 
 ##
 #
-  [
-    ["paulaner","O'Hara's","6119"],
-    ["paulaner","Paulaner","6118"],
-    ["paulaner","Dixie", "6122"],
-    ["paulaner","Fruli","6123"],
-    ["paulaner","Fuller's","6121"],
-    ["paulaner","Hacker-Pschorr","6120"],
-  ].each do |organization,name,key|
-
-    seed "brand #{ name }", :unless => Brand.find_by(:name => name) do
-      Brand.create!(:name => name,
-                    :organization => organization,
-                    :triggered_send_key => key)
-    end
-
-  end
-
-
-
-##
-#
 =begin
   seed "enums", :guard => Enum.count > 0 do
     yaml = IO.read("#{ Rails.root }/db/seeds/data/enums.yml")
