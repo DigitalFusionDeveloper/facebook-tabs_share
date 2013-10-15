@@ -344,6 +344,59 @@ module Util
     string
   end
 
+##
+#
+  def Util.cases_for(*args)
+    options = args.extract_options!.to_options!
+
+    title = args.shift || options[:title]
+    slug = args.shift || options[:slug]
+    name = args.shift || options[:name]
+
+    cases = Map.new(:title => title, :slug => slug, :name => name)
+
+    if cases.name.blank?
+      case
+        when title
+          cases.name = Slug.for(title, :join => '_')
+        when slug
+          cases.name = Slug.for(slug, :join => '_')
+      end
+    end
+
+    if cases.slug.blank?
+      case
+        when name
+          cases.slug = Slug.for(name, :join => '-')
+        when title
+          cases.slug = Slug.for(title, :join => '-')
+      end
+    end
+
+    if cases.title.blank?
+      case
+        when name
+          cases.title = String(cases.name).strip.titleize
+        when slug
+          cases.title = String(cases.slug).strip.titleize
+      end
+    end
+
+    unless cases.name.blank?
+      cases.name = Slug.for(cases.name, :join => '_')
+    end
+
+    unless cases.slug.blank?
+      cases.slug = Slug.for(cases.slug, :join => '-')
+    end
+
+    unless cases.title.blank?
+      cases.title = String(cases.title)
+    end
+
+    cases
+  end
+
   extend Util
   #unloadable(Util)
 end

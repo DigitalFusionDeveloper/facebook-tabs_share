@@ -8,11 +8,11 @@ class FormsController < ::ApplicationController
 ##
 #
 
-  def new
-    type = params[:type].to_sym
-
+  def rfi
     # FIXME: Need logic to pick the right conducer
-    @form = RFIConducer.for(@brand, @brand.rfis.new, type, params[type])
+    @form = RFIConducer.for(@brand, @brand.rfis.new, params[:rfi])
+
+binding.pry
 
     unless request.get?
       if @form.save
@@ -44,12 +44,10 @@ protected
     model_name :rfi
 
     attr_accessor :brand
-    attr_accessor :type
     attr_accessor :rfi
 
-    def initialize(brand, rfi, type, params = {})
+    def initialize(brand, rfi, params = {})
       @brand = brand
-      @type = type
       @rfi = rfi
 
       update_attributes(
@@ -68,12 +66,6 @@ protected
         errors.add(:email, 'is invalid')
       end
 
-      # if 'request-brand' == rfi_type
-      #   if attributes.postal_code.blank?
-      #     errors.add(:postal_code, 'is required')
-      #   end
-      # end
-
       return false unless valid?
 
       attributes.each do |attr, value|
@@ -89,7 +81,7 @@ protected
     end
 
     def template
-      template_exists?("forms/#{type}/#{@brand.slug}") ? "forms/#{type}/#{@brand.slug}" : type
+      template_exists?("forms/rfi/#{@brand.slug}") ? "forms/rfi/#{@brand.slug}" : "rfi"
     end
   end
 end
