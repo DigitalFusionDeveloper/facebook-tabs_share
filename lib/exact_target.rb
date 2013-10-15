@@ -47,7 +47,7 @@ class ExactTarget
   
   class Subscription < ExactTarget
     def self.subscribe!(brand,email)
-      brand = brand.is_a?(Brand) ? brand : Brand.for(brand)
+      brand = Brand.for(brand)
       client = Client.for(brand)
       Response.for(client.AddSubscriberToList(email,[brand.triggered_send_key],email))
     end
@@ -59,7 +59,7 @@ class ExactTarget
 
   class Send < ExactTarget
     def self.send_email(brand,email)
-      brand = brand.is_a?(Brand) ? brand : Brand.for(brand)
+      brand = Brand.for(brand)
       client = Client.for(brand)
       options = { 'CustomerKey' => brand.triggered_send_key,
         'Subscribers' => { 'EmailAddress' => email,

@@ -33,10 +33,23 @@ class Brand < Map
   end
 
   def Brand.for(arg)
-    arg = arg.to_s
+    return arg if arg.is_a?(Brand)
+
+    target =
+      case arg
+        when Hash
+          map = Map.for(arg)
+          String(map[:title] || map[:slug] || map[:name])
+        when String, Symbol
+          String(arg)
+        else
+          nil
+      end
+
+    raise(ArgumentError, arg.inspect) if target.nil?
 
     list.detect do |brand|
-      [brand.title == arg, brand.slug == arg, brand.name == arg].any?
+      [brand.title == target, brand.slug == target, brand.name == target].any?
     end
   end
 
