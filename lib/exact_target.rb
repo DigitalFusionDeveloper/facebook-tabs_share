@@ -1,27 +1,22 @@
 class ExactTarget
-  def self.config
-    @config ||= App.sekrets.exact_target
-  end
-
-  def self.auth
-    {
-      'client' => {
-        'id' => config.id,
-        'secret' => config.secret
+  class Auth
+    def Auth.for(brand)
+      config = App.sekrets.exact_target[brand.organization]
+      {
+        'client' => {
+          'id' => config.id,
+          'secret' => config.secret
+        }
       }
-    }
+    end
   end
-
-  def self.client
-      @client ||= FuelSDK::Client.new(auth)
+  
+  class Client
+    @client = {}
+    def Client.for(brand)
+      @client[brand] ||= FuelSDK::Client.new(Auth.for(brand))
+    end
   end
-
-  def client
-    @client ||= self.class.client
-  end
-
-  # TODO - These should return something reasonable
-
 
   class Response < ::Map
     def self.for(r)
@@ -51,42 +46,42 @@ class ExactTarget
   end
   
   class Subscription < ExactTarget
-    def self.template
-      config.template
+    def self.subscribe!(brand,email)
+      brand = brand.is_a?(Brand) ? brand : Brand.for(brand)
+      client = Client.for(brand)
+      Response.for(client.AddSubscriberToList(email,[brand.triggered_send_key],email))
     end
 
-    def self.subscribe!(email)
-      Response.for(client.AddSubscriberToList(email,[config.list_id],email))
-    end
-
-    def subscribe!(email)
-      job = Job.submit(self.class,:subscribe!, email)
+    def subscribe!(brand,email)
+      job = Job.submit(self.class,:subscribe!, brand,email)
     end
   end
 
   class Send < ExactTarget
-    def self.send_email(template,email)
-      options = { 'CustomerKey' => template,
+    def self.send_email(brand,email)
+      brand = brand.is_a?(Brand) ? brand : Brand.for(brand)
+      client = Client.for(brand)
+      options = { 'CustomerKey' => brand.triggered_send_key,
         'Subscribers' => { 'EmailAddress' => email,
           'SubscriberKey' => email }
       }
       Response.for(client.SendTriggeredSends([options]))
     end
 
-    def send_email(template,email)
-      job = Job.submit(self.class,:send_email, template,email)
+    def send_email(brand,email)
+      job = Job.submit(self.class,:send_email, brand,email)
     end
 
-    def self.send_and_subscribe!(template,email)
-      r = Subscription.subscribe!(email)
+    def self.send_and_subscribe!(brand,email)
+      r = Subscription.subscribe!(brand,email)
       if r.ok?
-        r = send_email(template,email)
+        r = send_email(brand,email)
       end
       r
     end
 
-    def send_and_subscribe!(template,email)
-      job = Job.submit(self.class,:send_and_subscribe!, template,email)
+    def send_and_subscribe!(brand,email)
+      job = Job.submit(self.class,:send_and_subscribe!, brand,email)
     end
   end
 end
