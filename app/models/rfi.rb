@@ -1,8 +1,8 @@
 class RFI
   include App::Document
 
-  field(:brand_slug, :type => String)
-  field(:rfi_type, :type => String)
+  field(:brand, :type => String)
+  field(:organization, :type => String)
 
   field(:email, :type => String)
 
@@ -15,21 +15,31 @@ class RFI
 
   field(:location, :type => String)
 
-  #belongs_to(:brand)
-
   before_validation do |rfi|
     rfi.normalize!
   end
 
-  def normalize!
-    normalize_brand!
-    normalize_name!
+  def brand
+    read_brand
   end
 
-  def normalize_brand!
-    if self.brand_slug.nil? and self.brand
-      self.brand_slug ||= self.brand.slug
-    end
+  def read_brand
+    brand = read_attribute(:brand)
+    Brand.for(brand) if brand
+  end
+
+  def brand=(brand)
+    write_brand(brand)
+  end
+
+  def write_brand(brand)
+    brand = Brand.for(brand)
+    write_attribute(:brand, brand ? brand.slug : nil)
+    brand
+  end
+
+  def normalize!
+    normalize_name!
   end
 
   def normalize_name!

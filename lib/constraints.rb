@@ -20,7 +20,7 @@ module Constraints
   class Brand
     def matches?(request)
       brand = request.path_parameters[:brand]
-      Brand.exists?(brand)
+      ::Brand.exists?(brand)
     end
   end
 
