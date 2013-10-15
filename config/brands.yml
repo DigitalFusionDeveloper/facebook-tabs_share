@@ -1,20 +1,20 @@
 ---
 brands:
   - title: O'Hara's
-    organization: paulaner
+    organization: Paulaner
     triggered_send_key: 6119
   - title: Paulaner
-    organization: paulaner
+    organization: Paulaner
     triggered_send_key: 6118
   - title: Dixie
-    organization: paulaner
+    organization: Paulaner
     triggered_send_key: 6122
   - title: Fruli
-    organization: paulaner
+    organization: Paulaner
     triggered_send_key: 6123
   - title: Fuller's
-    organization: paulaner
+    organization: Paulaner
     triggered_send_key: 6121
   - title: Hacker-Pschorr
-    organization: paulaner
+    organization: Paulaner
     triggered_send_key: 6120
