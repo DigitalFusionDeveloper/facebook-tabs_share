@@ -1,10 +1,12 @@
 class Brand < MapModel
 #
-  include Naming
-
   attributes :title, :slug, :name, :triggered_send_key, :organization
 
-  normalize do
+  identifier :slug
+
+  normalize_names!
+
+  normalize! do
     org = self[:organization]
 
     unless org.nil?
@@ -20,26 +22,16 @@ class Brand < MapModel
 
 #
   def rfis
-    RFI.where(:brand => slug)
+    RFI.where(:brand => id)
   end
 
 #
   class Organization < MapModel
-    include Naming
-
     attributes :title, :slug, :name
 
-    def normalize!
-      title, slug, name = %w( title slug name ).map{|attr| get(attr)}
+    identifier :slug
 
-      Util.cases_for(title, slug, name).tap do |cases|
-        self[:title] = cases.title
-        self[:slug] = cases.slug
-        self[:name] = cases.name
-      end
-
-      self
-    end
+    normalize_names!
   end
 end
 

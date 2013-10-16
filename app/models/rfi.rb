@@ -1,9 +1,35 @@
 class RFI
+#
   include App::Document
 
+#
   field(:brand, :type => String)
   field(:organization, :type => String)
 
+#
+  index({:brand => 1})
+  index({:organization => 1})
+
+#
+  def brand
+    Brand.for(read_attribute(:brand))
+  end
+
+  def brand=(brand)
+    brand = Brand.for(brand)
+    write_attribute(:brand, brand ? brand.id : nil)
+  end
+
+  def organization
+    Organization.for(read_attribute(:organization))
+  end
+
+  def organization=(organization)
+    organization = Organization.for(organization)
+    write_attribute(:organization, organization ? organization.id : nil)
+  end
+
+=begin
   field(:email, :type => String)
 
   field(:first_name, :type => String)
@@ -18,26 +44,9 @@ class RFI
   before_validation do |rfi|
     rfi.normalize!
   end
+=end
 
-  def brand
-    read_brand
-  end
-
-  def read_brand
-    brand = read_attribute(:brand)
-    Brand.for(brand) if brand
-  end
-
-  def brand=(brand)
-    write_brand(brand)
-  end
-
-  def write_brand(brand)
-    brand = Brand.for(brand)
-    write_attribute(:brand, brand ? brand.slug : nil)
-    brand
-  end
-
+=begin
   def normalize!
     normalize_name!
   end
@@ -65,6 +74,7 @@ class RFI
       end
     end
   end
+=end
 end
 
 Rfi = RFI # shut rails' const missing warning up...
