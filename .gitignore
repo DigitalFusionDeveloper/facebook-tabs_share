@@ -49,4 +49,6 @@ private/system
 nbproject
 
 .rvmrc
+.ruby-*
+
 .sekrets.key
