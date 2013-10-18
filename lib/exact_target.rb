@@ -37,9 +37,9 @@ class ExactTarget
     def log!
       unless success?
         begin
-          Log::ExactTarget.log!(response=self)
+        #  Log::ExactTarget.log!(response=self)
         rescue
-          Rails.logger.info("SmartButton !ok? - #{ to_hash.inspect }")
+        #  Rails.logger.info("SmartButton !ok? - #{ to_hash.inspect }")
         end
       end
     end
