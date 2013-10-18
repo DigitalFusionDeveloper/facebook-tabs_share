@@ -3,13 +3,64 @@ class MapModel < Map
     def normalize_names!
       title, slug, name = %w( title slug name ).map{|attr| get(attr)}
 
-      Util.cases_for(title, slug, name).tap do |cases|
+      Naming.names_for(title, slug, name).tap do |cases|
         self[:title] = cases.title
         self[:slug] = cases.slug
         self[:name] = cases.name
       end
 
       self
+    end
+
+    def Naming.names_for(*args)
+      options = args.extract_options!.to_options!
+
+      title = args.shift || options[:title]
+      slug = args.shift || options[:slug]
+      name = args.shift || options[:name]
+
+      cases = Map.new(:title => title, :slug => slug, :name => name)
+
+      if cases.name.blank?
+        case
+          when title
+            cases.name = Slug.for(title, :join => '_')
+          when slug
+            cases.name = Slug.for(slug, :join => '_')
+        end
+      end
+
+      if cases.slug.blank?
+        case
+          when name
+            cases.slug = Slug.for(name, :join => '-')
+          when title
+            cases.slug = Slug.for(title, :join => '-')
+        end
+      end
+
+      if cases.title.blank?
+        case
+          when name
+            cases.title = String(cases.name).strip.titleize
+          when slug
+            cases.title = String(cases.slug).strip.titleize
+        end
+      end
+
+      unless cases.name.blank?
+        cases.name = Slug.for(cases.name, :join => '_')
+      end
+
+      unless cases.slug.blank?
+        cases.slug = Slug.for(cases.slug, :join => '-')
+      end
+
+      unless cases.title.blank?
+        cases.title = String(cases.title)
+      end
+
+      cases
     end
 
     def self.included(other)
@@ -52,6 +103,7 @@ class MapModel < Map
 
     def for(arg)
       return arg if arg.is_a?(self)
+      return nil if arg.blank?
 
       target =
         case arg
@@ -113,18 +165,23 @@ class MapModel < Map
       all.detect{|model| model.id.to_s == id.to_s}
     end
 
-    def config_yml
-      File.join(Rails.root.to_s, "config/#{ model_name.plural }.yml")
+    def db_yml
+      File.join(Rails.root.to_s, "db/#{ model_name.plural }.yml")
     end
 
-    def config
-      Util.load_config_yml(config_yml) if test(?s, config_yml)
+    def db
+      @db ||= (
+        if test(?s, db_yml)
+          db = YAML::load(ERB.new((IO.read(db_yml))).result)
+          raise LoadError.new("#{ db_yml } is a #{ db.class.name }") unless [Hash, Array].include?(db.class)
+          db
+        end
+      )
     end
 
     def reload!
       delete_all
-      c = config
-      array = Array(c.is_a?(Array) ? c : c[model_name.plural])
+      array = Array(db.is_a?(Array) ? db : db[model_name.plural])
       array.map{|attributes| create(attributes)}
       all
     end

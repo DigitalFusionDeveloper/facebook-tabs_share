@@ -25,13 +25,12 @@ class Brand < MapModel
     RFI.where(:brand => id)
   end
 
-#
-  class Organization < MapModel
-    attributes :title, :slug, :name
+  def rfi_fields
+    Coerce.list_of_strings(get(:rfi_fields))
+  end
 
-    identifier :slug
-
-    normalize_names!
+  def Brand.rfi_fields
+    all.map{|brand| brand.rfi_fields}.flatten.compact.sort.uniq
   end
 end
 

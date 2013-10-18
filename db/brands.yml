@@ -1,0 +1,21 @@
+---
+brands:
+  - title: O'Hara's
+    organization: Paulaner
+    rfi_fields: email, first_name, last_name, postal_code, mobile_phone, location
+  - title: Paulaner
+    organization: Paulaner
+    rfi_fields: email, first_name, last_name, postal_code, mobile_phone, location
+  - title: Dixie
+    organization: Paulaner
+    rfi_fields: email, first_name, last_name, postal_code, mobile_phone, location
+  - title: Fruli
+    organization: Paulaner
+    rfi_fields: email, first_name, last_name, postal_code, mobile_phone, location
+  - title: Fuller's
+    organization: Paulaner
+    rfi_fields: email, first_name, last_name, postal_code, mobile_phone, location
+  - title: Hacker-Pschorr
+    organization: Paulaner
+    rfi_fields: email, first_name, last_name, postal_code, mobile_phone, location
+
