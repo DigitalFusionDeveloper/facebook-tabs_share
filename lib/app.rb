@@ -454,6 +454,12 @@ App.singleton_class.module_eval do
       merge(:expires_in => 42.years)
   end
 
+  def App.mongoid_store_config
+    {
+      :expires_in => 42.years
+    }
+  end
+
 ## all routes in teh applicaiton eaten by config/routes.rb, public/*,
 # +blacklisted routes
 #

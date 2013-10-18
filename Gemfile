@@ -14,6 +14,8 @@ gem 'mongoid-tree', :git => 'https://github.com/benedikt/mongoid-tree.git', :req
 
 gem 'mongoid-fts'
 
+gem 'mongoid-store'
+
 # gem 'mongoid_store'
 
 # gem 'carrierwave'
@@ -117,10 +119,10 @@ gem 'faker'
 gem 'json', '~> 1.7.0'
 gem 'fuelsdk', :git => 'https://github.com/dojo4/FuelSDK-Ruby'
 
-gem 'redis'
-gem 'redis-store'
-gem 'redis-rails'
-gem 'redis-namespace'
+#gem 'redis'
+#gem 'redis-store'
+#gem 'redis-rails'
+#gem 'redis-namespace'
 #gem 'resque', :require => false, :git => 'git://github.com/defunkt/resque.git'
 
 gem 'pry'

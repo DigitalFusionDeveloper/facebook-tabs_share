@@ -18,8 +18,8 @@ module App
     env = ActiveSupport::StringInquirer.new(env.to_s)
 
     if env.production? or ENV['RAILS_CACHE']
-      config.cache_store = [:redis_store, App.redis_store_config]
-      # config.cache_store = [:mongoid_store, {:expires_in => 42.years}]
+      #config.cache_store = [:redis_store, App.redis_store_config]
+      config.cache_store = [:mongoid_store, App.mongoid_store_config]
     end
   end
 

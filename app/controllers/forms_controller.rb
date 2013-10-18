@@ -5,7 +5,6 @@ class FormsController < ::ApplicationController
   before_filter 'set_brand'
 
 #
-
   def rfi
     conducer =
       case @brand.organization.slug
@@ -29,6 +28,7 @@ protected
     end
   end
 
+#
   class ::RFI
     class PaulanerConducer < ::Dao::Conducer
       model_name :rfi
@@ -110,99 +110,11 @@ protected
       end
     end
   end
-
-  class PaulanerRFIConducer < ::Dao::Conducer
-    model_name :rfi
-
-    attr_accessor :brand
-    attr_accessor :rfi
-
-    def initialize(brand, rfi, params = {})
-      @brand = brand
-      @rfi = rfi
-
-      update_attributes(
-        @rfi.attributes
-      )
-
-      update_attributes(
-        params
-      )
-    end
-
-    def save
-      @rfi.brand_slug = @brand.slug
-
-      unless attributes.email.to_s.split(/@/).size == 2
-        errors.add(:email, 'is invalid')
-      end
-
-      return false unless valid?
-
-      attributes.each do |attr, value|
-        @rfi[attr] = value
-      end
-
-      if @rfi.save
-        true
-      else
-        errors.relay(@rfi.errors)
-        false
-      end
-    end
-
-    def template
-      template_exists?("forms/rfi/#{@brand.slug}") ? "forms/rfi/#{@brand.slug}" : "rfi"
-    end
-  end
-
-##
-#
-  class RFIConducer < ::Dao::Conducer
-    model_name :rfi
-
-    attr_accessor :brand
-    attr_accessor :rfi
-
-    def initialize(brand, rfi, params = {})
-      @brand = brand
-      @rfi = rfi
-
-      update_attributes(
-        @rfi.attributes
-      )
-
-      update_attributes(
-        params
-      )
-    end
-
-    def save
-      @rfi.brand_slug = @brand.slug
-
-      unless attributes.email.to_s.split(/@/).size == 2
-        errors.add(:email, 'is invalid')
-      end
-
-      return false unless valid?
-
-      attributes.each do |attr, value|
-        @rfi[attr] = value
-      end
-
-      if @rfi.save
-        true
-      else
-        errors.relay(@rfi.errors)
-        false
-      end
-    end
-
-    def template
-      template_exists?("forms/rfi/#{@brand.slug}") ? "forms/rfi/#{@brand.slug}" : "rfi"
-    end
-  end
 end
+
+
+
+
 
 
 =begin

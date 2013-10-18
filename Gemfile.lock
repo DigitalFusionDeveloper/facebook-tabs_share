@@ -166,6 +166,9 @@ GEM
     mongoid-grid_fs (1.8.0)
       mime-types (~> 1.19)
       mongoid (~> 3.0)
+    mongoid-store (0.4.3)
+      activesupport (~> 3.2)
+      mongoid (~> 3.0)
     mongoid_rails_migrations (1.0.0)
       activesupport (>= 3.2.0)
       bundler (>= 1.0.0)
@@ -237,25 +240,6 @@ GEM
     rdoc (3.12.2)
       json (~> 1.4)
     redcarpet (2.1.1)
-    redis (2.2.2)
-    redis-actionpack (3.2.3)
-      actionpack (~> 3.2.3)
-      redis-rack (~> 1.4.0)
-      redis-store (~> 1.1.0)
-    redis-activesupport (3.2.3)
-      activesupport (~> 3.2.3)
-      redis-store (~> 1.1.0)
-    redis-namespace (1.0.3)
-      redis (< 3.0.0)
-    redis-rack (1.4.2)
-      rack (~> 1.4.1)
-      redis-store (~> 1.1.0)
-    redis-rails (3.2.3)
-      redis-actionpack (~> 3.2.3)
-      redis-activesupport (~> 3.2.3)
-      redis-store (~> 1.1.0)
-    redis-store (1.1.1)
-      redis (>= 2.2.0)
     rubypython (0.5.3)
       blankslate (>= 2.1.2.3)
       ffi (~> 1.0.7)
@@ -360,6 +344,7 @@ DEPENDENCIES
   mongoid
   mongoid-fts
   mongoid-grid_fs (>= 1.7.0)
+  mongoid-store
   mongoid-tree!
   mongoid_rails_migrations
   moped
@@ -378,10 +363,6 @@ DEPENDENCIES
   rails_nav
   rails_view
   redcarpet
-  redis
-  redis-namespace
-  redis-rails
-  redis-store
   rvm-capistrano
   sass-rails (~> 3.2.3)
   sekrets
