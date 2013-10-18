@@ -73,3 +73,94 @@ body {
   left: 0;
   margin: 1px 0 0 284px;
 }
+
+
+/* styles for beer forms */
+
+.container {
+  width: 810px;
+}
+.container.fb-tab {
+  background: url('img/ohara-bg-2.jpg') no-repeat 0 0 !important;
+  height: auto;
+}
+
+#header {margin: 10px 0 10px 0;}
+
+.form_wrapper {
+  background-color: #e7e7e7;
+  padding: 20px 0;
+}
+
+label, .required-field {
+    display: inline-block;
+}
+.required-field {
+    color: red;
+}
+
+.btn-primary {
+  background: #333;
+  text-transform: uppercase;
+  margin-top: 10px;
+}
+
+footer {
+/*   border-top: 14px solid #cbb572; */
+}
+
+footer img {
+  vertical-align: top;
+}
+
+.dialog-wrapper {
+/*   background: url('img/ohara-bg-2.jpg') no-repeat 0 0 !important; */
+  height: auto;
+}
+
+.dialog-pane {
+  background-color: rgba(0, 0, 0, .6);
+  padding: 20px;
+  margin: 25px 0;
+  border-radius: 8px;
+  border: 1px solid #cbb572;
+}
+
+.dialog-pane img {
+  display: block;
+  margin: 0 auto;
+}
+
+.dialog-pane p {
+  margin: 15px 0 0 0;
+  color: #fff;
+  font-size: 20px;
+  line-height: 26px;
+  text-align: center;
+}
+
+
+.dialog-pane a {
+  color: #cbb572;
+}
+
+.dialog-btn {
+  background: #fff;
+  border: 1px solid #cbb572;
+  color: #895124;
+  text-align: center;
+  font-size: 20px;
+  line-height: 26px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.dialog-btn:hover {
+  background: #fff5df;
+  color: #426308;
+}
+
+.dialog-pane img.thanks-hero {
+  margin-top: 10px;
+  border: 1px solid #cbb572;
+}
