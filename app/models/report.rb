@@ -33,7 +33,12 @@ class Report
 
     reports, labels = args.partition{|arg| arg.is_a?(Report)}
 
-    created_at = reports.size > 0 ? reports.first.created_at : nil
+    created_at = 
+      if reports.size > 0
+        reports.first.created_at || Time.now
+      else
+        nil
+      end
 
     prefix = labels.map{|label| Slug.for(label)}.uniq
 

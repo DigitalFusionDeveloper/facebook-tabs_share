@@ -48,7 +48,16 @@ Report.register(:model) do
 
     query = model.all.order_by(:created_at => :desc)
 
-    if model.fields.keys.include?('created_at')
+    report_fields =
+      Coerce.list_of_strings(
+        if model.respond_to?(:report_fields)
+          model.report_fields
+        else
+          model.fields.keys
+        end
+      )
+
+    if report_fields.include?('created_at')
       inclusive_start_time, exclusive_end_time = Report.timerange_for(config[:starts_at], config[:ends_at])
 
       if inclusive_start_time
@@ -62,7 +71,7 @@ Report.register(:model) do
 
     case config[:format].to_s
       when 'csv'
-        csv = Report.csv_for(model.fields.keys, query)
+        csv = Report.csv_for(report_fields, query)
         @report.attach!(csv, "#{ @report.title }.csv")
 
       when 'json'

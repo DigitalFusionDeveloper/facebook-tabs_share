@@ -28,6 +28,11 @@ class RFI
     organization = Organization.for(organization)
     write_attribute(:organization, organization ? organization.id : nil)
   end
+
+
+  def RFI.report_fields
+    Coerce.list_of_strings(:brand, :organization, Brand.rfi_fields)
+  end
 end
 
 Rfi = RFI # shut rails' const missing warning up...

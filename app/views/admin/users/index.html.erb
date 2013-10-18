@@ -51,8 +51,6 @@
       <%= link_to :edit, url_for(:action => :edit, :id => user.id), :title => 'edit this user', :class => 'label' %>
       |
       <%= link_to :login, url_for(:action => :show, :id => user.id, :login => '/dashboard'), :title => 'login as this user', :class => 'label' %>
-      |
-      <%= link_to :welcome, url_for(:action => :welcome, :id => user.id), :title => 'welcome this user', :class => 'label' %>
     </td>
   </tr>
   <% end %>
