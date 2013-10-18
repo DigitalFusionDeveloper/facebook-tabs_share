@@ -212,10 +212,73 @@ footer img {
   color: #ff0113;
 }
 
-.container img.thanks-hero {
-  margin-top: 10px;
-  border: 1px solid #b59242;
+input[type="submit"].btn {
+  background-color: #e9e9e9;
+  color: #333;
 }
+input[type="submit"].btn:hover {
+  background-color: #a3a3a3;
+}
+
+/* form errors */
+
+  form input[type=text],
+  form input[type=password],
+  form input[type=email],
+  form select,
+  form textarea,
+  {
+    box-sizing: border-box;
+    width: 100%;
+    height: auto;
+  }
+  form input.error,
+  form input.errors,
+  form textarea.error,
+  form textarea.errors
+  {
+    border: 1px solid darkred;
+  }
+  form.small {
+    width: 33%;
+  }
+  form.medium {
+    width: 66%;
+  }
+  .errors-summary {
+    box-sizing: border-box;
+    width: 85%;
+    height: auto;
+    color: #666;
+    background-color: #fffff6;
+    background-color: #fff;
+    border: 1px solid darkred;
+    padding: 1em;
+    margin: 1em auto;
+  }
+  .errors-summary ul {
+  }
+  .errors-caption {
+    font-weight: bold;
+  }
+  .errors-title {
+    float: left;
+  }
+  .errors-title:after {
+  content: "\a0 ";
+  }
+  .errors-message {
+    color: red;
+  }
+  label[data-required]:after {
+    content : ' *';
+  }
+  label {
+    font-weight: 500;
+    color: #fff;
+  }
+
+
 
 
 /* bootstrap width overrides for FB 810px width */
