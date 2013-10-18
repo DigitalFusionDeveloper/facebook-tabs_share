@@ -1,7 +1,7 @@
 class ExactTarget
   class Auth
     def Auth.for(brand)
-      config = App.sekrets.exact_target[brand.organization]
+      config = App.sekrets.exact_target[brand.organization.slug]
       {
         'client' => {
           'id' => config.id,
@@ -49,7 +49,7 @@ class ExactTarget
     def self.subscribe!(brand,email)
       brand = Brand.for(brand)
       client = Client.for(brand)
-      Response.for(client.AddSubscriberToList(email,[brand.triggered_send_key],email))
+      Response.for(client.AddSubscriberToList(email,[brand.slug],email))
     end
 
     def subscribe!(brand,email)
@@ -61,7 +61,7 @@ class ExactTarget
     def self.send_email(brand,email)
       brand = Brand.for(brand)
       client = Client.for(brand)
-      options = { 'CustomerKey' => brand.triggered_send_key,
+      options = { 'CustomerKey' => brand.slug,
         'Subscribers' => { 'EmailAddress' => email,
           'SubscriberKey' => email }
       }
