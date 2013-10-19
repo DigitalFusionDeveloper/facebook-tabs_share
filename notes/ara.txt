@@ -1,8 +1,10 @@
 todo:
   - update readme
-  - reports?
+  - fix staging deploy
+  - add locations
 
 done:
+  - reports?
   - rfi form needs to ajax submit and replace itself
   - demo page for noah in public
   - styles for flash?
