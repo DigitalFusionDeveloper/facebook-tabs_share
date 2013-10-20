@@ -19,8 +19,8 @@
 
       if(args.length == 2){
         if(typeof(args[1]) === 'string'){
-          this.name = args.shift();
-          this.template = args.shift();
+          this.name = Template.strip(args.shift());
+          this.template = Template.strip(args.shift());
         } else {
           name = args.shift();
           var template = Template.cache[name];
@@ -55,13 +55,17 @@
       scope.find('.template').each(function(){
         var j = jQuery(this);
         var name = j.attr('name');
-        var html = '' + j.html();
+        var html = j.html();
         var template = new Template(name, html);
         Template.cache[name] = Template.cache[name] || template.compile();
         templates.push(template);
       });
 
       return(templates);
+    };
+
+    Template.strip = function(string){
+      return( ('' + string).trim(/^\s+/).trim(/\s+$/) );
     };
 
     jQuery(function(){
