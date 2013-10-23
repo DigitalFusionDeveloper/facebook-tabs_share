@@ -94,6 +94,12 @@ protected
         @rfi[:organization] = @brand.organization.try(:slug)
 
         if @rfi.save
+          if Rails.env.production? or ENV['EMAIL_SIGNUP']
+            et = ExactTarget::Send.new
+            et.send_email(@brand.slug,email)
+          else
+            Rails.logger.info "Would signup #{email}"
+          end
           return true
         else
           @errors.relay(@rfi.errors)
