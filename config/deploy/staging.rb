@@ -12,7 +12,7 @@ repository = fetch(:repository)
 
 set :application, identifier
 set :user, "dojo4"
-set :deploy_to, "/var/www/social.mobile-fusion.mobi/#{ identifier }.#{ stage }"
+set :deploy_to, "/var/www/staging.social.mobile-fusion.mobi"
 
 set :scm, :git
 set :deploy_via, :remote_cache
