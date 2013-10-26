@@ -1,4 +1,4 @@
-class Location
+class GeoLocation
 ##
 #
   include App::Document
@@ -74,7 +74,7 @@ class Location
 
     if data and pinpoint?
       unless results_index
-        formatted_addresses = Location.formatted_addresses_for(data)
+        formatted_addresses = GeoLocation.formatted_addresses_for(data)
 
         if formatted_addresses.uniq.size > 1
           message = "ambiguous location: " + formatted_addresses.join(' | ')
@@ -86,14 +86,14 @@ class Location
 
 ##
 #
-  def Location.locate(address, options = {})
+  def GeoLocation.locate(address, options = {})
   #
     options.to_options!
-    location = Location.where(:address => address).first
+    location = GeoLocation.where(:address => address).first
     return location if location
 
   #
-    location = Location.new(:address => address)
+    location = GeoLocation.new(:address => address)
 
     if options[:pinpoint]
       location.pinpoint = true
@@ -111,7 +111,7 @@ class Location
 
     if location.data
       attributes =
-        Location.parse_data(location.data, :results_index => location.results_index) || Map.new
+        GeoLocation.parse_data(location.data, :results_index => location.results_index) || Map.new
 
       location.attributes.update(attributes)
 
@@ -123,42 +123,42 @@ class Location
     location
   end
 
-  def Location.locate!(address)
-    location = Location.locate(address)
+  def GeoLocation.locate!(address)
+    location = GeoLocation.locate(address)
   ensure
     raise unless location
   end
 
-  def Location.for(*args, &block)
-    location = Location.locate!(*args, &block)
+  def GeoLocation.for(*args, &block)
+    location = GeoLocation.locate!(*args, &block)
   rescue
     nil
   end
 
 
-  def Location.pinpoint(string)
+  def GeoLocation.pinpoint(string)
     data = GGeocode.geocode(string)
-    list = Location.formatted_addresses_for(data)
+    list = GeoLocation.formatted_addresses_for(data)
     list.size == 1 ? list.first : false
   end
 
-  def Location.pinpoint?(string)
-    Location.pinpoint(string)
+  def GeoLocation.pinpoint?(string)
+    GeoLocation.pinpoint(string)
   end
 
-  def Location.geocode(string)
+  def GeoLocation.geocode(string)
     GGeocode.geocode(string)
   end
 
-  def Location.reverse_geocode(string)
+  def GeoLocation.reverse_geocode(string)
     GGeocode.reverse_geocode(srting)
   end
 
-  def Location.rgeocode(string)
+  def GeoLocation.rgeocode(string)
     GGeocode.reocode(srting)
   end
 
-  def Location.parse_data(data, options = {})
+  def GeoLocation.parse_data(data, options = {})
     options.to_options!
     data = Map.for(data)
     parsed = Map.new
@@ -213,25 +213,25 @@ class Location
     parsed
   end
 
-  def Location.formatted_addresses_for(data)
+  def GeoLocation.formatted_addresses_for(data)
     return [] unless data
     results = data['results']
     return [] unless results
     results.map{|result| result['formatted_address']}.uniq
   end
 
-  def Location.absolute_path_for(*args)
+  def GeoLocation.absolute_path_for(*args)
     return '/' if args.empty?
     args = Util.absolute_path_for(*args).split('/')
     args.map!{|arg| Slug.for(arg)}
     Util.absolute_path_for(*args)
   end
 
-  def Location.prefixes
-    Location.all.order(:prefix).distinct(:prefix)
+  def GeoLocation.prefixes
+    GeoLocation.all.order(:prefix).distinct(:prefix)
   end
 
-  def Location.list
+  def GeoLocation.list
     items = {}
     prefixes.each do |prefix|
       loop do
@@ -243,9 +243,9 @@ class Location
     items.keys.sort
   end
 
-  def Location.prefixes_for(prefix)
+  def GeoLocation.prefixes_for(prefix)
     prefixes = []
-    prefix = Location.absolute_path_for(prefix)
+    prefix = GeoLocation.absolute_path_for(prefix)
     loop do
       prefixes.unshift(prefix)
       prefix = File.dirname(prefix)
@@ -257,7 +257,7 @@ class Location
 
 # FIXME - this doesn't *quite* work, for example 'denver, co'
 #
-  def Location.ensure_parents_exist!(location)
+  def GeoLocation.ensure_parents_exist!(location)
     prefix = location.prefix
     parts = [location.country, location.administrative_area_level_1, location.administrative_area_level_2, location.locality].compact
     parts.pop
@@ -267,7 +267,7 @@ class Location
     until parts.empty?
       address = parts.join(', ')
       parts.pop
-      location = Location.locate(address)
+      location = GeoLocation.locate(address)
       break unless(location and location.valid?)
       next unless prefix.index(location.prefix) == 0
       location.save! if location.new_record?
@@ -278,23 +278,23 @@ class Location
   end
 
   def ensure_parents_exist!
-    Location.ensure_parents_exist!(location=self)
+    GeoLocation.ensure_parents_exist!(location=self)
   end
 
 
-  def Location.default
-    @default ||= Location.where('prefix' => '/united-states').first
+  def GeoLocation.default
+    @default ||= GeoLocation.where('prefix' => '/united-states').first
   end
 
   scope(:prefixed_by,
     lambda do |prefix|
-      prefix = Location.absolute_path_for(prefix)
+      prefix = GeoLocation.absolute_path_for(prefix)
       where(:prefix => /^#{ prefix }/)
     end
   )
 
-  def Location.prefix?(prefix)
-    prefix = Location.absolute_path_for(prefix)
+  def GeoLocation.prefix?(prefix)
+    prefix = GeoLocation.absolute_path_for(prefix)
     where(:prefix => /^#{ prefix }/).count != 0
   end
 
@@ -321,7 +321,7 @@ class Location
   end
 
   def same
-    Location.new(
+    GeoLocation.new(
       :lat     => lat,
       :lng     => lng,
       :prefix  => prefix,
@@ -371,7 +371,7 @@ class Location
     date_for(Date.today)
   end
 
-  def Location.date_range_for(location, date_range_name)
+  def GeoLocation.date_range_for(location, date_range_name)
     today = Date.today
     date_a = nil
     date_b = nil
@@ -416,10 +416,10 @@ class Location
   end
 
   def date_range_for(date_range_name)
-    Location.date_range_for(location=self, date_range_name)
+    GeoLocation.date_range_for(location=self, date_range_name)
   end
 
-  def Location.date_range_name_for(location, date)
+  def GeoLocation.date_range_name_for(location, date)
     ranges = %w( today tomorrow this_weekend this_week this_month this_year all ).map{|name| date_range_for(location, name)}
     time = date.to_time
     range = ranges.detect{|r| r.include?(time)}
@@ -427,7 +427,7 @@ class Location
   end
 
   def date_range_name_for(date)
-    Location.date_range_name_for(location=self, date)
+    GeoLocation.date_range_name_for(location=self, date)
   end
 
   class DateRange < ::Range

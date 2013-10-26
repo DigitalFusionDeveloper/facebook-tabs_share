@@ -312,7 +312,7 @@ class Su::TestController < Su::Controller
   end
 
   def google_map
-    @location = Location.for('boulder')
+    @location = GeoLocation.for('boulder')
   end
 
 

@@ -95,7 +95,7 @@ Features
     for usage instructions
 
   * solid geolocation support in app/models/location.rb.
-    Location.for('boulder, co')
+    GeoLocation.for('boulder, co')
     Note: create account at geonames.org and update lib/app.rb
 
   * generic keyword search.  see app/models/search.rb
