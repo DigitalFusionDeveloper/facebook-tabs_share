@@ -103,6 +103,9 @@ class GeoLocation
       location.data = Map.for(options[:data])
     else
       location.data = GGeocode.geocode(address)
+      if options[:delay]
+        sleep(options[:delay].to_i + rand)
+      end
     end
 
     if options[:results_index]
@@ -123,8 +126,8 @@ class GeoLocation
     location
   end
 
-  def GeoLocation.locate!(address)
-    location = GeoLocation.locate(address)
+  def GeoLocation.locate!(*args, &block)
+    location = GeoLocation.locate(*args, &block)
   ensure
     raise unless location
   end
