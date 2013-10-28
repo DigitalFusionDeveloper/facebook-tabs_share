@@ -7,6 +7,8 @@ class Location
 
   class << self; attr_accessor :geo_delay end
 
+  default_scope where(active: true)
+
   name_fields!
   field(:address, :type => String)
   field(:state, :type => String)
@@ -18,19 +20,20 @@ class Location
   field(:type, :type => String)
   field(:active, :type => Boolean, :default => true)
 
+  field(:brand, :type => String)
+
   field(:raw, :type => Hash, :default => proc{ Hash.new })
 
   field :lat, :type => Float
   field :lng, :type => Float
   field :loc, :type => Array
 
-  index({:slug => 1}, {:unique => true })
-
   index({:zipcode => 1})
   index({:state => 1})
   index({:city => 1})
 
   index({:loc => '2d'})
+  index({:brand => 1})
 
   belongs_to(:geo_location, :class_name => '::GeoLocation')
 
@@ -40,9 +43,6 @@ class Location
     location.geolocate
   end
 
-
-  validates_uniqueness_of(:slug)
-
   validates_presence_of(:address)
   validates_presence_of(:state)
   validates_presence_of(:city)
@@ -50,6 +50,16 @@ class Location
   validates_presence_of(:lat)
   validates_presence_of(:lng)
   validates_presence_of(:loc)
+
+
+  def brand
+    Brand.for(read_attribute(:brand))
+  end
+
+  def brand=(brand)
+    brand = Brand.for(brand)
+    write_attribute(:brand, brand ? brand.id : nil)
+  end
 
   def full_address
     [address, city, state, zipcode, country].join(', ')
@@ -112,7 +122,8 @@ opitionally imported.
 
     attr_accessor :row, :errors, :skipped, :delay
 
-    def initialize(rows = [])
+    def initialize(brand,rows = [])
+      @brand = Brand.for(brand)
       @rows = rows
       @imports = []
       @errors = Map.new
@@ -141,9 +152,12 @@ opitionally imported.
         end
 
         row[:country] ||= 'US'
+        row[:brand] ||= @brand
+        row[:organization] ||= @brand.organization
+        row[:active] = false
 
         location = Map(row)
-        location[:raw] = row.to_hash
+        location[:raw] = location.to_hash
 
         if valid_address?(location)
           @imports.push(location)
@@ -156,17 +170,21 @@ opitionally imported.
 
     def save
       Location.geo_delay = @delay
+      new_locations = []
+      existing_locations = get_existing_locations
       @imports.each do |l|
-        location = location_cache.delete(Slug.for(l.name)) || Location.new
         # Don't litter the the record with extra fields
-        if !location.update_attributes(l.slice(*Location.attribute_names))
+        location = Location.new(l.slice(*Location.attribute_names))
+        if location.save
+          new_locations.push(location.id)
+        else
           @errors.add(location.name,location.errors) unless location.save
         end
       end
-      # Hide any locations that have been remove from the import.
-      Location.in(slug: location_cache.keys).each do |location|
-        location.update_attributes!(active: false)
-      end
+      # Remove any locations that have been remove from the import.
+      Location.unscoped.in(id: existing_locations).destroy_all
+      # Activate new locations
+      Location.unscoped.in(id: new_locations).update_all(active: true)
     end
 
     def full_address(location)
@@ -189,12 +207,8 @@ opitionally imported.
       end
     end
 
-    def location_cache
-      @location_cache ||= (
-        Map.new.tap do |map|
-          Location.unscoped.all.each{|location| map[location.slug] = location}
-        end
-      )
+    def get_existing_locations
+      @existing_locations ||= Location.unscoped.where(brand: @brand.id).map(&:id)
     end
 
     def estimated_time
