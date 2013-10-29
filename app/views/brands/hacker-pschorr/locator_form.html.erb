@@ -1,0 +1,14 @@
+<button id="current_location" class="btn btn-primary">
+  Use Current Location
+</button>
+<p class="or-text">
+  - Or -
+</p>
+<form class="find-location">
+  <p>
+    <input id="location" name="location" type="text" placeholder="Enter City and State" />
+    <button type="submit" class="btn btn-secondary">Search</button>
+  </p>
+</form>
+<%= javascript_include_tag 'geoPosition', 'locator' %>
+<%= javascript_tag "window.brand = '#{@brand.slug}'", defer: 'defer' %>

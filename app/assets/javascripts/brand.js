@@ -24,6 +24,22 @@ if(!window.Brand){
       return(true);
     };
 
+    Brand.locator_form = function(name, selector){
+      var url = '/' + name + '/forms/locator';
+      var target = jQuery(selector);
+      jQuery.ajax({
+        'url' : url,
+        'type' : 'GET',
+        'cache' : 'false',
+
+        'success' : function(html){
+          target.append(html);
+        }
+      });
+
+      return(true);
+    };
+
     Brand.ajaxify_form = function(target, form){
       form = jQuery(form);
 

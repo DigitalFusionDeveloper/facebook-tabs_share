@@ -18,16 +18,20 @@ class FormsController < ::ApplicationController
     conducer.render!
   end
 
+  def locator
+    conducer =
+      case @brand.organization.slug
+        when 'paulaner'
+          Locator::PaulanerConducer
+
+        else
+        raise IndexError.new(@brand.inspect)
+      end
+
+    conducer.render!
+   end
+
 protected
-#
-  def set_brand
-    @brand = Brand.for(:slug => params[:brand])
-
-    if @brand.nil?
-      render(:text => "brand #{ params[:brand].inspect } not found", :status => 404)
-    end
-  end
-
 #
   class ::RFI
     class PaulanerConducer < ::Dao::Conducer
@@ -113,6 +117,37 @@ protected
 
       def thank_you_template
         File.join(Rails.root.to_s, 'app/views/brands', @brand.slug, 'rfi_thank_you.html.erb')
+      end
+    end
+  end
+
+
+
+  class ::Locator
+    class PaulanerConducer < ::Dao::Conducer
+      model_name :locator
+
+      fattr :brand
+
+      def PaulanerConducer.render!
+        controller = Current.controller
+        conducer = self
+        controller.instance_eval do
+          @locator = conducer.new(@brand)
+          render @locator.form_template
+        end
+      end
+
+      def initialize(brand, params = {})
+        @brand = brand
+
+        update_attributes(
+          params
+        )
+      end
+
+      def form_template
+        File.join(Rails.root.to_s, 'app/views/brands', @brand.slug, 'locator_form.html.erb')
       end
     end
   end

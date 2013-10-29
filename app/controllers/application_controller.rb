@@ -328,6 +328,14 @@ protected
     @helper ||= Helper.new
   end
 
+  def set_brand
+    @brand = Brand.for(:slug => params[:brand])
+
+    if @brand.nil?
+      render(:text => "brand #{ params[:brand].inspect } not found", :status => 404)
+    end
+  end
+
 # flash message support
 #
   def flash_message_keys
