@@ -44,6 +44,16 @@
   end
 =end
 
+unless Rails.env.production?
+  seed 'locations' do
+    s = File.read(File.join(File.dirname(__FILE__),'data', 'hacker_locations_sample.csv'))
+    importer = Location::Importer.new('hacker-pschorr')
+    importer.csv = s
+    importer.parse
+    importer.save
+  end
+end
+
 ##
 #
   unless Rails.env.production?
