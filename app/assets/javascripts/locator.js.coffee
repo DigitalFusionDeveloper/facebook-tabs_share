@@ -17,7 +17,10 @@ jQuery ->
                 $address.click ->
                     $('#location_details .name').text($(this).find('.name').text())
                     $('#location_details .modal-body .map').attr('src',$(this).data('map_url'))
-                    $('#location_details .modal-body .address').html($(this).clone())
+                    htmlCopy = $(this).clone()
+                    htmlCopy.children('.viewMap').remove()
+                    htmlCopy.css('cursor', 'default')
+                    $('#location_details .modal-body .address').html(htmlCopy)
                     $('#location_details').modal('show')
                 $address.find('.name').text(location.title)
                 $address.find('.address').text(location.address)
