@@ -195,6 +195,11 @@ protected
 
         if @rfi.save
 
+          if Rails.env.production? or ENV['ILOOP_OPTIN']
+            il = ILoop::Mfinity.new
+            il.opt_in(@rfi[:mobile_phone])
+          end
+
         # TODO - iLoop and mail addys here...
 =begin
           
