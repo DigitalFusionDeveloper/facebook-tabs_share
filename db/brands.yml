@@ -18,4 +18,9 @@ brands:
   - title: Hacker-Pschorr
     organization: Paulaner
     rfi_fields: email, first_name, last_name, postal_code, mobile_phone, location
+  -
+    title: Colorado Christian University
+    slug: ccu
+    organization: ccu
+    #rfi_fields: email, first_name, last_name, term, street_address_1, street_address_2, city, state, zip, phone
 

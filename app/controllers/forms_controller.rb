@@ -7,9 +7,12 @@ class FormsController < ::ApplicationController
 #
   def rfi
     conducer =
-      case @brand.organization.slug
-        when 'paulaner'
+      case
+        when @brand.organization.slug == 'paulaner'
           RFI::PaulanerConducer
+
+        when @brand.slug == 'ccu'
+          RFI::CCUConducer
 
         else
           raise IndexError.new(@brand.inspect)
@@ -40,7 +43,7 @@ protected
       fattr :brand
       fattr :rfi
 
-      def PaulanerConducer.render!
+      def self.render!
         controller = Current.controller
         conducer = self
 
@@ -104,6 +107,99 @@ protected
           else
             Rails.logger.info "Would signup #{email}"
           end
+          return true
+        else
+          @errors.relay(@rfi.errors)
+          return false
+        end
+      end
+
+      def form_template
+        File.join(Rails.root.to_s, 'app/views/brands', @brand.slug, 'rfi_form.html.erb')
+      end
+
+      def thank_you_template
+        File.join(Rails.root.to_s, 'app/views/brands', @brand.slug, 'rfi_thank_you.html.erb')
+      end
+    end
+  end
+
+  class ::RFI
+    class CCUConducer < ::Dao::Conducer
+      model_name :rfi
+
+      fattr :brand
+      fattr :rfi
+
+      def self.render!
+        controller = Current.controller
+        conducer = self
+
+        controller.instance_eval do
+          rfi = RFI.new
+
+          @rfi = conducer.new(@brand, rfi, params[:rfi])
+
+          if params[:saved]
+            render @rfi.thank_you_template
+            return
+          end
+
+          if request.get?
+            render @rfi.form_template
+            return
+          end
+
+          if @rfi.save
+            redirect_to url_for(:saved => :true)
+          else
+            render @rfi.form_template
+          end
+        end
+      end
+
+      def initialize(brand, rfi, params = {})
+        @brand = brand
+        @rfi = rfi
+
+        update_attributes(
+          @rfi.attributes
+        )
+
+        update_attributes(
+          params
+        )
+      end
+
+      def save
+        validates_presence_of(:first_name)
+        validates_presence_of(:last_name)
+        validates_as_email(:email)
+        validates_as_phone(:mobile_phone)
+        validates_presence_of(:postal_code)
+
+        return false unless valid?
+
+        @brand.rfi_fields.each do |field|
+          value = attributes[field]
+          @rfi[field] = value
+        end
+
+        @rfi[:brand] = @brand.slug
+        @rfi[:organization] = @brand.organization.try(:slug)
+
+        if @rfi.save
+
+        # TODO - iLoop and mail addys here...
+=begin
+          
+          if Rails.env.production? or ENV['EMAIL_SIGNUP']
+            et = ExactTarget::Send.new
+            et.send_email(@brand.slug,email)
+          else
+            Rails.logger.info "Would signup #{email}"
+          end
+=end
           return true
         else
           @errors.relay(@rfi.errors)
