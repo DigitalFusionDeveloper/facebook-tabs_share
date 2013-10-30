@@ -179,6 +179,10 @@ footer img {
   border: 1px solid #b59242;
 }
 
+#beer-locator-form {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
 
 /* form errors */
 

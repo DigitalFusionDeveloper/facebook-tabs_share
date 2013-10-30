@@ -1,3 +1,11 @@
+h2#locatorHeader{
+  color: blue;
+  font-family: "Trebuchet MS", Helvetica, sans-serif;
+  > span {
+    color: red;
+  }
+}
+
 div#geoOptions{
   text-align: center;
 }
