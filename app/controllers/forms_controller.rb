@@ -11,7 +11,7 @@ class FormsController < ::ApplicationController
         when @brand.organization.slug == 'paulaner'
           RFI::PaulanerConducer
 
-        when @brand.slug == 'ccu'
+        when @brand.slug == 'cus'
           RFI::CCUConducer
 
         else
@@ -176,6 +176,11 @@ protected
         validates_presence_of(:last_name)
         validates_as_email(:email)
         validates_as_phone(:mobile_phone)
+        validates_presence_of(:term)
+        validates_presence_of(:street_address_1)
+        validates_presence_of(:street_address_2)
+        validates_presence_of(:city)
+        validates_presence_of(:state)
         validates_presence_of(:postal_code)
 
         return false unless valid?
