@@ -1,0 +1,13 @@
+<form class="find-location">
+  <div id="geoOptions">
+    <button id="current_location" class="geoOpt btn btn-primary">Use Current Location</button>
+    <span id="orText" class="geoOpt"> or </span>
+    <input id="location" class="geoOpt" name="location" type="text" placeholder="Enter zip, city, or state" />
+  </div>
+
+  <button id="submitBtn" class="btn" type="submit">Search</button>
+</form>
+
+<%= javascript_include_tag 'geoPosition', 'locator' %>
+<%= javascript_tag "window.brand = '#{@brand.slug}'", defer: 'defer' %>
+<%= stylesheet_link_tag("locator") %>
