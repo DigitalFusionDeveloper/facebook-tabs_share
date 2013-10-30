@@ -4,4 +4,8 @@ class Organization < MapModel
   identifier :slug
 
   normalize_names!
+
+  def brands
+    Brand.all.select {|b| b.organization.slug == slug }
+  end
 end

@@ -1,0 +1,72 @@
+<%
+
+  domid = "job-#{ @job.id }"
+
+%>
+
+<div id="<%= domid %>">
+
+  <%= link_to 'Refresh', request.fullpath, :class => 'btn btn-success' %>
+  <br>
+
+  <dl>
+    <dt>
+      status
+    </dt>
+    <dd>
+      <%= span_(:class => "label #{ @job.status == 'success' ? 'label-success' : 'label-important' }"){ @job.status } %>
+    </dd>
+
+    <dt>
+      errors
+    </dt>
+    <dd>
+      <pre>
+      <%= @job.result.blank? ? '~' : @job.result.to_yaml %>
+      </pre>
+    </dd>
+
+    <dt>
+      csv
+      <small>
+        (
+        <%= link_to 'download', url_for(:csv => :download), :target => :_blank %>
+          |
+        <%= link_to 'preview', url_for(:csv => :preview), :target => :_blank %>
+        )
+      </small>
+    </dt>
+    <dd>
+      <pre style='font-size:0.75em;'>
+      <%= @job.args.last.to_s.split(/\n/).join("\n\n") %>
+      </pre>
+    </dd>
+  </dl>
+
+</div>
+
+<% unless request.xhr? %>
+
+<script>
+  jq(function(){
+    var id = <%= j domid %>;
+    var url = <%= j request.fullpath %>;
+
+    var selector = '#' + id;
+    var target = jq(selector);
+
+    setInterval(function(){
+      jq.ajax({
+        'type' : 'GET',
+        'cache' : false,
+        'success' : function(html){
+        console.log(html);
+          target.replaceWith(html);
+          target = jq(selector);
+        }
+      });
+    }, 3000);
+  });
+</script>
+
+<% end %>

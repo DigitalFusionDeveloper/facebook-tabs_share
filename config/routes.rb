@@ -108,6 +108,13 @@ Dojo4::Application.routes.draw do
       match 'welcome', :action => 'welcome', :as => :welcome
     end
 
+    resources :locations do
+      collection do
+        match 'job/:id', :action => 'job'
+        match 'import', :action => 'import'
+      end
+    end
+
     resources :reports do
       match 'attachments/:attachment_id', :action => 'attachment', :as => 'attachment', :via => 'get'
     end
