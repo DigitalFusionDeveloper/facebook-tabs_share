@@ -484,6 +484,6 @@
   after "deploy", "notify:email"
   after "deploy", "notify:console"
 
-  after "deploy", "deploy:cleanup"
+  #after "deploy", "deploy:cleanup"
 
 
