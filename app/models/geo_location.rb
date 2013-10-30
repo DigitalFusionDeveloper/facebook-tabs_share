@@ -16,7 +16,6 @@ class GeoLocation
   field :prefix
   field :postal_code
 
-  field :pinpoint, :type => Boolean, :default => proc{ false }
   field :results_index, :type => Integer
 
   field :lat, :type => Float 
@@ -86,18 +85,25 @@ class GeoLocation
 
 ##
 #
+  fattr(:pinpoint){ false }
+
+##
+#
   def GeoLocation.locate(address, options = {})
   #
     options.to_options!
+    pinpoint = !!options[:pinpoint]
+
+  #
     location = GeoLocation.where(:address => address).first
-    return location if location
+    if location
+      location.pinpoint = pinpoint
+      return location
+    end
 
   #
     location = GeoLocation.new(:address => address)
-
-    if options[:pinpoint]
-      location.pinpoint = true
-    end
+    location.pinpoint = pinpoint
 
     if options[:data]
       location.data = Map.for(options[:data])
@@ -126,10 +132,17 @@ class GeoLocation
     location
   end
 
+  class Error < ::StandardError; end
+
   def GeoLocation.locate!(*args, &block)
     location = GeoLocation.locate(*args, &block)
-  ensure
-    raise unless location
+
+    if location.blank? or not location.valid?
+      message = location ? location.errors.inspect : ''
+      raise Error.new(message)
+    end
+
+    location
   end
 
   def GeoLocation.for(*args, &block)
@@ -137,7 +150,6 @@ class GeoLocation
   rescue
     nil
   end
-
 
   def GeoLocation.pinpoint(string)
     data = GGeocode.geocode(string)
