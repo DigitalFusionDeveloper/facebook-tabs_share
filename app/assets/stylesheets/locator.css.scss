@@ -28,3 +28,16 @@ div#geoOptions{
   display: block;
   margin: 20px auto 0;
 }
+
+.location {
+  margin-bottom: 10px;
+  text-align: center;
+  color: black;
+  cursor: pointer;
+  &:nth-child(2n){
+    color: red;
+  }
+  &:nth-child(2n+3){
+    color: blue;
+  }
+}
