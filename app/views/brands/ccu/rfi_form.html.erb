@@ -17,19 +17,45 @@
 
   <div class="row-fluid">
     <div class="span5 offset1">
-      <%= f.label :email %>
-      <%= f.input :email, :class => 'span12', :placeholder => 'Email' %>
+      <%= f.label :street_address_1 %>
+      <%= f.input :street_address_1, :class => 'span12', :placeholder => 'Street Address' %>
     </div>
     <div class="span5">
-      <%= f.label :mobile_phone %>
-      <%= f.input :mobile_phone, :class => 'span12', :placeholder => 'Mobile' %>
+      <%= f.label :street_address_2 %>
+      <%= f.input :street_address_2, :class => 'span12', :placeholder => 'Address 2' %>
+    </div>
+  </div>
+
+  <div class="row-fluid">
+    <div class="span5 offset1">
+      <%= f.label :city %>
+      <%= f.input :city, :class => 'span12', :placeholder => 'City' %>
+    </div>
+    <div class="span5">
+      <%= f.label :state %>
+      <%= f.input :state, :class => 'span12', :placeholder => 'State' %>
     </div>
   </div>
 
   <div class="row-fluid">
     <div class="span5 offset1">
       <%= f.label :postal_code %>
-      <%= f.input :postal_code, :class => 'span12', :placeholder => 'Postal Code' %>
+      <%= f.input :postal_code, :class => 'span12', :placeholder => 'Zip' %>
+    </div>
+    <div class="span5">
+      <%= f.label :term %>
+      <%= f.input :term, :class => 'span12', :placeholder => 'Anticipated Entry Term' %>
+    </div>
+  </div>
+
+  <div class="row-fluid">
+    <div class="span5 offset1">
+      <%= f.label :email %>
+      <%= f.input :email, :class => 'span12', :placeholder => 'Email address' %>
+    </div>
+    <div class="span5">
+      <%= f.label :phone %>
+      <%= f.input :phone, :class => 'span12', :placeholder => 'Cell phone #' %>
     </div>
   </div>
 
