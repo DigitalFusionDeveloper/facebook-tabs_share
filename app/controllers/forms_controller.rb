@@ -179,30 +179,36 @@ protected
         validates_presence_of(:term)
         validates_presence_of(:address)
 
-        return false unless valid?
-
-        # address processing
-        Rails.logger.info "Given address = #{attributes[:address]}"
-        fullAddress = GeoLocation.locate(attributes[:address], :pinpoint => true)
-
-        if fullAddress and fullAddress.valid?
-          Rails.logger.info 'Address is valid, so saving.'
-
-          @brand.rfi_fields.each do |field|
-            value = attributes[field]
-            @rfi[field] = value
+        fullAddress = 
+          unless attributes[:address].blank?
+            GeoLocation.locate(attributes[:address], :pinpoint => true)
           end
 
-          @rfi[:brand] = @brand.slug
-          @rfi[:organization] = @brand.organization.try(:slug)
+        if fullAddress and not fullAddress.valid?
+          errors.add(:address, 'is invalid')
 
-          @rfi[:street_address] = fullAddress.formatted_address.split(',')[0] # include US apt numbers
-          @rfi[:city] = fullAddress.city
-          @rfi[:state] = fullAddress.state
-          @rfi[:postal_code] = fullAddress.postal_code
+          fullAddress.errors.each do |key, list|
+            message = Array(list).join(', ')
+            errors.add(message)
+          end
+        end
 
-          if @rfi.save
+        return false unless valid?
 
+        @brand.rfi_fields.each do |field|
+          value = attributes[field]
+          @rfi[field] = value
+        end
+
+        @rfi[:brand] = @brand.slug
+        @rfi[:organization] = @brand.organization.try(:slug)
+
+        @rfi[:street_address] = fullAddress.street_address
+        @rfi[:city] = fullAddress.city
+        @rfi[:state] = fullAddress.state
+        @rfi[:postal_code] = fullAddress.postal_code
+
+        if @rfi.save
           if Rails.env.production? or ENV['ILOOP_OPTIN']
             il = ILoop::MFinity.new
             il.opt_in(@rfi[:mobile_phone])
@@ -213,25 +219,19 @@ protected
             il.opt_in("2075145450") # Sheena's number to test with.
           end
 
-        # TODO - mail addys here...
+        # TODO - iLoop and mail addys here...
 =begin
-            
-            if Rails.env.production? or ENV['EMAIL_SIGNUP']
-              et = ExactTarget::Send.new
-              et.send_email(@brand.slug,email)
-            else
-              Rails.logger.info "Would signup #{email}"
-            end
-=end
-            return true
+          
+          if Rails.env.production? or ENV['EMAIL_SIGNUP']
+            et = ExactTarget::Send.new
+            et.send_email(@brand.slug,email)
           else
-            @errors.relay(@rfi.errors)
-            return false
+            Rails.logger.info "Would signup #{email}"
           end
-
+=end
+          return true
         else
-          p "Mailing address invalid so letting user know."
-          @errors.relay(fullAddress.errors)
+          @errors.relay(@rfi.errors)
           return false
         end
 
