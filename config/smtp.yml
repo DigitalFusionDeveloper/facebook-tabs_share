@@ -1,0 +1,10 @@
+email: corey.inouye@mobilefusion.com # FIXME
+
+user_name: register@mobilefusion.com
+password: gobig2013
+address: smtp.sendgrid.net
+domain: mobilefusion.com
+port: 587
+authentication: login
+
+

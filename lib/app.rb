@@ -4,7 +4,7 @@ App.singleton_class.module_eval do
 # app settings
 #
   fattr(:settings){ Map.for(Settings.for(File.join(Rails.root, 'config/app.yml'))) }
-  fattr(:ses_smtp_settings){ Map.for(Settings.for(File.join(Rails.root, 'config/ses_smtp.yml'))) }
+  fattr(:smtp_settings){ Map.for(Settings.for(File.join(Rails.root, 'config/smtp.yml'))) }
   fattr(:identifier){ settings.identifier.to_s }
   fattr(:prefix){ [App.identifier, Rails.stage || Rails.env].join('_') } 
   fattr(:secret_token){ settings.secret_token.to_s }
@@ -49,7 +49,7 @@ App.singleton_class.module_eval do
 # This is the default vaild testing email for rails_app_m
 #  AWS SES will accept this email by default with the dojo4 testing creds
 #
-  fattr(:email){ ses_smtp_settings.email }
+  fattr(:email){ smtp_settings.email }
 
   fattr(:logger){ Rails.logger }
 

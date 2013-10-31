@@ -1,8 +1,0 @@
-# email:          testing+<%= App.identifier %>@dojo4.com
-email:          dojo4+<%= App.identifier %>@dojo4.com
-user_name:      AKIAIL4YQCGQJCF5KYFA
-password:       AtlSp85ZZ9Cj6mXG/lZEOszI+iznYyzjfYz9WEwTUzZL
-address:        email-smtp.us-east-1.amazonaws.com
-domain:         dojo4.com
-port:           587
-authentication: login

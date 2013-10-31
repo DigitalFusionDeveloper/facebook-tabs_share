@@ -37,12 +37,12 @@ module App
     # See: https://github.com/dojo4/aws/blob/master/ses.md
     #
       config.action_mailer.smtp_settings = {
-        :user_name            => ses_smtp_settings.user_name,
-        :password             => ses_smtp_settings.password,
-        :address              => ses_smtp_settings.address,
-        :domain               => ses_smtp_settings.domain,
-        :port                 => ses_smtp_settings.port,
-        :authentication       => ses_smtp_settings.authentication.to_sym
+        :user_name            => smtp_settings.user_name,
+        :password             => smtp_settings.password,
+        :address              => smtp_settings.address,
+        :domain               => smtp_settings.domain,
+        :port                 => smtp_settings.port,
+        :authentication       => smtp_settings.authentication.to_sym
       }
 
       config.action_mailer.delivery_method       = :smtp
