@@ -177,39 +177,54 @@ protected
         validates_as_email(:email)
         validates_as_phone(:mobile_phone)
         validates_presence_of(:term)
-        validates_presence_of(:street_address_1)
-        validates_presence_of(:street_address_2)
-        validates_presence_of(:city)
-        validates_presence_of(:state)
-        validates_presence_of(:postal_code)
+        validates_presence_of(:address)
 
         return false unless valid?
 
-        @brand.rfi_fields.each do |field|
-          value = attributes[field]
-          @rfi[field] = value
-        end
-
-        @rfi[:brand] = @brand.slug
-        @rfi[:organization] = @brand.organization.try(:slug)
-
-        if @rfi.save
-
-        # TODO - iLoop and mail addys here...
-=begin
-          
-          if Rails.env.production? or ENV['EMAIL_SIGNUP']
-            et = ExactTarget::Send.new
-            et.send_email(@brand.slug,email)
-          else
-            Rails.logger.info "Would signup #{email}"
+        # address processing
+        p "Given address = #{attributes[:address]}"
+        fullAddress = GeoLocation.locate(attributes[:address], :pinpoint => true)
+        
+        if fullAddress and fullAddress.valid?
+          p 'Address is valid, so saving.'
+        
+          @brand.rfi_fields.each do |field|
+            value = attributes[field]
+            @rfi[field] = value
           end
+
+          @rfi[:brand] = @brand.slug
+          @rfi[:organization] = @brand.organization.try(:slug)
+
+          @rfi[:street_address] = fullAddress.formatted_address.split(',')[0] # include US apt numbers
+          @rfi[:city] = fullAddress.locality
+          @rfi[:state] = fullAddress.administrative_area_level_1
+          @rfi[:postal_code] = fullAddress.postal_code
+
+          if @rfi.save
+
+          # TODO - iLoop and mail addys here...
+=begin
+            
+            if Rails.env.production? or ENV['EMAIL_SIGNUP']
+              et = ExactTarget::Send.new
+              et.send_email(@brand.slug,email)
+            else
+              Rails.logger.info "Would signup #{email}"
+            end
 =end
-          return true
+            return true
+          else
+            @errors.relay(@rfi.errors)
+            return false
+          end
+
         else
-          @errors.relay(@rfi.errors)
+          p "Mailing address invalid so letting user know."
+          @errors.relay(fullAddress.errors)
           return false
         end
+
       end
 
       def form_template
