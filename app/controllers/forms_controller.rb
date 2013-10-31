@@ -179,49 +179,50 @@ protected
         validates_presence_of(:term)
         validates_presence_of(:address)
 
+        fullAddress = 
+          unless attributes[:address].blank?
+            GeoLocation.locate(attributes[:address], :pinpoint => true)
+          end
+
+        if fullAddress and not fullAddress.valid?
+          errors.add(:address, 'is invalid')
+
+          fullAddress.errors.each do |key, list|
+            message = Array(list).join(', ')
+            errors.add(message)
+          end
+        end
+
         return false unless valid?
 
-        # address processing
-        p "Given address = #{attributes[:address]}"
-        fullAddress = GeoLocation.locate(attributes[:address], :pinpoint => true)
-        
-        if fullAddress and fullAddress.valid?
-          p 'Address is valid, so saving.'
-        
-          @brand.rfi_fields.each do |field|
-            value = attributes[field]
-            @rfi[field] = value
-          end
+        @brand.rfi_fields.each do |field|
+          value = attributes[field]
+          @rfi[field] = value
+        end
 
-          @rfi[:brand] = @brand.slug
-          @rfi[:organization] = @brand.organization.try(:slug)
+        @rfi[:brand] = @brand.slug
+        @rfi[:organization] = @brand.organization.try(:slug)
 
-          @rfi[:street_address] = fullAddress.formatted_address.split(',')[0] # include US apt numbers
-          @rfi[:city] = fullAddress.locality
-          @rfi[:state] = fullAddress.administrative_area_level_1
-          @rfi[:postal_code] = fullAddress.postal_code
+        @rfi[:street_address] = fullAddress.street_address
+        @rfi[:city] = fullAddress.city
+        @rfi[:state] = fullAddress.state
+        @rfi[:postal_code] = fullAddress.postal_code
 
-          if @rfi.save
+        if @rfi.save
 
-          # TODO - iLoop and mail addys here...
+        # TODO - iLoop and mail addys here...
 =begin
-            
-            if Rails.env.production? or ENV['EMAIL_SIGNUP']
-              et = ExactTarget::Send.new
-              et.send_email(@brand.slug,email)
-            else
-              Rails.logger.info "Would signup #{email}"
-            end
-=end
-            return true
+          
+          if Rails.env.production? or ENV['EMAIL_SIGNUP']
+            et = ExactTarget::Send.new
+            et.send_email(@brand.slug,email)
           else
-            @errors.relay(@rfi.errors)
-            return false
+            Rails.logger.info "Would signup #{email}"
           end
-
+=end
+          return true
         else
-          p "Mailing address invalid so letting user know."
-          @errors.relay(fullAddress.errors)
+          @errors.relay(@rfi.errors)
           return false
         end
 

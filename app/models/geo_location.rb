@@ -327,12 +327,17 @@ class GeoLocation
   alias_method(:ll, :latlng)
   alias_method(:lon, :lng)
 
-  def state
-    administrative_area_level_1
+
+  def street_address
+    formatted_address.split(',')[0]
   end
 
   def city
     locality || sublocality || administrative_area_level_3
+  end
+
+  def state
+    administrative_area_level_1
   end
 
   def same
