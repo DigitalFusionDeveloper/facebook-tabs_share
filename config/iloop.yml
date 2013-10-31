@@ -1,8 +1,7 @@
 uri        : http://xmlapi.iloopmobile.com/platform/group.ex?
 web_uri    : http://webapi.iloopmobile.com/saturn/gateway/webin/https?
 report_uri : http://xmlapi.iloopmobile.com/platform/reportApi/groupMessageDetails?
-user_token : 6AAFC9FCB8404730996BF4D9B15296E2
+user_token : F9765E5B69F99EAB2956332B23EF55B1
 short_code : 777555
-keyword    : UDISGF
-account_id : 26
-group_id   : 12831
+keyword    : CCU
+group_id   : 12445
