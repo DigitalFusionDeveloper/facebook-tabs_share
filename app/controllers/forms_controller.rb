@@ -210,13 +210,27 @@ protected
 
         if @rfi.save
           if Rails.env.production? or ENV['ILOOP_OPTIN']
-            il = ILoop::MFinity.new
-            il.opt_in(@rfi[:mobile_phone])
+            begin
+              il = ILoop::MFinity.new
+              il.opt_in(@rfi[:mobile_phone])
+            rescue
+              nil
+            end
           end
 
           if Rails.env.development?
             il = ILoop::MFinity.new
             il.opt_in("2075145450") # Sheena's number to test with.
+          end
+
+          recipients = Coerce.list_of_strings(@brand[:rfi_recipients])
+
+          if Rails.env.development?
+            Rails.logger.debug "Mailer.rfi(#{ recipients.inspect })"
+          else
+            unless recipients.blank?
+              Job.submit(Mailer, :rfi, recipients)
+            end
           end
 
         # TODO - iLoop and mail addys here...

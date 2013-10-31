@@ -18,6 +18,22 @@ class Mailer < ActionMailer::Base
     mail(:to => @email, :subject => @subject)
   end
 
+  def rfi(*args)
+    options = args.extract_options!.to_options!
+    
+    @rfi = args.shift || options.fetch(:rfi)
+
+    @recipients = Coerce.list_of_strings(args.shift || options.fetch(:recipients))
+
+    @rfi = @rfi.is_a?(RFI) ? @rfi : RFI.find(@rfi)
+
+    @brand = @rfi.brand
+
+    @subject = ['rfi', @brand.try(:slug), @rfi.id].compact.join(' | ').upcase
+
+    mail(:to => @recipients, :subject => @subject)
+  end
+
   def text(email, *args)
     options = args.extract_options!.to_options!
 
