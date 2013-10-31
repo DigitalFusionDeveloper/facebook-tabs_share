@@ -182,12 +182,12 @@ protected
         return false unless valid?
 
         # address processing
-        p "Given address = #{attributes[:address]}"
+        Rails.logger.info "Given address = #{attributes[:address]}"
         fullAddress = GeoLocation.locate(attributes[:address], :pinpoint => true)
-        
+
         if fullAddress and fullAddress.valid?
-          p 'Address is valid, so saving.'
-        
+          Rails.logger.info 'Address is valid, so saving.'
+
           @brand.rfi_fields.each do |field|
             value = attributes[field]
             @rfi[field] = value
@@ -197,18 +197,23 @@ protected
           @rfi[:organization] = @brand.organization.try(:slug)
 
           @rfi[:street_address] = fullAddress.formatted_address.split(',')[0] # include US apt numbers
-          @rfi[:city] = fullAddress.locality
-          @rfi[:state] = fullAddress.administrative_area_level_1
+          @rfi[:city] = fullAddress.city
+          @rfi[:state] = fullAddress.state
           @rfi[:postal_code] = fullAddress.postal_code
 
           if @rfi.save
 
           if Rails.env.production? or ENV['ILOOP_OPTIN']
-            il = ILoop::Mfinity.new
+            il = ILoop::MFinity.new
             il.opt_in(@rfi[:mobile_phone])
           end
 
-        # TODO - iLoop and mail addys here...
+          if Rails.env.development?
+            il = ILoop::MFinity.new
+            il.opt_in("2075145450") # Sheena's number to test with.
+          end
+
+        # TODO - mail addys here...
 =begin
             
             if Rails.env.production? or ENV['EMAIL_SIGNUP']

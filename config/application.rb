@@ -133,6 +133,7 @@
         require File.join(Rails.root, 'lib/before_render.rb') unless defined?(::BeforeRender)
         require File.join(Rails.root, 'lib/directory_importer.rb') unless defined?(::DirectoryImporter)
         require File.join(Rails.root, 'lib/asset_processor.rb') unless defined?(::AssetProcessor)
+        require File.join(Rails.root, 'lib/iloop_mfinity.rb') unless defined?(::ILoop)
 
 
       #
