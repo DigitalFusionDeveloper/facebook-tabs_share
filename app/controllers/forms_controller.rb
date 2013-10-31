@@ -177,6 +177,7 @@ protected
         validates_as_email(:email)
         validates_as_phone(:mobile_phone)
         validates_presence_of(:term)
+        validates_presence_of(:referral)
         validates_presence_of(:address)
 
         fullAddress = 
