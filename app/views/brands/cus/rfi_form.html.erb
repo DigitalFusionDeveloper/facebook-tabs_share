@@ -22,7 +22,7 @@
     </div>
     <div class="span5">
       <%= f.label :term %>
-      <%= f.select :term, :options => ['Spring 2013', 'Fall 2013', 'Spring 2014', 'Fall 2014', 'Spring 2015', 'Fall 2015'], :class => 'span12' %>
+      <%= f.select :term, :options => @rfi.options_for_term, :class => 'span12' %>
     </div>
   </div>
 
@@ -34,6 +34,13 @@
     <div class="span5">
       <%= f.label :mobile_phone %>
       <%= f.input :mobile_phone, :class => 'span12', :placeholder => 'Cell phone #' %>
+    </div>
+  </div>
+
+  <div class="row-fluid">
+    <div class="span5 offset1">
+      <%= f.label :hear_how %>
+      <%= f.select :hear_how, :options => @rfi.options_for_hear_how, :class => 'span12' %>
     </div>
   </div>
 

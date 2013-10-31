@@ -22,5 +22,5 @@ brands:
     title: Colorado Christian University
     slug: cus
     organization: ccu
-    rfi_fields: email, first_name, last_name, term, street_address, city, state, postal_code, mobile_phone
+    rfi_fields: email, first_name, last_name, term, street_address, city, state, postal_code, mobile_phone, hear_how
 

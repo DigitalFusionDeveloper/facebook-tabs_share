@@ -234,6 +234,14 @@ protected
       def thank_you_template
         File.join(Rails.root.to_s, 'app/views/brands', @brand.slug, 'rfi_thank_you.html.erb')
       end
+
+      def options_for_term
+        return ['Spring 2013', 'Fall 2013', 'Spring 2014', 'Fall 2014', 'Spring 2015', 'Fall 2015']
+      end
+
+      def options_for_hear_how
+        return ['CCU Sponsored Event/conference', 'CCU Website', 'College Fair', 'Facebook', 'Friend/Family Member', 'High School Visit', 'KLOVE', 'Mail/E-mail', 'Other Website', 'WAYFM']
+      end
     end
   end
 
