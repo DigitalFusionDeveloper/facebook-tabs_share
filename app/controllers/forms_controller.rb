@@ -177,23 +177,31 @@ protected
         validates_as_email(:email)
         validates_as_phone(:mobile_phone)
         validates_presence_of(:term)
-        validates_presence_of(:street_address_1)
-        validates_presence_of(:street_address_2)
-        validates_presence_of(:city)
-        validates_presence_of(:state)
-        validates_presence_of(:postal_code)
+        validates_presence_of(:address)
 
         return false unless valid?
 
-        @brand.rfi_fields.each do |field|
-          value = attributes[field]
-          @rfi[field] = value
-        end
+        # address processing
+        p "Given address = #{attributes[:address]}"
+        fullAddress = GeoLocation.locate(attributes[:address], :pinpoint => true)
+        
+        if fullAddress and fullAddress.valid?
+          p 'Address is valid, so saving.'
+        
+          @brand.rfi_fields.each do |field|
+            value = attributes[field]
+            @rfi[field] = value
+          end
 
-        @rfi[:brand] = @brand.slug
-        @rfi[:organization] = @brand.organization.try(:slug)
+          @rfi[:brand] = @brand.slug
+          @rfi[:organization] = @brand.organization.try(:slug)
 
-        if @rfi.save
+          @rfi[:street_address] = fullAddress.formatted_address.split(',')[0] # include US apt numbers
+          @rfi[:city] = fullAddress.locality
+          @rfi[:state] = fullAddress.administrative_area_level_1
+          @rfi[:postal_code] = fullAddress.postal_code
+
+          if @rfi.save
 
           if Rails.env.production? or ENV['ILOOP_OPTIN']
             il = ILoop::Mfinity.new
@@ -202,19 +210,26 @@ protected
 
         # TODO - iLoop and mail addys here...
 =begin
-          
-          if Rails.env.production? or ENV['EMAIL_SIGNUP']
-            et = ExactTarget::Send.new
-            et.send_email(@brand.slug,email)
-          else
-            Rails.logger.info "Would signup #{email}"
-          end
+            
+            if Rails.env.production? or ENV['EMAIL_SIGNUP']
+              et = ExactTarget::Send.new
+              et.send_email(@brand.slug,email)
+            else
+              Rails.logger.info "Would signup #{email}"
+            end
 =end
-          return true
+            return true
+          else
+            @errors.relay(@rfi.errors)
+            return false
+          end
+
         else
-          @errors.relay(@rfi.errors)
+          p "Mailing address invalid so letting user know."
+          @errors.relay(fullAddress.errors)
           return false
         end
+
       end
 
       def form_template
@@ -223,6 +238,14 @@ protected
 
       def thank_you_template
         File.join(Rails.root.to_s, 'app/views/brands', @brand.slug, 'rfi_thank_you.html.erb')
+      end
+
+      def options_for_term
+        return ['Spring 2013', 'Fall 2013', 'Spring 2014', 'Fall 2014', 'Spring 2015', 'Fall 2015']
+      end
+
+      def options_for_hear_how
+        return ['CCU Sponsored Event/conference', 'CCU Website', 'College Fair', 'Facebook', 'Friend/Family Member', 'High School Visit', 'KLOVE', 'Mail/E-mail', 'Other Website', 'WAYFM']
       end
     end
   end

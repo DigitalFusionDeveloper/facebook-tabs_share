@@ -196,7 +196,7 @@ class Location
     url = "http://maps.googleapis.com/maps/api/staticmap?" + query_string
   end
 
-  class Importer
+  class Importer < ::Dao::Conducer
 =begin
 The Importer expects rows to be an array of hash like objects that have
 at least address, city, state, and zip code. Alternatively, if address looks
@@ -206,13 +206,19 @@ opitionally imported.
 =end
     require 'csv'
 
-    attr_accessor :row, :errors, :skipped, :delay
+    attr_accessor :rows, :skipped, :delay, :brand
 
-    def initialize(brand,rows = [])
+    def Importer.import_csv!(brand,csv)
+      importer = Importer.new(brand)
+      importer.csv = csv
+      importer.parse && importer.save
+      results = {errors: importer.errors.to_hash, skipped: importer.skipped.to_hash }
+    end
+
+    def initialize(brand = '',rows = [])
       @brand = Brand.for(brand)
       @rows = rows
       @imports = []
-      @errors = Map.new
       @skipped = Map.new
       @delay = (Rails.env.production? ? 1 : 0)
       @cached = 0
@@ -224,8 +230,13 @@ opitionally imported.
 
     def parse
       @imports = []
+      if @brand.blank?
+        errors.add(:brand, "is blank")
+        return false
+      end
+
       if @rows.empty?
-        @errors.add(:importer, "No data found")
+        errors.add(:importer, "No data found")
         return false
       end
       
@@ -252,6 +263,7 @@ opitionally imported.
           @skipped.add(location.name,location.errors)
         end
       end
+      true
     end
 
     def save
@@ -271,6 +283,7 @@ opitionally imported.
       Location.unscoped.in(id: existing_locations).destroy_all
       # Activate new locations
       Location.unscoped.in(id: new_locations).update_all(active: true)
+      true
     end
 
     def full_address(location)

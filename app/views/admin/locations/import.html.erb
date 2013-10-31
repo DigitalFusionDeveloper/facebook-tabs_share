@@ -1,0 +1,18 @@
+<div class='row-fluid'>
+  <div class='span6'>
+    <%= form @importer, :url => url_for(:action => :import) do |f| %>
+      <%= f.errors %>
+      <%=
+      if !@importer.skipped.empty?
+	importer.skipped.to_s(:html,{'base' => 'The following studios were skipped'})
+      end
+      %>
+      <%= f.label :brand, content: 'Select Brand' %>
+      <%= f.select :brand, :options => @brands.map {|b| [b.title, b.slug]}, blank: 'Select one' %>
+      <%= f.label :file, content: 'CSV File' %>
+      
+      <%= f.input :file, :type => :file %>
+      <%= f.submit 'Verify and Import', :class => 'btn btn-success' %>
+    <% end %>
+  </div>
+</div>
