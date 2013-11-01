@@ -1,8 +1,9 @@
 <%
 
-  stage = Rails.stage || Rails.env
-  database = "#{ App.underscore }-#{ stage }".gsub(/\s+/, '_')
-  mongo_conf = App.sekrets.get([:mongo,stage])
+  stage      = Rails.stage || Rails.env
+  database   = "#{ App.underscore }-#{ stage }".gsub(/\s+/, '_')
+  mongo_conf = App.sekrets.get([:mongo, stage])
+
   if mongo_conf.blank?
     uri = "mongodb://localhost:27017/#{database}"
   else

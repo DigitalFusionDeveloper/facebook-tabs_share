@@ -13,11 +13,11 @@ production:
 
 deploy:
   staging:
-    ip: stagingfbtabs.digitalfusiontesting.com
+    ip: 198.61.171.226
     deploy_to: /var/www/stagingfbtabs.digitalfusiontesting.com
 
   production: 
-    ip: productionfbtabs.digitalfusiontesting.com
+    ip: 198.61.171.226
     deploy_to: /var/www/productionfbtabs.digitalfusiontesting.com
 
   notify:
