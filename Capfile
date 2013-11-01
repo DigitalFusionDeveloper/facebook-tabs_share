@@ -303,8 +303,8 @@
     task :enable do
       src = "./config/deploy/os_files/etc/apache2/sites-enabled/#{ stage }.conf"
 
-      ENV['RAILS_STAGE'] = stage
-      `bundle exec rake deploy:generate:os_files`
+      #ENV['RAILS_STAGE'] = stage.to_s
+      #`bundle exec rake deploy:generate:os_files`
 
       if test(?s, src)
         dst = "/etc/apache2/sites-enabled/#{ identifier }.#{ stage }"
