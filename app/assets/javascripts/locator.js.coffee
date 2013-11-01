@@ -37,7 +37,6 @@ jQuery ->
                     $('.load-more').hide() if $hidden.length <= 5
                 
     $('#current_location').click ->
-        alert('click')
         locator_message 'info', 'finding your location...'
         $(this).addClass('disabled')
         if geoPosition.init()   # Geolocation Initialization
