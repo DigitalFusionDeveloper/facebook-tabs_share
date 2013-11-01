@@ -1,7 +1,9 @@
 <br>
 
 <%=
-  index = `ls #{ Rails.root }/public`.strip.split("\n").map{|file| ::File.basename(file)}.sort.delete_if{|file| file =~ /\.html$/}
+  index = `ls #{ Rails.root }/public`.strip.split("\n").map{|file| ::File.basename(file)}.sort
+
+  index = index.select{|entry| test(?d, "#{ Rails.root }/public/#{ entry }")}
 
   ul_(:class => ''){ index.each{|href| li_{ a_(:href => "./#{ href }"){ href } } } }
 %>
