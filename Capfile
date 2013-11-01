@@ -489,3 +489,14 @@
   #after "deploy", "deploy:cleanup"
 
 
+##
+#
+  namespace :fast do
+    task :deploy do
+      run "cd #{ current_path } && git pull origin master 2>&1 && { nohup rake cache:clear 2>&1 >/dev/null & } && touch tmp/restart.txt"
+    end
+  end
+  after "fast:deploy", "notify:campfire"
+  after "fast:deploy", "notify:email"
+  after "fast:deploy", "notify:console"
+
