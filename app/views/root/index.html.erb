@@ -1,11 +1,15 @@
+
 <br>
 
 <%=
-  index = `ls #{ Rails.root }/public`.strip.split("\n").map{|file| ::File.basename(file)}.sort
 
-  index = index.select{|entry| test(?d, "#{ Rails.root }/public/#{ entry }")}
+  index =
+    Dir.glob(Rails.root.join('public', 'brands', '*').to_s).
+      select{|entry| test(?d, entry)}.
+        map{|entry| File.basename(entry)}.
+          sort
 
-  ul_(:class => ''){ index.each{|href| li_{ a_(:href => "./#{ href }"){ href } } } }
+  ul_(:class => ''){ index.each{|brand| li_{ a_(:href => "./brands/#{ brand }", :target => :_blank){ brand } } } }
+
 %>
-
 
