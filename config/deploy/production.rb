@@ -11,7 +11,7 @@ repository = fetch(:repository)
 
 set :application, identifier
 set :user, "dojo4"
-set :deploy_to, "/var/www/social.mobile-fusion.mobi/#{ identifier }.#{ stage }"
+#set :deploy_to, "/var/www/social.mobile-fusion.mobi/#{ identifier }.#{ stage }"
 
 set :scm, :git
 set :deploy_via, :remote_cache
@@ -24,7 +24,7 @@ set :deploy_via, :remote_cache
 set :branch, "master" unless exists?(:branch)
 set :use_sudo, false
 
-ip = "198.61.171.226"
+#ip = "198.61.171.226"
 role :web, ip                          # Your HTTP server, Apache/etc
 role :app, ip                          # This may be the same as your `Web` server
 role :db,  ip, :primary => true # This is where Rails migrations will run

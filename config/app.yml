@@ -1,11 +1,24 @@
 ---
 identifier: facebook_tabs
+
 repository: git@github.com:dojo4/facebook-tabs.git
+
 secret_token: ec759d3acccb0ce9c7aad88cf0c2319ec3d82723dbbb07ae5ab3d9dec8c8a4b0add9e7c72ffd34160752c6c8803da540824559901350b6c97595b2deaad459b7
+
 staging:
-  url: http://social.mobile-fusion.mobi/facebook-tabs
+  url: http://stagingfbtabs.digitalfusiontesting.com
+
 production:
-  url: http://social.mobile-fusion.mobi/facebook-tabs
+  url: http://productionfbtabs.digitalfusiontesting.com
+
 deploy:
+  staging:
+    ip: stagingfbtabs.digitalfusiontesting.com
+    deploy_to: /var/www/stagingfbtabs.digitalfusiontesting.com
+
+  production: 
+    ip: productionfbtabs.digitalfusiontesting.com
+    deploy_to: /var/www/productionfbtabs.digitalfusiontesting.com
+
   notify:
   - dojo4@dojo4.com

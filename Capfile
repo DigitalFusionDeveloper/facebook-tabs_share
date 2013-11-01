@@ -106,6 +106,7 @@
   set(:identifier, settings['identifier'])
   set(:url, settings[stage]['url'])
   set(:repository, settings['repository'] || "git@github.com:dojo4/#{ identifier }.git")
+  set(:ip, settings['deploy'][stage]['ip'])
 
 ## make rake run in the proper environment
 #
