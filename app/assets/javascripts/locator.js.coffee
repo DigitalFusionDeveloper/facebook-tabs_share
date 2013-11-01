@@ -37,12 +37,14 @@ jQuery ->
                     $('.load-more').hide() if $hidden.length <= 5
                 
     $('#current_location').click ->
+        alert('click')
         locator_message 'info', 'finding your location...'
         $(this).addClass('disabled')
         if geoPosition.init()   # Geolocation Initialization
             geoPosition.getCurrentPosition(geo_success,geo_error)
         else
             locator_message 'error', 'Unable to find your current location.'
+        false
 
     geo_success = (p) ->
         c = p.coords
