@@ -10,6 +10,7 @@ class Admin::LocationsController < Admin::Controller
   end
 
   def import
+    @brands = Brand.all
     brand = params[:importer][:brand] if params[:importer]
     @importer = Location::Importer.new(brand)
     return if request.get?
