@@ -55,7 +55,6 @@ db_namespace = namespace(:db) do
 ##
 #
   desc 'load the db using mongoload (rtfm)'
-=begin
   task(:load, [:timestamp] => :dumpdir) do |task, options|
   # scan for a previously dumped db.  we load the most recent unless
   # something else is specified
@@ -83,23 +82,74 @@ db_namespace = namespace(:db) do
     directory ||= File.join(@dumpdir, basename || timestamp || current_timestamp)
     directory = File.expand_path(directory)
 
+  # push sacred data
+  #
+    sacred = {
+      'system.users' => nil
+    }
+
+=begin
+    sacred.keys.each do |collection|
+      status, stdout, stderr = systemu("mongoexport #{ mongo_cmd_line_connection } --collection #{ collection.inspect }")
+      abort("failed to dump sacred data #{ collection.inspect }") unless status==0
+      sacred[collection] = stdout
+    end
+=end
+
   # unpack the data and suck that bad boy into our db
   #
     Dir.chdir(directory) do
+      cwd = File.expand_path(Dir.pwd)
+      puts "### cwd: #{ cwd }"
+
       spawn("tar xvfz data.tar.gz", :report => false)
+
+      begin                                                                                                                                                                     
+        Dir.chdir('./data') do                                                                                                                                                  
+          spawn("rm -rf system\.*")                                                                                                                                             
+          cwd = File.expand_path(Dir.pwd)                                                                                                                                       
+          puts "### cwd: #{ cwd }"                                                                                                                                              
+                                                                                                                                                                                
+          Dir.glob('*.bson') do |bson|                                                                                                                                          
+            collection = bson.sub(/\.bson\Z/, '')                                                                                                                               
+            if bson =~ /\Asystem\./                                                                                                                                             
+              warn "skipping system collection #{ collection.inspect }"                                                                                                         
+            end                                                                                                                                                                 
+            #next if bson =~ /\Asystem\./                                                                                                                                       
+            #command = "mongorestore #{ mongo_cmd_line_connection } --noIndexRestore --objcheck --collection #{ collection.inspect } #{ bson.inspect }"                         
+            command = "mongorestore #{ mongo_cmd_line_connection } --objcheck --collection #{ collection.inspect } #{ bson.inspect }"                                           
+            spawn(command, :report => command)                                                                                                                                  
+          end                                                                                                                                                                   
+        end                                                                                                                                                                     
+      ensure                                                                                                                                                                    
+        spawn("rm -rf ./data", :report => false)                                                                                                                                
+      end                             
+
+=begin
       begin
-        command = "mongorestore --drop --indexesLast --objcheck #{ mongo_cmd_line_connection } ./data"
+        command = "mongorestore --drop --noIndexRestore --objcheck #{ mongo_cmd_line_connection } ./data"
         spawn(command, :report => directory)
       ensure
         spawn("rm -rf ./data", :report => false)
       end
+=end
     end
 
-  # ensure indexes are built
+  # pop sacred data
   #
-    spawn("bundle exec rake db:mongoid:create_indexes")
+    sacred.each do |collection, data|
+      if data
+        status, stdout, stderr = systemu("mongoimport #{ mongo_cmd_line_connection } --upsert --collection #{ collection.inspect }", :stdin => data)
+        abort("failed to load sacred data #{ collection.inspect }") unless status==0
+      end
+    end
+
+  # ensure indexes are built in background
+  #
+    command = "nohup bundle exec rake db:mongoid:create_indexes >/dev/null &"
+    puts "### system: #{ command }"
+    system(command)
   end
-=end
 
   def spawn(command, options = {})
     status, stdout, stderr = systemu(command)
