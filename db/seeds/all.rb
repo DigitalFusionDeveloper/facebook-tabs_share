@@ -15,7 +15,9 @@
   stakeholders =
   [
     {
-      :email => 'dojo4@dojo4.com', :name => 'dojo4'
+      :email => 'dojo4@dojo4.com', :name => 'dojo4',
+      :email => 'sheena.collins@mobilefusion.com', :name => 'Sheena Collins',
+      :email => 'corey.inouye@mobilefusion.com', :name => 'Corey Inouye'
     },
   ]
 
@@ -56,7 +58,7 @@ end
 
 ##
 #
-  unless Rails.env.production?
+#  unless Rails.env.production?
     users = User.where(:password_digest => nil)
 
     seed "set default passwords", :unless => users.size.zero?  do
@@ -65,7 +67,7 @@ end
         user.save!
       end
     end
-  end
+#  end
 
 ##
 #
