@@ -166,11 +166,11 @@ class GeoLocation
   end
 
   def GeoLocation.reverse_geocode(string)
-    GGeocode.reverse_geocode(srting)
+    GGeocode.reverse_geocode(string)
   end
 
   def GeoLocation.rgeocode(string)
-    GGeocode.reocode(srting)
+    GGeocode.reocode(string)
   end
 
   def GeoLocation.parse_data(data, options = {})

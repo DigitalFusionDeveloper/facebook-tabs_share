@@ -22,6 +22,18 @@ class Api < Dao::Api
       data.update :current_user => current_user
     }
 
+  desc '/geolocate - geolocate a location'
+
+    call('/geolocate'){
+      get {
+       if location = GeoLocation.for(params[:location])
+         data.update :location => {   city: location.city,
+                                     state: location.state,
+                                   country: location.country }
+       end
+      }
+    }
+
 
 #
   attr_accessor :effective_user

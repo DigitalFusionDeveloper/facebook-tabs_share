@@ -12,7 +12,7 @@ class APIController < ApplicationController
   before_filter :setup_path
   before_filter :setup_api
 
-  WhiteList = Set.new( %w( ping index ) )
+  WhiteList = Set.new( %w( ping index geolocate) )
   BlackList = Set.new( %w( ) )
 
   def index
