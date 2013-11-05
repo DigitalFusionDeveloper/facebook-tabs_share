@@ -8,6 +8,7 @@ jQuery ->
 
             if locations.length == 0
                 locator_message 'info', 'We were unable to find a location near you.'
+                $('#location').attr 'placeholder', 'Enter zip, city, or state'
 
             for location,i in locations
                 $address = $('#locations .template').clone()
@@ -37,12 +38,14 @@ jQuery ->
                     $('.load-more').hide() if $hidden.length <= 5
                 
     $('#current_location').click ->
-        locator_message 'info', 'finding your location...'
+        $('#location').attr 'placeholder', 'Finding your current location...'
+        locator_message 'info', 'Finding your current location...'
         $(this).addClass('disabled')
         if geoPosition.init()   # Geolocation Initialization
             geoPosition.getCurrentPosition(geo_success,geo_error)
         else
             locator_message 'error', 'Unable to find your current location.'
+            $('#location').attr 'placeholder', 'Enter zip, city, or state'
         false
 
     geo_success = (p) ->
