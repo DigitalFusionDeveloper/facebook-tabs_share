@@ -23,12 +23,3 @@
       });
     });
   </script>
-
-<!-- rpc -->
-  <script>
-    jQuery(function(){
-      var rpc = new RPC(<%= raw url_for(:action => :rpc).to_json %>);
-
-      window.rpc ||= rpc;
-    });
-  </script>
