@@ -51,11 +51,21 @@ jQuery ->
     geo_success = (p) ->
         c = p.coords
         getLocations { lat: c.latitude, lng: c.longitude }
+        updateLocation  c.latitude, c.longitude
         $('#current_location').removeClass('disabled')
 
     geo_error = (p) ->
         locator_message 'error', 'Unable to find your current location.'
         $('#current_location').removeClass('disabled')
+
+    updateLocation = (lat,lng) ->
+        current_location = $('#location').val()
+        $.getJSON '/api/geolocate', {location: (lat + ',' + lng) }, (response) ->
+            if location = response.data.location
+                # Geo responses can be slow, don't if the user has
+                # already started typing
+                if current_location == $('#location').val()
+                    $('#location').val(location.city + ', ' + location.state)
 
     $('.find-location').submit ->
         if $('#location').val()
