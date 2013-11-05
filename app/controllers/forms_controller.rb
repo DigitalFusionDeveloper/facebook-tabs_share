@@ -232,11 +232,15 @@ protected
           recipients = Coerce.list_of_strings(@brand[:rfi_recipients])
 
           if Rails.env.development?
-            Rails.logger.debug "Mailer.rfi(#{ recipients.inspect })"
-          else
-            unless recipients.blank?
-              Job.submit(Mailer, :rfi, recipients)
-            end
+            Rails.logger.info "Mailer.rfi(#{ recipients.inspect })"
+          end
+
+          if Rails.stage and !Rails.stage.production?
+            recipients = ['corey.inouye@mobilefusion.com', 'sheena.collins@mobilefusion.com']
+          end
+
+          unless recipients.blank?
+            Job.submit(Mailer, :rfi, recipients)
           end
 
         # TODO - iLoop and mail addys here...
