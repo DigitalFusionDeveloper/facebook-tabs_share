@@ -11,3 +11,13 @@
 <%= javascript_include_tag 'geoPosition', 'locator' %>
 <%= javascript_tag "window.brand = '#{@brand.slug}'", defer: 'defer' %>
 <%= stylesheet_link_tag("locator") %>
+
+<script>
+  jQuery(function(){
+    var rpc = new RPC(<%= raw url_for(:action => :rpc).to_json %>);
+
+    var geo_location = rpc.call('geo_location', { 'address' : '2030 17th street, boulder, co'  });
+
+    console.log && console.log(geo_location['formatted_address']);
+  });
+</script>

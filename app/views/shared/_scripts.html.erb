@@ -21,5 +21,14 @@
         jQuery("meta[name='csrf-token']").attr('content', csrf.token);
         jQuery("meta[name='csrf-param']").attr('content', csrf.param);
       });
-    })
+    });
+  </script>
+
+<!-- rpc -->
+  <script>
+    jQuery(function(){
+      var rpc = new RPC(<%= raw url_for(:action => :rpc).to_json %>);
+
+      window.rpc ||= rpc;
+    });
   </script>

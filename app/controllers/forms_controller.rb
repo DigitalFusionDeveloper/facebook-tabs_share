@@ -33,6 +33,11 @@ class FormsController < ::ApplicationController
 
     conducer.render!
    end
+#
+  rpc(:geo_location) do |params|
+    geo_location = GeoLocation.for(params[:address] || params[:geo_location])
+    geo_location.as_document
+  end
 
 protected
 #
