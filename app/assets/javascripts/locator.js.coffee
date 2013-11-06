@@ -9,33 +9,38 @@ jQuery ->
             if locations.length == 0
                 locator_message 'info', 'We were unable to find a location near you.'
                 $('#location').attr 'placeholder', 'Enter zip, city, or state'
-
-            for location,i in locations
-                $address = $('#locations .template').clone()
-                $address.removeClass 'template'
-                $address.addClass 'location'
-                $address.data('map_url',location.map_url)
-                $address.click ->
-                    $('#location_details .name').text($(this).find('.name').text())
-                    $('#location_details .modal-body .map').attr('src',$(this).data('map_url'))
-                    htmlCopy = $(this).clone()
-                    htmlCopy.children('.viewMap').remove()
-                    htmlCopy.css('cursor', 'default')
-                    $('#location_details .modal-body .address').html(htmlCopy)
-                    $('#location_details').modal('show')
-                $address.find('.name').text(location.title)
-                $address.find('.address').text(location.address)
-                $address.find('.city').text(location.city)
-                $address.find('.state').text(location.state)
-                $address.find('.zipcode').text(location.zipcode)
-                $address.show() if i < 5
-                $address.insertBefore '.load-more'
-             if locations.length > 5
-                $('.load-more').show()
-                $('.load-more').click ->
-                    $hidden = $('.location:hidden');
-                    $hidden.slice(0,5).show();
-                    $('.load-more').hide() if $hidden.length <= 5
+            else
+                $('#metaLocationResults')?.show?()
+                $('.load-more').hide()
+                for location,i in locations
+                    $address = $('#locations .template').clone()
+                    $address.removeClass 'template'
+                    $address.addClass 'location'
+                    $address.data('map_url',location.map_url)
+                    $address.click ->
+                        $('#location_details .name').text($(this).find('.name').text())
+                        $('#location_details .modal-body .map').attr('src',$(this).data('map_url'))
+                        htmlCopy = $(this).clone()
+                        htmlCopy.children('.viewMap').remove()
+                        htmlCopy.css('cursor', 'default')
+                        $('#location_details .modal-body .address').html(htmlCopy)
+                        $('#location_details').modal('show')
+                    $address.find('.name').text(location.title)
+                    $address.find('.address').text(location.address)
+                    $address.find('.city').text(location.city)
+                    $address.find('.state').text(location.state)
+                    $address.find('.zipcode').text(location.zipcode)
+                    $address.show() if i < 5
+                    if $('#metaLocationResults').length is 0
+                        $address.insertBefore '.load-more'
+                    else
+                        $address.insertBefore '#metaLocationResults'
+                 if locations.length > 5
+                    $('.load-more').show()
+                    $('.load-more').click ->
+                        $hidden = $('.location:hidden');
+                        $hidden.slice(0,5).show();
+                        $('.load-more').hide() if $hidden.length <= 5
                 
     $('#current_location').click ->
         $('#location').attr 'placeholder', 'Finding your current location...'

@@ -39,21 +39,31 @@
           <div id='beer-locator-form'></div>
       	  <div id="locations">
 
-      	    <div class="template" style="display:none;">
-      	      <span class="name" style="text-transform:uppercase;"></span><br />
-      	      <span class="address"></span><br />
-      	      <span class="city"></span>, <span class="state"></span> <span class="zipcode"></span><br />
-      	      <i><span class="distance"></i>
+
+            <div class="template" style="display:none;">
+              <span class="name" style="text-transform:uppercase;"></span><br />
+              <span class="address"></span><br />
+              <span class="city"></span>, <span class="state"></span> <span class="zipcode"></span><br />
+              <i><span class="distance"></i>
               <a href="#" class="viewMap">View Map</a>
-      	    </div>
-      	    
+            </div>
+            
             <div id="locator_message" class="alert" style="display: none;"></div>
-      	    
-            <div class="load-more" style="display: none;">
-      	      <button class="btn btn-primary">
-    		        Load More Results
-      	      </button>
-      	    </div>
+            
+            <div id="metaLocationResults"  style="display: none;">
+
+              <div id="barStoreTab" class="btn-group">
+                <button id="storesBtn" class="btn">Stores</button>
+                <button id="barsBtn" class="btn">Bars</button>
+              </div>
+
+              <div class="load-more">
+        	      <button class="btn btn-primary">
+      		        Load More Results
+        	      </button>
+        	    </div>
+
+            </div>
 
       	  </div>
         </div>
