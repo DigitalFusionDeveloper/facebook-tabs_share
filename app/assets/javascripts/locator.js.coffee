@@ -53,6 +53,9 @@ jQuery ->
             $('#location').attr 'placeholder', 'Enter zip, city, or state'
         false
 
+    $('#requestCityBtn button')?.click ->
+        window.location.replace('contact')
+
     geo_success = (p) ->
         c = p.coords
         getLocations { lat: c.latitude, lng: c.longitude }

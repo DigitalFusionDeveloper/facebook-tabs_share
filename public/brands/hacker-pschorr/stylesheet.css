@@ -191,6 +191,11 @@ footer img {
 #barStoreTab > .btn:active{
   background-color: #7a7a7a;
 }
+#requestCityBtn {
+  display: block;
+  text-align: center;
+  margin-bottom: 15px;
+}
 
 /* form errors */
 
