@@ -1,0 +1,14 @@
+#! /usr/bin/env ruby
+# encoding: utf-8
+
+unless DATA.flock(File::LOCK_EX | File::LOCK_NB) == 0
+  exit!(42)
+end
+
+require(File.dirname(__FILE__) + '/../config/environment.rb')
+
+Location.locate_all! do |location|
+  p location.full_address => location.loc
+end
+
+__END__

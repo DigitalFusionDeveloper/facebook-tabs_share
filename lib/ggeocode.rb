@@ -77,7 +77,8 @@ module GGeocode
     def Error.for(arg)
       case arg
         when Hash
-          new.tap{|e| e.data = arg}
+          status = arg['status'].to_s
+          new(status).tap{|e| e.data = arg}
         else
           new(arg.to_s)
       end

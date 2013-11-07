@@ -5,11 +5,10 @@ class Location
 
   include App::Document
 
-  class << self; attr_accessor :geo_delay end
-
   default_scope where(active: true)
 
   name_fields!
+
   field(:address, :type => String)
   field(:state, :type => String)
   field(:city, :type => String)
@@ -32,25 +31,49 @@ class Location
   index({:state => 1})
   index({:city => 1})
 
-  index({:loc => '2d'})
+  index({:loc => '2d'}, {:sparse => true})
   index({:brand => 1})
 
   belongs_to(:geo_location, :class_name => '::GeoLocation')
 
   default_scope order_by(:state => :asc, :city => :asc)
 
-  before_validation do |location|
-    location.geolocate
-  end
-
   validates_presence_of(:address)
   validates_presence_of(:state)
   validates_presence_of(:city)
   validates_presence_of(:zipcode)
-  validates_presence_of(:lat)
-  validates_presence_of(:lng)
-  validates_presence_of(:loc)
 
+  def Location.locate_all!(options = {}, &block)
+    options.to_options!
+
+    delay =
+      if options.has_key?(:delay)
+        case options[:delay]
+          when false, nil
+            0.0
+          else
+            Float(options[:delay])
+        end
+      else
+        0.200
+      end
+
+    42.times do
+      query = Location.where(:loc => nil)
+
+      return nil if query.count == 0
+
+      query.each do |location|
+        full_address = location.full_address
+        next if full_address.blank?
+        location.geolocate!
+        block.call(location) if location
+        sleep(delay) if delay
+      end
+    end
+
+    return true
+  end
 
   def brand
     Brand.for(read_attribute(:brand))
@@ -67,11 +90,12 @@ class Location
 
   def geolocate
     location = self
+    geo_location = nil
 
     if location.loc
-      geo_location = GeoLocation.for(location.loc,delay: Location.geo_delay)
+      geo_location = GeoLocation.for(location.loc)
     elsif !location.address.blank?
-      geo_location = GeoLocation.for(location.full_address,delay: Location.geo_delay)
+      geo_location = GeoLocation.for(location.full_address)
 
       legit = proc do |loc|
         (
@@ -84,14 +108,17 @@ class Location
       end
 
       unless legit[geo_location]
-        geo_location = GeoLocation.for(location.zipcode,delay: Location.geo_delay)
+        geo_location = GeoLocation.for(location.zipcode)
       end
+    end
 
-      if geo_location
-        location.lat = geo_location.lat
-        location.lng = geo_location.lng
-        location.loc = geo_location.loc
-      end
+    if geo_location
+      location.lat = geo_location.lat
+      location.lng = geo_location.lng
+      location.loc = geo_location.loc
+      geo_location
+    else
+      false
     end
   end
 
@@ -206,7 +233,7 @@ opitionally imported.
 =end
     require 'csv'
 
-    attr_accessor :rows, :skipped, :delay, :brand
+    attr_accessor :rows, :skipped, :brand
 
     def Importer.import_csv!(brand,csv)
       importer = Importer.new(brand)
@@ -220,7 +247,6 @@ opitionally imported.
       @rows = rows
       @imports = []
       @skipped = Map.new
-      @delay = (Rails.env.production? ? 1 : 0)
       @cached = 0
     end
       
@@ -267,7 +293,6 @@ opitionally imported.
     end
 
     def save
-      Location.geo_delay = @delay
       new_locations = []
       existing_locations = get_existing_locations
       @imports.each do |l|
@@ -312,7 +337,7 @@ opitionally imported.
 
     def estimated_time
       # Figuring 1 second per geo location
-      (@imports.count - @cached) * (1 + @delay)
+      (@imports.count - @cached)
     end
   end
 end

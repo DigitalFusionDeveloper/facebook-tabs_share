@@ -31,6 +31,7 @@ gem 'terminator'
 
 gem 'aws-sdk'
 
+gem 'threadify'
 
 
 # Gems used only for assets and not required
