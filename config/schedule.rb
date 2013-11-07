@@ -22,7 +22,7 @@
 every 15.minutes do
   rake 'jobs:run'
   #rake 'upload:process:all'
-  command './script/locate_all_locations'
+  script 'locate_all_locations'
 end
 
 every 1.day do
