@@ -146,9 +146,12 @@ class GeoLocation
   end
 
   def GeoLocation.for(*args, &block)
-    location = GeoLocation.locate!(*args, &block)
-  rescue
-    nil
+    begin
+      location = GeoLocation.locate!(*args, &block)
+    rescue GGeocode::Error => e
+      raise e if e.over_query_limit?
+      return nil
+    end
   end
 
   def GeoLocation.pinpoint(string)

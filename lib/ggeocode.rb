@@ -71,13 +71,31 @@ module GGeocode
     string.to_s.strip
   end
 
-  class StatusError < ::StandardError
-    attr_accessor :data
+  class Error < ::StandardError
+    attr_accessor(:data)
+
+    def Error.for(arg)
+      case arg
+        when Hash
+          new.tap{|e| e.data = arg}
+        else
+          new(arg.to_s)
+      end
+    end
+
+    def over_query_limit?
+      return false if data.nil?
+      return false unless data.is_a?(Hash)
+      status = data['status'].to_s
+      status =~ /^OVER_QUERY_LIMIT$/i
+    end
+
+    class Status < Error; end
   end
 
   def result_for(response)
     if response.body.empty?
-      raise(StatusError.new)
+      raise(Error.new)
     end
 
     hash = MultiJson.decode(response.body)
@@ -87,10 +105,10 @@ module GGeocode
     map.response = response
     map.update(hash)
 
-    unless hash['status'] == 'OK'
-      e = StatusError.new(hash['status'])
-      e.data = map
-      raise(e)
+    status = hash['status'].to_s
+
+    unless status =~ /^OK$/
+      raise Error::Status.for(map)
     end
 
     map
@@ -98,9 +116,11 @@ module GGeocode
 
   module Response
     attr_accessor :response
+
     def body
       response.body
     end
+
     alias_method('json', 'body')
   end
 
