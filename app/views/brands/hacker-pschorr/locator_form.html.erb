@@ -5,6 +5,10 @@
     <input id="location" class="geoOpt" name="location" type="text" placeholder="Enter zip, city, or state" />
   </div>
 
+  <% @locator.types.each do |type| %>
+    <input type="checkbox" name="type" value="<%= type %>" checked="checked"><%= type %>
+  <% end %>
+
   <button id="submitBtn" class="btn" type="submit">Search</button>
 </form>
 

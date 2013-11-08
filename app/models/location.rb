@@ -129,6 +129,10 @@ class Location
     save!
   end
 
+  def Location.types
+    distinct(:type)
+  end
+
   def Location.geolocate!(options = {})
     options.to_options!
     iterator = options[:thread] ? :threadify : :each

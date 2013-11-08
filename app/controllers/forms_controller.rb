@@ -286,6 +286,7 @@ protected
       model_name :locator
 
       fattr :brand
+      fattr :types
 
       def PaulanerConducer.render!
         controller = Current.controller
@@ -298,7 +299,7 @@ protected
 
       def initialize(brand, params = {})
         @brand = brand
-
+        @types = Location.where(brand: @brand.slug).types
         update_attributes(
           params
         )

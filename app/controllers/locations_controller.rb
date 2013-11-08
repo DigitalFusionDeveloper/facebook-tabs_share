@@ -8,8 +8,11 @@ class LocationsController < ApplicationController
     @lat = params[:lat]
     @state = params[:state]
     @city = params[:city]
+    @types = params[:type]
 
     location = Location.where(brand: @brand.slug)
+    # No types provided is the same as all types
+    location = location.in(type: @types) unless @types.empty?
 
     locations =
       case
