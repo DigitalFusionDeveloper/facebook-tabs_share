@@ -69,7 +69,7 @@ class Location
         full_address = location.full_address
         next if full_address.blank?
         location.geolocate!
-        block.call(location) if location
+        block.call(location) if block
         sleep(delay) if delay
       end
     end
