@@ -34,6 +34,8 @@ class Location
   index({:loc => '2d'}, {:sparse => true})
   index({:brand => 1})
 
+  belongs_to(:map_image, :class_name => '::Upload', inverse_of: nil)
+
   belongs_to(:geo_location, :class_name => '::GeoLocation')
 
   default_scope order_by(:state => :asc, :city => :asc)
@@ -206,7 +208,7 @@ class Location
     Location.find_all_by_lat_lng(location.lat,location.lng)
   end
 
-  def map_url
+  def query_string
     query = {
       :center  => "#{ lat },#{ lng }",
       :markers => "color:0x00AEEF|#{ lat },#{ lng }",
@@ -216,11 +218,40 @@ class Location
       :sensor  => false,
       :style   => "saturation:-100"
     }
+    query.to_query
+  end
 
-    #query_string = query.to_a.map{|kv| kv.join('=')}.join('&')
-    query_string = query.to_query
+  def map_url
+    return map_image.s3_url if map_image
+    begin
+      return image.s3_url if image = cache_map!     
+    rescue Object => e
+      google_url
+    end
+    google_url
+  end
 
+  def google_url
     url = "http://maps.googleapis.com/maps/api/staticmap?" + query_string
+  end
+
+  def map_data(&block)
+   open(google_url, 'rb') do |socket|
+      block ? block.call(socket) : socket.read
+    end
+  end
+
+  def cache_map!
+    return self.map_image if self.map_image
+    if map_data
+      filename = Digest::MD5.hexdigest(query_string) + '.png'
+      # Already have a map cached for a different brand or past lookup?
+      unless self.map_image = Upload.find_by(basename: filename)
+        self.map_image = Upload.sio!(map_data, filename: filename)
+      end
+      self.save!
+      self.map_image
+    end
   end
 
   class Importer < ::Dao::Conducer
