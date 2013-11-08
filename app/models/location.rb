@@ -201,7 +201,7 @@ class Location
   def Location.find_by_string(string)
     begin
       geo = GGeocode.geocode(string)
-    rescue GGeocode::StatusError
+    rescue GGeocode::Error::Status
       return []
     end
     location = GeoLocation.parse_data(geo)
