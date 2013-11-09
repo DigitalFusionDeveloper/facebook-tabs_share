@@ -133,29 +133,28 @@ class Location
     location = self
     geo_location = nil
 
+    address = Location.extract_raw_address(location.raw)
 
-    if location.loc
-      geo_location = GeoLocation.for(location.loc)
-    else
-      address = Location.extract_raw_address(location.raw)
+    unless address.blank?
+      geo_location = GeoLocation.for(address)
 
-      unless address.blank?
-        geo_location = GeoLocation.for(address)
+      legit = proc do |gloc|
+        (
+          !gloc.blank? and
+          !(is_postal = Array(gloc.data.get(:results, 0, :address_components, 0, :types)).include?('postal_code')) and
+          !(gloc.state.blank? or gloc.city.blank?)
+        )
+      end
 
-        legit = proc do |gloc|
-          (
-            !gloc.blank? and
-            !(is_postal = Array(gloc.data.get(:results, 0, :address_components, 0, :types)).include?('postal_code')) and
-            !(gloc.state.blank? or gloc.city.blank?)
-          )
+      unless legit[geo_location]
+        zipcode = %w(zipcode zip_code postal_code).map{|key| location.raw[key]}.detect{|val| !val.blank?}
+
+        if zipcode.blank? and !geo_location.postal_code.blank?
+          zipcode = geo_location.postal_code
         end
 
-        unless legit[geo_location]
-          zipcode = %w(zipcode zip_code postal_code).map{|key| location.raw[key]}.detect{|val| !val.blank?}
-
-          unless zipcode.blank?
-            geo_location = GeoLocation.for(zipcode)
-          end
+        unless zipcode.blank?
+          geo_location = GeoLocation.for(zipcode)
         end
       end
     end
