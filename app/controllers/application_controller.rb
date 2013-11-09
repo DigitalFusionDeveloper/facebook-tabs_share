@@ -42,6 +42,7 @@ class ApplicationController < ActionController::Base
 
 # rpc action support
 #
+  require 'rpc' unless defined?(RPC)
   include(RPC)
 
 protected
