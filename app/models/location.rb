@@ -75,7 +75,7 @@ class Location
             Float(options[:delay])
         end
       else
-        0.200
+        1.000
       end
 
     42.times do

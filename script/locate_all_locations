@@ -7,6 +7,14 @@ end
 
 require(File.dirname(__FILE__) + '/../config/environment.rb')
 
+unless STDIN.tty?
+  log = Rails.root.join('log/locate_all_locations.log').to_s
+  open(log, 'wb+') do |fd|
+    STDOUT.reopen(fd)
+    STDERR.reopen(fd)
+  end
+end
+
 Location.locate_all! do |location|
   p location.full_address => location.loc
 end
