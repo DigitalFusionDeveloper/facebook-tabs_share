@@ -15,7 +15,7 @@ Rails.configuration.after_initialize do
 # enable text search
 # 
   begin
-    App.db_enable_text_search!
+    #App.db_enable_text_search!
   rescue Object => e
     warn 'could not enable text search!'
   end
