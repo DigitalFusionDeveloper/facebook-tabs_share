@@ -3,6 +3,9 @@ jQuery ->
         $('.location').remove()
         $('.load-more').hide()
         locator_message 'info', 'searching...'
+        types = ($(type).val() for type in $("input[name='type']:checked"))
+        args['type'] = types
+        console.log args
         $.getJSON '/' + window.brand + '/locations', args, (locations) ->
             $('#locator_message').hide()
 
@@ -77,7 +80,7 @@ jQuery ->
 
     $('.find-location').submit ->
         if $('#location').val()
-            getLocations { location_string: $('#location').val() }
+            getLocations { location_string: $('#location').val(), type: ['a','b'] }
         else
             locator_message 'info', 'Please select "use current location" or enter a location and click "search."'
         false

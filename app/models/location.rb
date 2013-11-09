@@ -8,11 +8,8 @@ class Location
   name_fields!
 
   field(:md5, :type => String)
-
   field(:raw, :type => Hash, :default => proc{ Hash.new })
-
   field(:phone, :type => String)
-
   field(:type, :type => String)
 
   field :lat, :type => Float
@@ -21,6 +18,7 @@ class Location
 
 #
   belongs_to(:geo_location, :class_name => '::GeoLocation')
+  belongs_to(:map_image, :class_name => '::Upload', inverse_of: nil)
 
 #
   index({:md5 => 1}, {:unique => true})
@@ -28,11 +26,11 @@ class Location
   index({:zipcode => 1})
   index({:city => 1})
   index({:loc => '2d'}, {:sparse => true})
+  index({:type => 1})
 
 #
   validates_presence_of(:md5)
   validates_presence_of(:raw)
-
   validates_uniqueness_of(:md5)
 
 #
@@ -105,6 +103,10 @@ class Location
     %w( address address1 address2 addr1 addr2 street_address city state postal_code zipcode zip_code country ).map do |field|
       raw[field] || raw[field.to_sym]
     end.select{|cell| not cell.blank?}.join(', ')
+  end
+
+  def Location.types
+    distinct(:type)
   end
 
   def geolocated?
@@ -236,7 +238,7 @@ class Location
   def Location.find_by_string(string)
     begin
       geo = GGeocode.geocode(string)
-    rescue GGeocode::StatusError
+    rescue GGeocode::Error::Status
       return []
     end
 
@@ -244,9 +246,7 @@ class Location
     Location.find_all_by_lat_lng(location.lat, location.lng)
   end
 
-  def map_url
-    return nil unless loc
-
+  def query_string
     query = {
       :center  => "#{ lat },#{ lng }",
       :markers => "color:0x00AEEF|#{ lat },#{ lng }",
@@ -256,11 +256,41 @@ class Location
       :sensor  => false,
       :style   => "saturation:-100"
     }
+    query.to_query
+  end
 
-    #query_string = query.to_a.map{|kv| kv.join('=')}.join('&')
-    query_string = query.to_query
+  def map_url
+    return nil unless loc
+    return map_image.s3_url if map_image
+    begin
+      return image.s3_url if image = cache_map!     
+    rescue Object => e
+      google_url
+    end
+    google_url
+  end
 
+  def google_url
     url = "http://maps.googleapis.com/maps/api/staticmap?" + query_string
+  end
+
+  def map_data(&block)
+   open(google_url, 'rb') do |socket|
+      block ? block.call(socket) : socket.read
+    end
+  end
+
+  def cache_map!
+    return self.map_image if self.map_image
+    if map_data
+      filename = Digest::MD5.hexdigest(query_string) + '.png'
+      # Already have a map cached for a different brand or past lookup?
+      unless self.map_image = Upload.find_by(basename: filename)
+        self.map_image = Upload.sio!(map_data, filename: filename)
+      end
+      self.save!
+      self.map_image
+    end
   end
 
   class Importer < ::Dao::Conducer

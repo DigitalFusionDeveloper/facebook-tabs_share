@@ -58,6 +58,7 @@ protected
           @rfi = conducer.new(@brand, rfi, params[:rfi])
 
           if params[:saved]
+            Rails.logger.info('saved param is there.')
             render @rfi.thank_you_template
             return
           end
@@ -286,6 +287,7 @@ protected
       model_name :locator
 
       fattr :brand
+      fattr :types
 
       def PaulanerConducer.render!
         controller = Current.controller
@@ -298,7 +300,7 @@ protected
 
       def initialize(brand, params = {})
         @brand = brand
-
+        @types = Location.where(brand: @brand.slug).types
         update_attributes(
           params
         )

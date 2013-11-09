@@ -1,7 +1,13 @@
 <%= form @rfi, :url => request.fullpath do |f| %>
-
   <%= f.messages %>
   <%= f.errors %>
+
+  <div id="rfi_intro" class="row-fluid">
+    <div class="span12">
+      <h4 class="text-center">Take the first step towards your future at Colorado Christian University!</h4>
+      <h5 class="text-center">Fill out the form to learn more about CCU: </h5>
+    </div>
+  </div>
 
   <div class="row-fluid">
     <div class="span5 offset1">
@@ -47,6 +53,12 @@
   <div class="row-fluid contact-form-button">
     <div class="span10 offset1">
       <%= f.submit :class => 'btn btn-primary' %>
+    </div>
+  </div>
+
+  <div id="rfi_disclaimer" class="row-fluid">
+    <div class="span10 offset1">
+      <p>Disclaimer: By entering your mobile phone number, you are agreeing to receive promotional text messages from Colorado Christian University. Opt-in not required for admissions. Message & data rates may apply. T-Mobile subscribers acknowledge they do not want to double opt-in from their mobile phone in order to sign up for offers via text message/SMS.</p>
     </div>
   </div>
 
