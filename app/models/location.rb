@@ -79,7 +79,7 @@ class Location
       end
 
     42.times do
-      query = Location.where(:loc => nil)
+      query = Location.where(:loc => nil).order_by(:brand => :asc, :title => :asc)
 
       return nil if query.count == 0
 
