@@ -28,8 +28,6 @@
     fd.flush
   end
 
-  Dir.chdir(rails_root)
-
 # drop to background iff daemon
 #
   if is_daemon
@@ -39,7 +37,9 @@
 
 # boot rails
 #
-  require(File.dirname(__FILE__) + '/../config/environment.rb')
+  Dir.chdir(rails_root)
+
+  require('config/environment.rb')
 
 # redirect io iff running in the background or daemon
 #
