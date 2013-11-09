@@ -76,7 +76,7 @@ protected
 
 
   def setup_mode
-    @mode = params['mode'] || (request.get? ? 'read' : 'write')
+    @mode = params['mode'] || request.method.downcase
   end
 
   def path
@@ -134,9 +134,10 @@ protected
         if defined?(current_user) and current_user
           @api.user = current_user
         else
-          headers['WWW-Authenticate'] = ('Basic realm=""' % realm)
-          render(:nothing => true, :status => :unauthorized)
-          return
+          @api.user = nil
+          #headers['WWW-Authenticate'] = ('Basic realm=""' % realm)
+          #render(:nothing => true, :status => :unauthorized)
+          #return
         end
       end
     end

@@ -34,6 +34,75 @@ class Api < Dao::Api
       }
     }
 
+  desc '/jobs/next - get the next job to run'
+    call('/jobs/next'){
+      get {
+        stale = Time.now - (Rails.env.development? ? 0 : 60)
+
+        job = JavascriptJob.next!(:stale => stale)
+
+        data.update(
+          'job' => job.try(:to_map)
+        )
+      }
+    }
+
+  desc '/jobs/:id - get or put job data'
+    call('/jobs/:id'){
+      get {
+        job = JavascriptJob.find(params[:id])
+
+        data.update(
+          'job' => job.try(:to_map)
+        )
+      }
+
+      put {
+        job = JavascriptJob.find(params[:id])
+
+        if params[:job]
+          job.result = params[:job][:result]
+          job.completed!
+        end
+
+        data.update(
+          'job' => job.to_map
+        )
+      }
+    }
+
+  def get_next_job
+    job = Map.new
+
+    location = Location.where(:loc => nil).first
+
+    return nil unless location
+
+    address = location.raw_address
+
+    url = GGeocode.geocode_url_for(:address => address)
+
+    code = <<-__
+
+      var url = #{ url.to_s.to_json };
+
+      jQuery.ajax({
+        'url' : url,
+        'type' : 'GET',
+        'cache' : false,
+
+        'success' : function(data){
+          console.dir && console.dir(data)
+        }
+      });
+
+    __
+
+    job['code'] = code.strip
+
+    job
+  end
+
 
 #
   attr_accessor :effective_user
@@ -43,13 +112,14 @@ class Api < Dao::Api
     options = args.extract_options!.to_options!
     effective_user = args.shift || options[:effective_user] || options[:user]
     real_user = args.shift || options[:real_user] || effective_user
-    @effective_user = user_for(effective_user) if effective_user
-    @real_user = user_for(real_user) if real_user
+    @effective_user = user_for(effective_user) unless effective_user.blank?
+    @real_user = user_for(real_user) unless real_user.blank?
     @real_user ||= @effective_user
   end
 
 #
   def user_for(arg)
+    return nil if arg.blank?
     User[arg]
   end
 
