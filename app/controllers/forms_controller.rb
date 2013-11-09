@@ -58,6 +58,7 @@ protected
           @rfi = conducer.new(@brand, rfi, params[:rfi])
 
           if params[:saved]
+            Rails.logger.info('saved param is there.')
             render @rfi.thank_you_template
             return
           end
