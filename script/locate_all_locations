@@ -1,5 +1,7 @@
 #! /usr/bin/env ruby
 # encoding: utf-8
+#
+  require 'fileutils'
 
 # args
 #
@@ -7,9 +9,26 @@
 
 # ensure just one version is running
 #
-  unless DATA.flock(File::LOCK_EX | File::LOCK_NB) == 0
+  script_dir = File.expand_path(File.dirname(__FILE__))
+  rails_root = File.dirname(script_dir)
+
+  log = File.join(rails_root, 'log/locate_all_locations.log')
+  lock = File.join(rails_root, 'log/locate_all_locations.lock')
+
+  FileUtils.touch(log)
+  FileUtils.touch(lock)
+
+  fd = open(lock, 'ab+')
+
+  unless fd.flock(File::LOCK_EX | File::LOCK_NB) == 0
     exit!(42)
+  else
+    fd.rewind
+    fd.puts Process.pid
+    fd.flush
   end
+
+  Dir.chdir(rails_root)
 
 # drop to background iff daemon
 #
@@ -22,17 +41,13 @@
 #
   require(File.dirname(__FILE__) + '/../config/environment.rb')
 
-# rails_root
-#
-  Dir.chdir(Rails.root.to_s)
-
 # redirect io iff running in the background or daemon
 #
-  if is_daemon || !STDIN.tty?
-    log = Rails.root.join('log/locate_all_locations.log').to_s
 
+  if is_daemon || !STDIN.tty? || !STDOUT.tty?
     open(log, 'wb+') do |fd|
       fd.sync = true
+      STDIN.reopen(fd)
       STDOUT.reopen(fd)
       STDERR.reopen(fd)
     end
@@ -52,6 +67,7 @@
       exit(0) if n == 0
     rescue Object => e
       STDERR.puts "#{ e.message }(#{ e.class })\n#{ Array(e.backtrace).join(10.chr) }"
+      STDERR.puts
       sleep(rand(120))
     end
   end
