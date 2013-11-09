@@ -39,7 +39,7 @@
 #
   Dir.chdir(rails_root)
 
-  require('config/environment.rb')
+  require('./config/environment.rb')
 
 # redirect io iff running in the background or daemon
 #
