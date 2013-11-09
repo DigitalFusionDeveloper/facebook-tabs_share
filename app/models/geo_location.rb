@@ -134,9 +134,19 @@ class GeoLocation
   def GeoLocation.locate!(*args, &block)
     location = GeoLocation.locate(*args, &block)
 
-    if location.blank? or not location.valid?
-      message = location ? location.errors.inspect : ''
+    if location.blank?
+      message = "no location for: #{ args.inspect }"
       raise Error.new(message)
+    end
+
+    unless location.valid?
+      begin
+        sleep(rand)
+        GeoLocation.locate(*args, &block).tap{|loc| location = loc}
+      rescue Object
+        nil
+      end
+      raise Error.new(location.errors.inspect) unless location.valid?
     end
 
     location
