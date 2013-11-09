@@ -18,15 +18,6 @@
     </dd>
 
     <dt>
-      errors
-    </dt>
-    <dd>
-      <pre>
-      <%= @job.result.blank? ? '~' : @job.result.to_yaml %>
-      </pre>
-    </dd>
-
-    <dt>
       csv
       <small>
         (
@@ -36,10 +27,29 @@
         )
       </small>
     </dt>
+
+    <dt>
+      details
+    </dt>
     <dd>
-      <pre style='font-size:0.75em;'>
-      <%= @job.args.last.to_s.split(/\n/).join("\n\n") %>
-      </pre>
+      <%= 
+        if @job.status == 'success'
+          if @job.result.blank?
+            '~'
+          else
+            @job.result['_'].html_safe
+          end
+        else
+          pre_(:style => 'font-size:0.75em;'){ 
+            Array(@job.failures).reverse.each do |failure|
+              hr_{}
+              tagz << failure.to_s
+              br_{}
+              br_{}
+            end
+          }
+        end
+      %>
     </dd>
   </dl>
 
@@ -65,7 +75,7 @@
           target = jq(selector);
         }
       });
-    }, 3000);
+    }, 30000);
   });
 </script>
 

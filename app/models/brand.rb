@@ -22,7 +22,7 @@ class Brand < MapModel
 
 #
   def rfis
-    RFI.where(:brand => id)
+    RFI.where(:brand => slug)
   end
 
   def rfi_fields
@@ -31,6 +31,54 @@ class Brand < MapModel
 
   def Brand.rfi_fields
     all.map{|brand| brand.rfi_fields}.flatten.compact.sort.uniq
+  end
+
+  def locations
+    Location.where(:brand => slug)
+  end
+
+
+  module Able
+    Code = proc do
+      #
+        field(:brand, :type => String)
+        field(:organization, :type => String)
+
+      #
+        index({:brand => 1})
+        index({:organization => 1})
+
+      #
+        def brand
+          Brand.for(read_attribute(:brand))
+        end
+
+        def brand=(brand)
+          brand = Brand.for(brand)
+          write_attribute(:brand, brand ? brand.id : nil)
+        ensure
+          self.organization = self.brand.organization if self.brand
+        end
+
+        def organization
+          Organization.for(read_attribute(:organization))
+        end
+
+        def organization=(organization)
+          organization = Organization.for(organization)
+          write_attribute(:organization, organization ? organization.id : nil)
+        end
+    end
+
+    def Able.included(other)
+      super
+    ensure
+      other.module_eval(&Code)
+    end
+  end
+
+  def Brand.able
+    Able
   end
 end
 

@@ -1,7 +1,10 @@
 <table class='grid' style='width:100%;'>
   <tr>
     <td style='vertical-align:top;'>
-        <%= link_to raw("Import &rarr;"), url_for(:action => :import), :title => 'Import Locations From CSV', :class => 'btn btn-success' %>
+    <%= 
+      content = raw(@brand ? "Import #{ @brand.slug.inspect } locations &rarr;" : "Import locations &rarr;")
+      link_to content, url_for(:action => :import), :title => 'Import Locations From CSV', :class => 'btn btn-success' 
+    %>
     </td>
     <td style='vertical-align:top;text-align:right;'>
       <form>
@@ -11,41 +14,56 @@
   </tr>
 </table>
 
-<table class='table table-striped'>
+<table class='table table-striped' style='font-size:0.75em;'>
   <thead>
     <th>
-      URL
+      Brand
     </th>
     <th>
-      Address
+      Title
+    </th>
+    <th>
+      MD5
+    </th>
+    <th>
+      Full Address
     </th>
     <th>
       Map
-    </th>
-    <th>
-      Actions
     </th>
   </thead>
 
   <% @locations.each do |location| %>
   <tr>
     <td>
+      <%= link_to location.brand.slug, url_for(:brand_id => location.brand.slug, :action => :index) %>
+    </td>
+    <td>
       <%= location.title %>
     </td>
     <td>
-      <%= location.full_address %>
+      <%= location.md5 %>
+    </td>
+    <td>
+      <%= location.loc ? location.formatted_address : "~ #{ location.raw_address }" %>
     </td>
     <td>
       <%=
-        
-        link_to('Map',
-          location.map_url,
-          'target' => :_blank, 'class' => 'map-lightbox', 'data-title' => location.title
-        )
+        lat = location.lat
+        lat = lat.round(2) if lat
+        lng = location.lng
+        lng = lng.round(2) if lng
+        loc = [lat, lng].compact.join(', ')
+
+        if loc.blank?
+          "~"
+        else
+          link_to("@ #{ loc }",
+            location.map_url,
+            'target' => :_blank, 'class' => 'map-lightbox', 'data-title' => location.title
+          )
+        end
       %>
-    </td>
-    <td>
-      ~
     </td>
   </tr>
   <% end %>

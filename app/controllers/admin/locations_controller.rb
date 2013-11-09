@@ -1,36 +1,32 @@
 class Admin::LocationsController < Admin::Controller
   include ActionView::Helpers::DateHelper
 
+  before_filter(:setup)
+
   def index
-    @brands = Brand.all
-    query = Location.unscoped.all
-    query = search_query_for(query, params)
-    locations = query.page(params[:page]).per(10)
+    @brands    = Brand.all
+    query      = @scope.all
+    query      = search_query_for(query, params)
+    query      = query.order_by(:brand => :asc, :title => :asc)
+    locations  = query.page(params[:page]).per(10)
     @locations = Conducer.collection_for(locations)
   end
 
   def import
-    @brands = Brand.all
-    brand = params[:importer][:brand] if params[:importer]
-    @importer = Location::Importer.new(brand)
+    @importer = Location::Importer.new(params[:importer])
+    @importer.brand = @brand
+
     return if request.get?
-    unless params[:importer][:file].blank?
-      csv = params[:importer][:file].read
-      @importer.csv = csv
-    end
-    @importer.parse
-    if @importer.errors.empty?
-      @job = Job.submit(Location::Importer,:import_csv!,brand,csv)
+
+    if @importer.parse
+      @job = @importer.background!
 
       url = url_for(:action => :job, :id => @job.id)
 
       message.success <<-__
         successful csv parse
         <br>
-        check <a href="#{ url }">job #{ @job.id }</a> for progress...
-        <br>
-        <br>
-          Estitmated processing time: #{distance_of_time_in_words(@importer.estimated_time)}
+        check <a href="#{ url }" target="_blank">job #{ @job.id }</a> for progress...
       __
     end
   end
@@ -39,13 +35,13 @@ class Admin::LocationsController < Admin::Controller
     @job = Job.find(params[:id])
 
     if params[:csv] == 'download'
-      csv = @job.args.last
-      send_data(csv, :filename => "location-#{ @job.created_at.iso8601 }.csv")
+      csv = @job.args.last['csv']
+      send_data(csv, :filename => "locations-#{ @job.created_at.iso8601 }.csv")
       return
     end
 
     if params[:csv] == 'preview'
-      csv = @job.args.last
+      csv = @job.args.last['csv']
       render(:text => csv, :content_type => 'text/plain', :layout => false)
       return
     end
@@ -54,7 +50,25 @@ class Admin::LocationsController < Admin::Controller
       render(:layout => false)
     end
   end
-  protected
+
+protected
+  def setup
+    @brands = Brand.all
+
+    params[:importer] ||= {}
+
+    brand = [params[:importer][:brand], params[:brand_id], params[:brand]].detect{|val| !val.blank?}
+
+    @scope =
+      unless brand.blank?
+        @brand = Brand.for(brand)
+        Location.where(:brand => @brand.slug)
+      else
+        Location.all
+      end
+
+    @scope = @scope.order_by(:organization => :asc, :brand => :asc, :state => :asc, :city => :asc)
+  end
 
   def search_query_for(query, params)
     unless params[:search].blank?
@@ -62,7 +76,7 @@ class Admin::LocationsController < Admin::Controller
       terms = Array(params[:search]).join(' ').strip.split(/\s+/)
       words = terms.map{|term| "\\b#{ term }\\b"}
       re = /#{ words.join('|') }/i
-      conditions = [ {:title => re}, {:slug => re}, {:address => re} ]
+      conditions = [ {:title => re}, {:slug => re}, {:address => re}, {:brand => re}, {:md5 => re} ]
       query = query.any_of(conditions)
     else
       query
@@ -90,6 +104,11 @@ class Admin::LocationsController < Admin::Controller
 
     def full_address
       @location.full_address
+    end
+
+    def method_missing(method, *args, &block)
+      super unless @location.respond_to?(method)
+      @location.send(method, *args, &block)
     end
 
     def save

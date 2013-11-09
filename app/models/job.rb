@@ -47,6 +47,22 @@
 
   ##
   #
+    index({:runner => 1})
+    index({:completed_at => 1})
+    index({:attempts => 1})
+    index({:started_at => 1})
+    index({:created_at => 1})
+
+    index({:starts_at => 1})
+
+    index({:object => 1})
+    index({:message => 1})
+    index({:tags => 1})
+
+    index({:status => 1})
+
+  ##
+  #
     class Failure
       include App::Document::Embedded
 
@@ -79,6 +95,10 @@
         unless failure.backtrace.blank?
           failure.backtrace = Array(failure.backtrace).flatten.compact
         end
+      end
+
+      def to_s
+        "#{ message }(#{ type })\n#{ Array(backtrace).join(10.chr) }"
       end
 
       embedded_in(:job, :class_name => '::Job')

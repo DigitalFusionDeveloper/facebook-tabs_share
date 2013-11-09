@@ -1,18 +1,44 @@
 <div class='row-fluid'>
-  <div class='span6'>
+  <div class='span8'>
     <%= form @importer, :url => url_for(:action => :import) do |f| %>
+      <div class='instructions'>
+        upload a csv file (<em>export as csv</em>) that has the following columns
+        <br>
+        <br>
+
+        <pre>
+          (brand), title, address, city, state, zipcode, (type)
+        </pre>
+
+        <ul>
+          <li>
+            <em>(brand)</em> is required unless you've selected a brand
+          </li>
+          <li>
+            <em>(type)</em> is optional and can contain arbitrary labels like 'retail' or 'wholesale'.  
+            <br> these labels can then be used to filter locations.
+          </li>
+        </ul>
+      </div>
+
       <%= f.errors %>
-      <%=
-      if !@importer.skipped.empty?
-	importer.skipped.to_s(:html,{'base' => 'The following studios were skipped'})
-      end
-      %>
+
       <%= f.label :brand, content: 'Select Brand' %>
-      <%= f.select :brand, :options => @brands.map {|b| [b.title, b.slug]}, blank: 'Select one' %>
+      <%= f.select :brand, :options => @importer.options_for(:brand), :selected => @importer.selected_brand, :blank => true %>
       <%= f.label :file, content: 'CSV File' %>
       
-      <%= f.input :file, :type => :file %>
+      <%= f.input :csv, :type => :file %>
       <%= f.submit 'Verify and Import', :class => 'btn btn-success' %>
     <% end %>
+
+    <br>
+    <h5>Jobs</h5>
+    <ul>
+      <% Job.where(:object => "Location::Importer").order_by(:created_at => :desc).each do |job| %>
+        <li>
+          <%= link_to job.id, url_for(:action => :job, :id => job.id), :target => :_blank %> created <%= time_ago_in_words job.created_at %> ago
+        </li>
+      <% end %>
+    </ul>
   </div>
 </div>

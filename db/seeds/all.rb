@@ -47,12 +47,10 @@
 =end
 
 unless Rails.env.production?
-  seed 'locations' do
-    s = File.read(File.join(File.dirname(__FILE__),'data', 'hacker_locations_sample.csv'))
-    importer = Location::Importer.new('hacker-pschorr')
-    importer.csv = s
-    importer.parse
-    importer.save
+  seed 'locations', :if => Location.count.zero? do
+    csv = IO.binread Rails.root.join('db/brands/locations/hacker-pschorr-medium.csv').to_s
+    importer = Location::Importer.new(:brand => 'hacker-pschorr', :csv => csv)
+    importer.parse && importer.save
   end
 end
 

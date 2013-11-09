@@ -108,11 +108,18 @@ Dojo4::Application.routes.draw do
       match 'welcome', :action => 'welcome', :as => :welcome
     end
 
-    resources :locations do
-      collection do
-        match 'job/:id', :action => 'job'
-        match 'import', :action => 'import'
+    location_routes = proc do
+      resources :locations, :controller => 'locations'  do
+        collection do
+          match 'job/:id', :action => 'job'
+          match 'import', :action => 'import'
+        end
       end
+    end
+    instance_eval(&location_routes)
+
+    resources :brands do
+      instance_eval(&location_routes)
     end
 
     resources :reports do

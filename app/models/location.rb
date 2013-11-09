@@ -1,50 +1,72 @@
 # -*- coding: utf-8 -*-
 class Location
-##
 #
-
   include App::Document
+  include Brand.able
 
-  default_scope where(active: true)
-
+#
   name_fields!
 
-  field(:address, :type => String)
-  field(:state, :type => String)
-  field(:city, :type => String)
-  field(:zipcode, :type => String)
-  field(:country, :type => String, :default => 'US')
+  field(:md5, :type => String)
+
+  field(:raw, :type => Hash, :default => proc{ Hash.new })
+
   field(:phone, :type => String)
 
   field(:type, :type => String)
-  field(:active, :type => Boolean, :default => true)
-
-  field(:brand, :type => String)
-
-  field(:raw, :type => Hash, :default => proc{ Hash.new })
 
   field :lat, :type => Float
   field :lng, :type => Float
   field :loc, :type => Array
 
-  index({:zipcode => 1})
-  index({:state => 1})
-  index({:city => 1})
-
-  index({:loc => '2d'}, {:sparse => true})
-  index({:brand => 1})
-
+#
   belongs_to(:geo_location, :class_name => '::GeoLocation')
 
-  default_scope order_by(:state => :asc, :city => :asc)
+#
+  index({:md5 => 1}, {:unique => true})
+  index({:state => 1})
+  index({:zipcode => 1})
+  index({:city => 1})
+  index({:loc => '2d'}, {:sparse => true})
 
-  validates_presence_of(:address)
-  validates_presence_of(:state)
-  validates_presence_of(:city)
-  validates_presence_of(:zipcode)
+#
+  validates_presence_of(:md5)
+  validates_presence_of(:raw)
 
+  validates_uniqueness_of(:md5)
+
+#
+  before_validation do |location|
+    location.md5 = Location.md5_for(location.raw)
+
+    unless location.md5.blank?
+      location.md5 = location.md5.force_encoding('utf-8')
+    end
+  end
+
+#
+  def Location.md5_for(raw)
+    return nil if raw.blank?
+    return nil unless raw.is_a?(Hash)
+    Digest::MD5.hexdigest(raw.to_json).to_s.force_encoding('utf-8')
+  end
+
+  def Location.[](key)
+    any_of( {:_id => key}, {:md5 => key} ).first
+  end
+
+#
   def Location.locate_all!(options = {}, &block)
     options.to_options!
+
+    if options[:background]
+      raise ArgumentError.new('no block allowed with background') if block
+      script = Rails.root.join("script/locate_all_locations").to_s
+      Thread.new do
+        `nohup #{ script.inspect } >> log/locate_all_locations.log 2>&1 &`
+      end
+      return true
+    end
 
     delay =
       if options.has_key?(:delay)
@@ -64,10 +86,8 @@ class Location
       return nil if query.count == 0
 
       query.each do |location|
-        full_address = location.full_address
-        next if full_address.blank?
-        location.geolocate!
-        block.call(location) if location
+        location.geolocate! unless location.geolocated?
+        block.call(location) if block
         sleep(delay) if delay
       end
     end
@@ -75,48 +95,75 @@ class Location
     return true
   end
 
-  def brand
-    Brand.for(read_attribute(:brand))
+  def Location.extract_raw_address(raw)
+    if raw.is_a?(Location)
+      raw = raw.raw
+    end
+
+    return nil if raw.blank?
+
+    %w( address address1 address2 addr1 addr2 street_address city state postal_code zipcode zip_code country ).map do |field|
+      raw[field] || raw[field.to_sym]
+    end.select{|cell| not cell.blank?}.join(', ')
   end
 
-  def brand=(brand)
-    brand = Brand.for(brand)
-    write_attribute(:brand, brand ? brand.id : nil)
+  def geolocated?
+    not loc.blank?
   end
 
   def full_address
-    [address, city, state, zipcode, country].join(', ')
+    formatted_address || raw_address
+  end
+
+  def formatted_address
+    geo_location and geo_location.formatted_address
+  end
+
+  def raw_address
+    Location.extract_raw_address(raw)
+  end
+
+  def address
+    full_address
   end
 
   def geolocate
     location = self
     geo_location = nil
 
+
     if location.loc
       geo_location = GeoLocation.for(location.loc)
-    elsif !location.address.blank?
-      geo_location = GeoLocation.for(location.full_address)
+    else
+      address = Location.extract_raw_address(location.raw)
 
-      legit = proc do |loc|
-        (
-          !loc.blank? and
+      unless address.blank?
+        geo_location = GeoLocation.for(address)
 
-          !(is_postal = Array(loc.data.get(:results, 0, :address_components, 0, :types)).include?('postal_code')) and
+        legit = proc do |gloc|
+          (
+            !gloc.blank? and
+            !(is_postal = Array(gloc.data.get(:results, 0, :address_components, 0, :types)).include?('postal_code')) and
+            !(gloc.state.blank? or gloc.city.blank?)
+          )
+        end
 
-          !(loc.state.blank? or loc.city.blank?)
-        )
-      end
+        unless legit[geo_location]
+          zipcode = %w(zipcode zip_code postal_code).map{|key| location.raw[key]}.detect{|val| !val.blank?}
 
-      unless legit[geo_location]
-        geo_location = GeoLocation.for(location.zipcode)
+          unless zipcode.blank?
+            geo_location = GeoLocation.for(zipcode)
+          end
+        end
       end
     end
 
     if geo_location
+      %w( lat lng loc )
       location.lat = geo_location.lat
       location.lng = geo_location.lng
       location.loc = geo_location.loc
-      geo_location
+      self.geo_location = geo_location
     else
       false
     end
@@ -125,16 +172,6 @@ class Location
   def geolocate!
     geolocate
     save!
-  end
-
-  def Location.geolocate!(options = {})
-    options.to_options!
-    iterator = options[:thread] ? :threadify : :each
-    force = !!options[:force]
-
-    Location.all.send(iterator) do |location|
-      location.geolocate! unless(location.geo_location or force)
-    end
   end
 
   def Location.find_all_by_zipcode(zipcode, options = {})
@@ -202,11 +239,14 @@ class Location
     rescue GGeocode::StatusError
       return []
     end
+
     location = GeoLocation.parse_data(geo)
-    Location.find_all_by_lat_lng(location.lat,location.lng)
+    Location.find_all_by_lat_lng(location.lat, location.lng)
   end
 
   def map_url
+    return nil unless loc
+
     query = {
       :center  => "#{ lat },#{ lng }",
       :markers => "color:0x00AEEF|#{ lat },#{ lng }",
@@ -224,120 +264,233 @@ class Location
   end
 
   class Importer < ::Dao::Conducer
-=begin
-The Importer expects rows to be an array of hash like objects that have
-at least address, city, state, and zip code. Alternatively, if address looks
-like a full address (it contains commas and ends in at least four digits
-followed by an optional country) it will be use. "country" and "type" are
-opitionally imported.
-=end
     require 'csv'
 
-    attr_accessor :rows, :skipped, :brand
+    def Importer.import_csv!(*args)
+      importer = Importer.new(*args)
 
-    def Importer.import_csv!(brand,csv)
-      importer = Importer.new(brand)
-      importer.csv = csv
-      importer.parse && importer.save
-      results = {errors: importer.errors.to_hash, skipped: importer.skipped.to_hash }
+      if importer.parse
+        result = importer.save
+        if result
+          importer.html_summary_for(result)
+        end
+      end
     end
 
-    def initialize(brand = '',rows = [])
+    def initialize(*args)
+      options = args.extract_options!.to_options!
+
+      csv   = args.shift || options[:csv] || options[:file]
+      brand = args.shift || options[:brand]
+
+      self.csv = csv
+      self.brand = brand
+    end
+
+    def brands
+      @brands ||= Brand.all
+    end
+
+    def brand=(brand)
       @brand = Brand.for(brand)
-      @rows = rows
-      @imports = []
-      @skipped = Map.new
-      @cached = 0
     end
-      
+
+    def brand
+      @brand
+    end
+
+    def options_for(which)
+      case which.to_s
+        when /brand/
+          brands.map{|brand| [brand.title, brand.slug]}
+      end
+    end
+
+    def selected_brand
+      @brand.try(:slug)
+    end
+
     def csv=(csv)
-      @rows = csv.is_a?(CSV) ? csv : CSV.parse(csv,headers: :first_row, header_converters: :symbol)
+      case
+        when false, nil
+          @csv = nil
+        when csv.respond_to?(:read)
+          @csv = Util.dos2unix(csv.read)
+        else
+          @csv = Util.dos2unix(csv.to_s)
+      end
     end
 
+  # brand, title, street_address, city, state, country, postal_code, type
+  #
     def parse
-      @imports = []
-      if @brand.blank?
-        errors.add(:brand, "is blank")
+    #
+      @rows = CSV.parse(@csv, headers: :first_row, header_converters: :symbol)
+
+    #
+      if @rows.empty?
+        errors.add(:importer, "no data in csv")
         return false
       end
 
-      if @rows.empty?
-        errors.add(:importer, "No data found")
-        return false
+    #
+      @columns = (@rows.try(:first).try(:headers) || []).map(&:to_s)
+
+    #
+      if @brand.blank?
+        errors.add("missing 'brand' column") unless @columns.include?('brand')
       end
+
+      unless @columns.include?('title')
+        errors.add("missing 'title' column")
+      end
+
+      unless %w( address street_address city state country postal_code ).any?{|header| @columns.include?(header)}
+        errors.add("no address-like headers found") unless @columns.include?('title')
+      end
+
+      return false unless valid?
+
+    #
+      @to_import = []
       
       @rows.each_with_index do |row, index|
-        @row_number = index + 1
+        brand =
+          if row[:brand].blank?
+            @brand
+          else
+            Brand.for(row[:brand])
+          end
 
-        if row.blank?
-          @skipped.add("row[#{ @row_number }]", "is blank")
-          next
+        raw = {}
+
+        row.to_hash.each do |key, val|
+          key = Slug.for(key).force_encoding('utf-8')
+          val = String(val).force_encoding('utf-8')
+          raw.update(key => val)
         end
 
-        row[:country] ||= 'US'
-        row[:brand] ||= @brand
-        row[:organization] ||= @brand.organization
-        row[:active] = false
+        to_import = {
+          'status'     => nil,
+          'brand'      => brand.try(:slug),
+          'raw'        => raw,
+          'location'   => nil,
+          'errors'     => nil
+        }
 
-        location = Map(row)
-        location[:raw] = location.to_hash
-
-        if valid_address?(location)
-          @imports.push(location)
-          @cached += 1 if GeoLocation.find_by(address: full_address(location))
-        else
-          @skipped.add(location.name,location.errors)
-        end
+        @to_import.push(to_import)
       end
+
       true
     end
 
     def save
-      new_locations = []
-      existing_locations = get_existing_locations
-      @imports.each do |l|
-        # Don't litter the the record with extra fields
-        location = Location.new(l.slice(*Location.attribute_names))
-        if location.save
-          new_locations.push(location.id)
+      @result = []
+
+      brand_location_ids = Hash.new{|hash, brand| hash[brand] = []}
+
+      @to_import.map do |to_import|
+      #
+        @result.push(to_import)
+
+      #
+        brand = to_import['brand']
+        raw = to_import['raw']
+
+      #
+        to_import['status'] = 'FAILURE'
+
+      #
+        brand = Brand.for(brand)
+
+      #
+        if brand.blank?
+          to_import['errors'] = {'brand' => 'is missing'}
+          next
+        end
+
+      #
+        md5 = Location.md5_for(raw)
+
+        location = Location.where(:md5 => md5).first
+
+        if location
+          to_import['status'] = 'SUCCESS'
+          to_import['location'] = {'title' => location.title, 'md5' => location.md5}
         else
-          @errors.add(location.name,location.errors) unless location.save
+          attributes = {
+            :brand => brand.slug,
+            :title => raw['title'],
+            :raw   => raw
+          }
+
+          location = Location.new(attributes)
+
+          if location.save
+            to_import['status'] = 'SUCCESS'
+            to_import['location'] = {'title' => location.title, 'md5' => location.md5}
+          else
+            to_import['status'] = 'FAILURE'
+            to_import['errors'] = {}.update(location.errors)
+          end
+        end
+
+        if location.persisted?
+          brand_location_ids[brand].push(location.id)
         end
       end
-      # Remove any locations that have been remove from the import.
-      Location.unscoped.in(id: existing_locations).destroy_all
-      # Activate new locations
-      Location.unscoped.in(id: new_locations).update_all(active: true)
-      true
-    end
 
-    def full_address(location)
-      [location[:address], location[:city], location[:state],
-       location[:zipcode], location[:country]]
-        .delete_if{|_| _.blank?}.join(', ')
-    end
-
-    def valid_address?(location)
-      if location.address.blank? || 
-        ((location.city.blank? || location.state.blank? ||
-          location.zipcode.blank?) &&
-          # Does the address look like might be a full one
-          # Ending in a zip code and optional country?
-         !location.address =~ /^.*,.*[-\d]\d{4}(, \w+)?$/)
-        location.add(errors, {address: 'Invalid'})
-        return false
-      else
-        return true
+      brand_location_ids.each do |brand, location_ids|
+        brand.locations.where(:_id.nin => location_ids).destroy_all
       end
+
+      Location.locate_all!(:background => true)
+
+      @result
     end
 
-    def get_existing_locations
-      @existing_locations ||= Location.unscoped.where(brand: @brand.id).map(&:id)
+=begin
+  {"_rowno":2,"brand":"hacker-pschorr","title":"GINGERMAN","address":"2718  BOLL","city":"DALLAS","state":"TX","country":"75016","zipcode":"Draft","type":""}
+=end
+
+    def background!
+      Job.submit(Location::Importer, :import_csv!, :csv => @csv, :brand => @brand.try(:slug))
     end
 
-    def estimated_time
-      # Figuring 1 second per geo location
-      (@imports.count - @cached)
+    def html_summary_for(result)
+      array = Array(result).flatten.compact
+      return nil if array.blank?
+
+      headers = (array.first || {}).keys
+
+      table_(:class => 'table table-striped', :style => 'width:100%;font-size:0.75em;font-family:monospace;'){
+        tr_{
+          headers.each do |cell|
+            td_{ cell }
+          end
+        }
+
+        array.each do |hash|
+          tr_(:style => 'max-width:25%;'){
+            hash.each do |key, val|
+              if val.is_a?(Hash)
+                td_(:style => 'white-space:pre;'){ val.to_yaml.strip }
+              else
+                td_{ val }
+              end
+            end
+          }
+        end
+      }
     end
   end
 end
+
+
+__END__
+=begin
+        _address = 
+          %w( address street_address city state postal_code zipcode zip_code country ).map do |field|
+            row[field] || row[field.to_sym]
+          end.select{|cell| not cell.blank?}.join(', ')
+=end

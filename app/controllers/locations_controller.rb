@@ -33,6 +33,7 @@ class LocationsController < ApplicationController
       end
 
       @locations = LocationPresenter.collection_for(locations, params)
+
       respond_to do |format|
         format.html
         format.json { render :xml => @locations.to_json }

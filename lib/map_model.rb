@@ -276,6 +276,14 @@ class MapModel < Map
   def inspect
     "#{ self.class.name }(#{ to_hash.inspect.chomp })"
   end
+
+  def to_s
+    id.to_s
+  end
+
+  def to_param
+    id.to_s
+  end
 end
 
 Object.send(:remove_const, :MM) if Object.send(:const_defined?, :MM)
