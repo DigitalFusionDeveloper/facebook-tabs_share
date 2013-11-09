@@ -32,6 +32,7 @@
     log = Rails.root.join('log/locate_all_locations.log').to_s
 
     open(log, 'wb+') do |fd|
+      fd.sync = true
       STDOUT.reopen(fd)
       STDERR.reopen(fd)
     end
