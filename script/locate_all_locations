@@ -1,22 +1,58 @@
 #! /usr/bin/env ruby
 # encoding: utf-8
 
-unless DATA.flock(File::LOCK_EX | File::LOCK_NB) == 0
-  exit!(42)
-end
+# args
+#
+  is_daemon = ARGV.delete('-d') || ARGV.delete('--daemon')
 
-require(File.dirname(__FILE__) + '/../config/environment.rb')
-
-unless STDIN.tty?
-  log = Rails.root.join('log/locate_all_locations.log').to_s
-  open(log, 'wb+') do |fd|
-    STDOUT.reopen(fd)
-    STDERR.reopen(fd)
+# ensure just one version is running
+#
+  unless DATA.flock(File::LOCK_EX | File::LOCK_NB) == 0
+    exit!(42)
   end
-end
 
-Location.locate_all! do |location|
-  p location.full_address => location.loc
-end
+# drop to background iff daemon
+#
+  if is_daemon
+    exit! if fork
+    exit! if fork
+  end
+
+# boot rails
+#
+  require(File.dirname(__FILE__) + '/../config/environment.rb')
+
+# rails_root
+#
+  Dir.chdir(Rails.root.to_s)
+
+# redirect io iff running in the background or daemon
+#
+  if is_daemon || !STDIN.tty?
+    log = Rails.root.join('log/locate_all_locations.log').to_s
+
+    open(log, 'wb+') do |fd|
+      STDOUT.reopen(fd)
+      STDERR.reopen(fd)
+    end
+  end
+
+# go
+#
+  42.times do
+    begin
+      n = 0
+
+      Location.locate_all! do |location|
+        p location.full_address => location.loc
+        n += 1
+      end
+
+      exit(0) if n == 0
+    rescue Object => e
+      STDERR.puts "#{ e.message }(#{ e.class })\n#{ Array(e.backtrace).join(10.chr) }"
+      sleep(rand(120))
+    end
+  end
 
 __END__
