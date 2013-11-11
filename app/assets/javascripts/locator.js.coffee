@@ -81,15 +81,21 @@ jQuery ->
         if $('#location').val()
             address = $('#location').val()
             url     = "http://maps.google.com/maps/api/geocode/json"
+            params  = {search: address, type: ['a','b']}
+            url     = "poop"
 
-            $.getJSON url, {sensor: false, address: address}, (response) ->
-              location          = eval('response.results[0].geometry.location') || {}
-
-              params            = location
-              params['address'] = address
-              params['type']    = ['a','b']
-
-              getLocations params
+            $.ajax
+              url      : url
+              type     : 'GET'
+              dataType : 'json'
+              data     : {sensor : false, address : address}
+              success  : (response) ->
+                location = eval('response.results[0].geometry.location') || {}
+                params['lat'] = location['lat']
+                params['lng'] = location['lng']
+                getLocations params
+              error    :
+                getLocations params
         else
             locator_message 'info', 'Please select "use current location" or enter a location and click "search."'
         false
