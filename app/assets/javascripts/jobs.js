@@ -49,7 +49,6 @@ if(!window.jobs){
 
     var url = '/api/jobs/:id'.replace(/:id/, job['id']);
 
-    //var data = jQuery.toJSON({'job' : job});
     var data = {'job' : job};
 
     var success = function(response){
