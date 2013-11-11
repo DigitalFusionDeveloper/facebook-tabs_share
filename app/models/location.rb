@@ -54,10 +54,10 @@ class Location
   end
 
 #
-  def Location.md5_for(raw)
-    return nil if raw.blank?
-    return nil unless raw.is_a?(Hash)
-    Digest::MD5.hexdigest(raw.to_json).to_s.force_encoding('utf-8')
+  def Location.md5_for(arg)
+    return nil if arg.blank?
+    string = arg.is_a?(String) ? arg : arg.to_json
+    Digest::MD5.hexdigest(string).to_s.force_encoding('utf-8')
   end
 
   def Location.[](key)
@@ -376,15 +376,26 @@ class Location
 
   def cache_map!
     return self.map_image if self.map_image
+
     if map_data
-      filename = Digest::MD5.hexdigest(query_string) + '.png'
-      # Already have a map cached for a different brand or past lookup?
-      unless self.map_image = Upload.find_by(basename: filename)
-        self.map_image = Upload.sio!(map_data, filename: filename)
+      key = map_key
+      basename = map_basename
+
+      unless self.map_image = Upload.find_by(key: key)
+        self.map_image = Upload.sio!(map_data, key: key, basename: basename)
       end
+
       self.save!
       self.map_image
     end
+  end
+
+  def map_key
+    Location.md5_for(query_string)
+  end
+
+  def map_basename
+    brand ? "#{ brand.slug }--#{ slug }.png" : "#{ slug }.png"
   end
 
   class Importer < ::Dao::Conducer
