@@ -16,7 +16,7 @@ class Upload
 
       @pathname = nil 
 
-      [:pathname, :filename, :path, :file].each do |key|
+      [:basename, :pathname, :filename, :path, :file].each do |key|
         break(@pathname = options[key]) if options.has_key?(key)
         break(@pathname = options[key.to_s]) if options.has_key?(key.to_s)
       end

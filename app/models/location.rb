@@ -369,25 +369,24 @@ class Location
   end
 
   def map_data(&block)
-   open(google_url, 'rb') do |socket|
+    open(google_url, 'rb') do |socket|
       block ? block.call(socket) : socket.read
     end
   end
 
   def cache_map!
-    return self.map_image if self.map_image
+    location = self
 
-    if map_data
+    if map_image.blank? and not(data = map_data).blank?
       key = map_key
       basename = map_basename
 
-      unless self.map_image = Upload.find_by(key: key)
-        self.map_image = Upload.sio!(map_data, key: key, basename: basename)
-      end
+      location.map_image = Upload.find_by(key: key) || Upload.sio!(data, key: key, basename: basename)
 
-      self.save!
-      self.map_image
+      location.save!
     end
+
+    location.map_image
   end
 
   def map_key
