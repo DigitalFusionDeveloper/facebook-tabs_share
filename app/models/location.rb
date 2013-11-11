@@ -355,13 +355,13 @@ class Location
 
   def map_url
     return nil unless loc
-    return map_image.s3_url if map_image.try(:s3_url)
+
     begin
-      return image.s3_url if image = cache_map!     
+      cache_map! unless map_image
+      map_image.s3_url || map_image.url
     rescue Object => e
       google_url
     end
-    google_url
   end
 
   def google_url

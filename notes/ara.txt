@@ -1,9 +1,8 @@
 todo:
-  - type is not populated correctly
-
   - image caching isn't good/working in dev?
 
 done:
+  - type is not populated correctly
   - searching needs to do geo-location in the *client*
   - finsih js work queue and inline into forms layout
   - reports?
