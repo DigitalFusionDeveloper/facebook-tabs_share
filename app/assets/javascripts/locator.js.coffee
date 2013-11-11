@@ -5,7 +5,6 @@ jQuery ->
         locator_message 'info', 'searching...'
         types = ($(type).val() for type in $("input[name='type']:checked"))
         args['type'] = types
-        console.log args
         $.getJSON '/' + window.brand + '/locations', args, (locations) ->
             $('#locator_message').hide()
 
@@ -80,7 +79,17 @@ jQuery ->
 
     $('.find-location').submit ->
         if $('#location').val()
-            getLocations { location_string: $('#location').val(), type: ['a','b'] }
+            address = $('#location').val()
+            url     = "http://maps.google.com/maps/api/geocode/json"
+
+            $.getJSON url, {sensor: false, address: address}, (response) ->
+              location          = eval('response.results[0].geometry.location') || {}
+
+              params            = location
+              params['address'] = address
+              params['type']    = ['a','b']
+
+              getLocations params
         else
             locator_message 'info', 'Please select "use current location" or enter a location and click "search."'
         false

@@ -21,6 +21,7 @@ class LocationsController < ApplicationController
       case
         when !@location_string.blank?
           location.find_by_string(@location_string)
+
         when !@zipcode.blank?
           location.find_all_by_zipcode(@zipcode)
 

@@ -293,8 +293,8 @@ class Location
       return []
     end
 
-    location = GeoLocation.parse_data(geo)
-    Location.find_all_by_lat_lng(location.lat, location.lng)
+    geo_location = GeoLocation.parse_data(geo)
+    Location.find_all_by_lat_lng(geo_location.lat, geo_location.lng)
   end
 
   def query_string
