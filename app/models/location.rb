@@ -57,6 +57,8 @@ class Location
   def Location.locate_all!(options = {}, &block)
     options.to_options!
 
+    forcing = options[:force]
+
     if options[:background]
       raise ArgumentError.new('no block allowed with background') if block
       script = Rails.root.join("script/locate_all_locations").to_s
@@ -78,19 +80,70 @@ class Location
         1.000
       end
 
-    42.times do
-      query = Location.where(:loc => nil).order_by(:brand => :asc, :title => :asc)
+    2.times do
+      query = 
+        Location.where(:loc => nil).
+          order_by(:brand => :asc, :title => :asc)
 
       return nil if query.count == 0
 
-      query.each do |location|
-        location.geolocate! unless location.geolocated?
-        block.call(location) if block
-        sleep(delay) if delay
+      unless options[:client] == false or options[:javascript] == false
+        query.each do |location|
+          if forcing or GeoLocation.where(:address => location.raw_address).count == 0
+            if forcing or not location.javascript_geo_location_job?
+              location.create_javascript_geo_location_job
+            end
+          end
+        end
+      end
+
+      unless options[:server] == false or options[:rails] == false
+        query.each do |location|
+          location.reload
+          if forcing or not location.geolocated?
+            location.geolocate!
+          end
+          block.call(location) if block
+          sleep(delay) if delay
+        end
       end
     end
 
     return true
+  end
+
+  def Location.create_javascript_jobs
+    each do |location|
+      location.create_javascript_geo_location_job unless
+        location.javascript_geo_location_job?
+    end
+    self
+  end
+
+  def build_javascript_geo_location_job(attributes = {})
+    code = View.render(:template => 'javascript_jobs/job/geo_location.js.erb', :locals => {:location => self})
+
+    attributes = attributes.to_options!
+
+    attributes[:code] = code
+
+    JavascriptJob.new(
+      attributes
+    )
+  end
+
+  def create_javascript_geo_location_job(attributes = {})
+    build_javascript_geo_location_job(attributes).tap do |javascript_job|
+      javascript_job.save
+    end
+  end
+
+  def javascript_geo_location_job?
+    JavascriptJob.where(:identifier => javascript_geo_location_job_identifier).first
+  end
+
+  def javascript_geo_location_job_identifier
+    "locations/#{ id }/jobs/geo_location"
   end
 
   def Location.extract_raw_address(raw)
@@ -160,10 +213,10 @@ class Location
     end
 
     if geo_location
-      %w( lat lng loc )
       location.lat = geo_location.lat
       location.lng = geo_location.lng
       location.loc = geo_location.loc
+
       self.geo_location = geo_location
     else
       false
@@ -260,7 +313,7 @@ class Location
 
   def map_url
     return nil unless loc
-    return map_image.s3_url if map_image
+    return map_image.s3_url if map_image.try(:s3_url)
     begin
       return image.s3_url if image = cache_map!     
     rescue Object => e

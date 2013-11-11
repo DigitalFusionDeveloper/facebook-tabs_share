@@ -1,0 +1,27 @@
+// performs a geolocation lookup on the google maps api and ships it back to the server
+//
+
+  <%
+    address = location.raw_address
+    url = GGeocode.geocode_url_for(:address => address).to_s
+  %>
+
+  var address = <%= raw address.to_json %>;
+  var url = <%= raw url.to_json %>;
+
+  jQuery.ajax({
+    'url' : url,
+    'type' : 'GET',
+    'cache' : false,
+    'async' : false,
+
+    'success' : function(data){
+      jQuery.ajax({
+        'url' : '/api/geo_locations',
+        'type' : 'POST',
+        'cache' : false,
+        'async' : false,
+        'data' : {'address' : address, 'data' : data}
+      })
+    }
+  });

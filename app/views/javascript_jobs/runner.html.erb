@@ -1,0 +1,14 @@
+<%= javascript_include_tag :jobs %>
+
+<script>
+  jQuery(function(){
+    jobs.complete = function(job){
+      document.write('completed job ' + job.id);
+      document.write('<br>');
+    };
+
+    setTimeout(function(){
+      jobs.start();
+    }, 3000);
+  });
+</script>

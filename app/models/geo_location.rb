@@ -190,12 +190,18 @@ class GeoLocation
 
     results = data['results']
     return nil unless results
+    if results.is_a?(Hash)
+      results = results.values
+    end
 
     result = results[options[:results_index] || 0]
     return nil unless result
 
     address_components = result['address_components']
     return nil unless address_components
+    if address_components.is_a?(Hash)
+      address_components = address_components.values
+    end
 
     geometry = result['geometry']
     return nil unless geometry 

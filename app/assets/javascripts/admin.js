@@ -19,7 +19,6 @@
 //= require 'rpc.js'
 //
 //= require 'brand.js'
-//= require 'jobs.js'
 //
 //= require 'app'
 

@@ -1,7 +1,7 @@
 todo:
-  - update readme
-  - fix staging deploy
-  - add locations
+  - finsih js work queue and inline into forms layout
+  - type isn't populated
+  - image caching isn't good in dev
 
 done:
   - reports?

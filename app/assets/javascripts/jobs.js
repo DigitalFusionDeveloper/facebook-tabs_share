@@ -2,8 +2,10 @@ if(!window.jobs){
   window.jobs = {};
 
   window.jobs.count = 0;
-  window.jobs.max = 3;
-  window.jobs.throttle = 100;
+  window.jobs.max = 256;
+  window.jobs.throttle = 1000;
+
+  window.jobs.complete = function(){};
 
   jobs.get_next_job = function(){
     Dao.api.call('/jobs/next', function(response){
@@ -28,6 +30,8 @@ if(!window.jobs){
     var result = undefined;
     callback = callback || function(){};
 
+//console.log(code);
+
     if(code){
       try{
         (function(){
@@ -36,7 +40,7 @@ if(!window.jobs){
       } catch(e) {};
     }
 
-    job['result'] = result;
+    job['result'] = result || job['id'];
 
     var path = '/jobs/' + job['id'];
 
@@ -44,13 +48,16 @@ if(!window.jobs){
 
     Dao.api.put(path, params, function(response){
       job = response['data']['job'];
+      jobs.complete(job);
       callback(job);
     });
   };
 
   try {
 
-    jobs.get_next_job();
+    //jobs.get_next_job();
 
   } catch(e){};
+
+  jobs.start = jobs.get_next_job;
 }

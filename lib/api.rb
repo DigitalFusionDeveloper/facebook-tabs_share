@@ -71,38 +71,70 @@ class Api < Dao::Api
       }
     }
 
-  def get_next_job
-    job = Map.new
+  desc '/geo_locations - post new geolocations'
+    call('/geo_locations'){
+      post{
+        address  = params['address']
+        data     = params['data']
 
-    location = Location.where(:loc => nil).first
+        geo_location = GeoLocation.find_by(:address => address)
 
-    return nil unless location
+        unless geo_location
+          normalize_javascript_geo_location_data!(data)
 
-    address = location.raw_address
+          geo_location = GeoLocation.new
 
-    url = GGeocode.geocode_url_for(:address => address)
+          geo_location.address  = address
+          geo_location.data     = data
+          geo_location.pinpoint = true
 
-    code = <<-__
+          attributes = GeoLocation.parse_data(geo_location.data) || Map.new
 
-      var url = #{ url.to_s.to_json };
+          geo_location.attributes.update(attributes)
 
-      jQuery.ajax({
-        'url' : url,
-        'type' : 'GET',
-        'cache' : false,
+          if geo_location.save
+            geo_location.calculate_timezone! rescue nil
+          else
+            geo_location = GeoLocation.find_by(:address => address)
+          end
+        end
 
-        'success' : function(data){
-          console.dir && console.dir(data)
-        }
-      });
+        data.update('geo_location' => geo_location.try(:id))
+      }
+    }
 
-    __
+    def normalize_javascript_geo_location_data!(data)
+      data = Map.for(data)
 
-    job['code'] = code.strip
+      results = data['results']
 
-    job
-  end
+      if results.is_a?(Hash)
+        results = results.values
+        data['results'] = results
+      end
 
+      results.each do |result|
+        address_components = result['address_components']
+        if address_components.is_a?(Hash)
+          address_components = address_components.values
+          result['address_components'] = address_components
+        end
+      end
+
+      keys =  []
+      data.depth_first_each.each do |key, val|
+        keys.push(key)
+      end
+
+      keys.each do |key|
+        if %w( lat lng ).include?(key.last.to_s)
+          val = data.get(key)
+          data.set(key, val.to_f)
+        end
+      end
+
+      data
+    end
 
 #
   attr_accessor :effective_user
