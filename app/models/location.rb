@@ -62,9 +62,7 @@ class Location
     if options[:background]
       raise ArgumentError.new('no block allowed with background') if block
       script = Rails.root.join("script/locate_all_locations").to_s
-      Thread.new do
-        `nohup #{ script.inspect } >> log/locate_all_locations.log 2>&1 &`
-      end
+      Thread.new{ `#{ script.inspect } --daemon` }
       return true
     end
 

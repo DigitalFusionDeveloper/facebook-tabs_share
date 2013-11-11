@@ -55,7 +55,7 @@
 
 # go
 #
-  42.times do
+  2.times do
     begin
       n = 0
 
