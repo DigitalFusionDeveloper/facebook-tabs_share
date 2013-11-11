@@ -80,22 +80,22 @@ class Api < Dao::Api
         geo_location = GeoLocation.find_by(:address => address)
 
         unless geo_location
-          normalize_javascript_geo_location_data!(data)
+          if normalize_javascript_geo_location_data!(data)
+            geo_location = GeoLocation.new
 
-          geo_location = GeoLocation.new
+            geo_location.address  = address
+            geo_location.data     = data
+            geo_location.pinpoint = true
 
-          geo_location.address  = address
-          geo_location.data     = data
-          geo_location.pinpoint = true
+            attributes = GeoLocation.parse_data(geo_location.data) || Map.new
 
-          attributes = GeoLocation.parse_data(geo_location.data) || Map.new
+            geo_location.attributes.update(attributes)
 
-          geo_location.attributes.update(attributes)
-
-          if geo_location.save
-            geo_location.calculate_timezone! rescue nil
-          else
-            geo_location = GeoLocation.find_by(:address => address)
+            if geo_location.save
+              geo_location.calculate_timezone! rescue nil
+            else
+              geo_location = GeoLocation.find_by(:address => address)
+            end
           end
         end
 
@@ -112,6 +112,7 @@ class Api < Dao::Api
         results = results.values
         data['results'] = results
       end
+      return false unless results.is_a?(Array)
 
       results.each do |result|
         address_components = result['address_components']
@@ -119,6 +120,7 @@ class Api < Dao::Api
           address_components = address_components.values
           result['address_components'] = address_components
         end
+        return false unless address_components.is_a?(Array)
       end
 
       keys =  []

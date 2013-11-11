@@ -12,7 +12,10 @@ class LocationsController < ApplicationController
 
     location = Location.where(brand: @brand.slug)
     # No types provided is the same as all types
-    location = location.in(type: @types) unless @types.empty?
+
+    unless @types.blank?
+      location = location.in(type: @types)
+    end
 
     locations =
       case
