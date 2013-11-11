@@ -1,9 +1,9 @@
 todo:
-  - finsih js work queue and inline into forms layout
   - type isn't populated
   - image caching isn't good in dev
 
 done:
+  - finsih js work queue and inline into forms layout
   - reports?
   - rfi form needs to ajax submit and replace itself
   - demo page for noah in public

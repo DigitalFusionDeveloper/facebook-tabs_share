@@ -64,8 +64,16 @@ class JavascriptJob
 
 #
   def JavascriptJob.submit!(job)
-    attributes = Map.for(job.is_a?(JavascriptJob) ? job.attributes : job)
-
+    attributes =
+      case job
+        when JavascriptJob
+          Map.for(job.attributes)
+        when Hash
+          Map.for(job)
+        when String
+          Map.for(:code => job)
+      end
+          
     identifier = attributes[:identifier]
 
     if identifier
@@ -80,6 +88,6 @@ class JavascriptJob
   end
 
   def JavascriptJob.submit(*args)
-    submit! rescue false
+    submit!(*args) rescue false
   end
 end

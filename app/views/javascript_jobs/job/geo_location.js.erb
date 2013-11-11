@@ -8,6 +8,7 @@
 
   var address = <%= raw address.to_json %>;
   var url = <%= raw url.to_json %>;
+  var result;
 
   jQuery.ajax({
     'url' : url,
@@ -16,6 +17,8 @@
     'async' : false,
 
     'success' : function(data){
+      result = data;
+
       jQuery.ajax({
         'url' : '/api/geo_locations',
         'type' : 'POST',
@@ -25,3 +28,5 @@
       })
     }
   });
+
+  result;
