@@ -32,3 +32,7 @@ every 1.day do
   rake 'logs:rotate'
   rake 'tmp:uploads:clear'
 end
+
+every 1.week do
+  runner 'JavascriptJob.complete.destroy_all'
+end

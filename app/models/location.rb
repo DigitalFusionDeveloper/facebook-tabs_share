@@ -126,6 +126,7 @@ class Location
     attributes = attributes.to_options!
 
     attributes[:code] = code
+    attributes[:identifier] = javascript_geo_location_job_identifier
 
     JavascriptJob.new(
       attributes
@@ -143,7 +144,7 @@ class Location
   end
 
   def javascript_geo_location_job_identifier
-    "locations/#{ id }/jobs/geo_location"
+    "/locations/#{ id }/jobs/geo_location"
   end
 
   def Location.extract_raw_address(raw)
