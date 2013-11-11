@@ -82,7 +82,6 @@ jQuery ->
             address = $('#location').val()
             url     = "http://maps.google.com/maps/api/geocode/json"
             params  = {search: address, type: ['a','b']}
-            url     = "poop"
 
             $.ajax
               url      : url
