@@ -1,11 +1,10 @@
 todo:
-  - searching needs to do geo-location in the *client*
-
-  - type isn't populated correctly
+  - type is not populated correctly
 
   - image caching isn't good/working in dev?
 
 done:
+  - searching needs to do geo-location in the *client*
   - finsih js work queue and inline into forms layout
   - reports?
   - rfi form needs to ajax submit and replace itself

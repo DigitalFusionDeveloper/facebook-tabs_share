@@ -12,6 +12,12 @@ class Location
   field(:phone, :type => String)
   field(:type, :type => String)
 
+  field(:street_address, :type => String)
+  field(:city, :type => String)
+  field(:state, :type => String)
+  field(:country, :type => String)
+  field(:postal_code, :type => String)
+
   field :lat, :type => Float
   field :lng, :type => Float
   field :loc, :type => Array
@@ -22,10 +28,15 @@ class Location
 
 #
   index({:md5 => 1}, {:unique => true})
-  index({:state => 1})
-  index({:zipcode => 1})
+
+  index({:street_address => 1})
   index({:city => 1})
+  index({:state => 1})
+  index({:country => 1})
+  index({:postal_code => 1})
+
   index({:loc => '2d'}, {:sparse => true})
+
   index({:type => 1})
 
 #
@@ -35,11 +46,11 @@ class Location
 
 #
   before_validation do |location|
-    location.md5 = Location.md5_for(location.raw)
+    location.generate_md5!
+  end
 
-    unless location.md5.blank?
-      location.md5 = location.md5.force_encoding('utf-8')
-    end
+  before_create do |location|
+    location.copy_raw_fields!
   end
 
 #
@@ -53,7 +64,6 @@ class Location
     any_of( {:_id => key}, {:md5 => key} ).first
   end
 
-#
   def Location.locate_all!(options = {}, &block)
     options.to_options!
 
@@ -212,11 +222,8 @@ class Location
     end
 
     if geo_location
-      location.lat = geo_location.lat
-      location.lng = geo_location.lng
-      location.loc = geo_location.loc
-
       self.geo_location = geo_location
+      location.copy_geolocation_fields!
     else
       false
     end
@@ -225,6 +232,42 @@ class Location
   def geolocate!
     geolocate
     save!
+  end
+
+  def copy_geolocation_fields!
+    location = self
+
+    if geo_location
+      %w(
+        street_address city state country postal_code lat lng loc
+      ).each do |attr|
+        location[attr] = geo_location.send(attr)
+      end
+    end
+  end
+
+  def copy_raw_fields!
+    location = self
+
+    if raw
+      %w(
+        type
+      ).each do |attr|
+        location[attr] = raw[attr]
+      end
+    end
+  end
+
+  def generate_md5!
+    location = self
+
+    if raw
+      location.md5 = Location.md5_for(location.raw)
+
+      unless location.md5.blank?
+        location.md5 = location.md5.force_encoding('utf-8')
+      end
+    end
   end
 
   def Location.find_all_by_zipcode(zipcode, options = {})
