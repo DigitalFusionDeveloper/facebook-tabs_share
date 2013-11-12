@@ -67,7 +67,7 @@ if(!window.jobs){
       'url'      : url,
       'type'     : 'PUT',
       'cache'    : false,
-      'data'     : {'job' : job},
+      'data'     : {'job'  : job},
       'dataType' : 'json',
       'success'  : success
     });

@@ -1,7 +1,22 @@
 todo:
-  - image caching isn't good/working in dev?
+
+- phone on import!
+- dashboard needs to indicate failed lookup?
+- ticket for sheena
+
+- new form for locator
+
+
+- map features
+  - request at my location
+  - show all returned locations on a map
+  - filter by types
+
+  - all server side?
+
 
 done:
+  - image caching isn't good/working in dev?
   - type is not populated correctly
   - searching needs to do geo-location in the *client*
   - finsih js work queue and inline into forms layout

@@ -48,9 +48,19 @@
 
 unless Rails.env.production?
   seed 'locations', :if => Location.count.zero? do
-    csv = IO.binread Rails.root.join('db/brands/locations/hacker-pschorr-medium.csv').to_s
-    importer = Location::Importer.new(:brand => 'hacker-pschorr', :csv => csv)
-    importer.parse && importer.save
+    glob = Rails.root.join('db/brands/locations/seed/*.csv').to_s
+
+    Dir.glob(glob).each do |entry|
+      slug = File.basename(entry).split('.').first
+      brand = Brand.for(slug)
+
+      if brand
+        csv = IO.binread(entry) 
+        importer = Location::Importer.new(:brand => brand.slug, :csv => csv)
+        importer.parse && importer.save
+        Location.locate_all!
+      end
+    end
   end
 end
 

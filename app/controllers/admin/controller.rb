@@ -8,10 +8,8 @@ protected
 
     @layout.nav_for(:main) do |nav|
       nav.link(:Users   , admin_users_path, :default => true)
-
-      nav.link(:Uploads , admin_uploads_path)
       nav.link(:Locations , admin_locations_path)
-
+      nav.link(:Uploads , admin_uploads_path)
       nav.link(:Reports , admin_reports_path)
     end
   end
