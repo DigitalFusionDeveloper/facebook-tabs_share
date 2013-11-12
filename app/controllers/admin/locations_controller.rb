@@ -3,12 +3,14 @@ class Admin::LocationsController < Admin::Controller
 
   before_filter(:setup)
 
+  PER_PAGE = 100
+
   def index
     @brands    = Brand.all
     query      = @scope.all
     query      = search_query_for(query, params)
     query      = query.order_by(:brand => :asc, :title => :asc)
-    locations  = query.page(params[:page]).per(10)
+    locations  = query.page(params[:page]).per(PER_PAGE)
     @locations = Conducer.collection_for(locations)
   end
 

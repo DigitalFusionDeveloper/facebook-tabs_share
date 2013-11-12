@@ -89,12 +89,25 @@ class Location
       end
 
     2.times do
+    # find un-geolocated locations
+    #
       query = 
         Location.where(:loc => nil).
           order_by(:brand => :asc, :title => :asc)
 
+    # nothing to do
+    #
       return nil if query.count == 0
 
+    # run through all locations using local cache only
+    #
+      query.each do |location|
+        location.geolocate!(:cache => :only) unless location.geo_location
+        block.call(location) if block
+      end
+
+    # now submit jobs for any missing geo_locations
+    #
       unless options[:client] == false or options[:javascript] == false
         query.each do |location|
           if forcing or GeoLocation.where(:address => location.raw_address).count == 0
@@ -105,13 +118,18 @@ class Location
         end
       end
 
+    # and start doing work in the server...
+    #
       unless options[:server] == false or options[:rails] == false
         query.each do |location|
           location.reload
+
           if forcing or not location.geolocated?
             location.geolocate!
           end
+
           block.call(location) if block
+
           sleep(delay) if delay
         end
       end
@@ -191,32 +209,42 @@ class Location
     full_address
   end
 
-  def geolocate
+  def geolocate(options = {})
     location = self
     geo_location = nil
 
     address = Location.extract_raw_address(location.raw)
 
-    unless address.blank?
-      geo_location = GeoLocation.for(address)
-
-      legit = proc do |gloc|
-        (
-          !gloc.blank? and
-          !(is_postal = Array(gloc.data.get(:results, 0, :address_components, 0, :types)).include?('postal_code')) and
-          !(gloc.state.blank? or gloc.city.blank?)
-        )
+    geo_location_for = proc do |address|
+      if options[:cache] == :only
+        GeoLocation.where(:address => address).first
+      else
+        GeoLocation.for(address)
       end
+    end
 
-      unless legit[geo_location]
-        zipcode = %w(zipcode zip_code postal_code).map{|key| location.raw[key]}.detect{|val| !val.blank?}
+    unless address.blank?
+      geo_location = geo_location_for[address]
 
-        if zipcode.blank? and !geo_location.postal_code.blank?
-          zipcode = geo_location.postal_code
+      if geo_location
+        legit = proc do |gloc|
+          (
+            !gloc.blank? and
+            !(is_postal = Array(gloc.data.get(:results, 0, :address_components, 0, :types)).include?('postal_code')) and
+            !(gloc.state.blank? or gloc.city.blank?)
+          )
         end
 
-        unless zipcode.blank?
-          geo_location = GeoLocation.for(zipcode)
+        unless legit[geo_location]
+          zipcode = %w(zipcode zip_code postal_code).map{|key| location.raw[key]}.detect{|val| !val.blank?}
+
+          if zipcode.blank? and !geo_location.postal_code.blank?
+            zipcode = geo_location.postal_code
+          end
+
+          unless zipcode.blank?
+            geo_location = geo_location_for[zipcode] 
+          end
         end
       end
     end
@@ -224,13 +252,14 @@ class Location
     if geo_location
       self.geo_location = geo_location
       location.copy_geolocation_fields!
+      geo_location
     else
       false
     end
   end
 
-  def geolocate!
-    geolocate
+  def geolocate!(options = {})
+    geolocate(options)
     save!
   end
 

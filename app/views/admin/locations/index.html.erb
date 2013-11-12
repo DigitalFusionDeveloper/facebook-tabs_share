@@ -2,9 +2,23 @@
   <tr>
     <td style='vertical-align:top;'>
     <%= 
-      content = raw(@brand ? "Import #{ @brand.slug.inspect } locations &rarr;" : "Import locations &rarr;")
-      link_to content, url_for(:action => :import), :title => 'Import Locations From CSV', :class => 'btn btn-success' 
+      #content = raw(@brand ? "Import #{ @brand.slug.inspect } locations &rarr;" : "Import locations &rarr;")
+      content = "Import locations &rarr;"
+      link_to raw(content), url_for(:action => :import), :title => 'Import Locations From CSV', :class => 'btn btn-success' 
     %>
+    </td>
+    <td>
+      <%= form :method => :get do %>
+        <%= 
+          select_tag(
+            :brand,
+            options_for_select(Brand.all.map(&:slug),
+            :selected      => @brand.try(:slug)),
+            :include_blank => true,
+            :onChange      => '$this=$(this); url = $this.val() ? "/admin/brands/:brand/locations".replace(":brand", $this.val()) : "/admin/locations"; window.location = url;'
+          )
+        %>
+      <% end %>
     </td>
     <td style='vertical-align:top;text-align:right;'>
       <form>

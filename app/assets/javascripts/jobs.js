@@ -19,6 +19,8 @@ if(!window.jobs){
             setTimeout(jobs.get_next_job, jobs.throttle);
           }
         });
+      } else {
+        setTimeout(jobs.get_next_job, 1000 * 420);
       }
     };
 
