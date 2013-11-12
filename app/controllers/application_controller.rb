@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  include SslRequirement
 #
   protect_from_forgery
 
@@ -46,6 +47,11 @@ class ApplicationController < ActionController::Base
   include(RPC)
 
 protected
+# require ssl for production & staging
+#
+  def ssl_required?
+    (Rails.env.production? or Rails.env.staging?) and Rails.stage
+  end
 # layout
 #
   def initialize_layout
