@@ -241,7 +241,7 @@ protected
           end
 
           unless recipients.blank?
-            Job.submit(Mailer, :rfi, recipients)
+            Job.submit(Mailer, :rfi, @rfi.id, recipients)
           end
 
         # TODO - iLoop and mail addys here...
