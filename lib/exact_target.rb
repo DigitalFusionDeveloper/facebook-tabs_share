@@ -58,8 +58,8 @@ class ExactTarget
   end
 
   class Send < ExactTarget
-    def self.send_email(brand,email)
-      brand = Brand.for(brand)
+    def self.send_email(slug,email)
+      brand = Brand.for(slug)
       client = Client.for(brand)
       options = { 'CustomerKey' => brand.slug,
         'Subscribers' => { 'EmailAddress' => email,
@@ -68,8 +68,8 @@ class ExactTarget
       Response.for(client.SendTriggeredSends([options]))
     end
 
-    def send_email(brand,email)
-      job = Job.submit(self.class,:send_email, brand,email)
+    def send_email(slug,email)
+      job = Job.submit(self.class,:send_email, slug,email)
     end
 
     def self.send_and_subscribe!(brand,email)
