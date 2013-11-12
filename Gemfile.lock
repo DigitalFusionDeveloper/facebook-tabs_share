@@ -190,6 +190,7 @@ GEM
       activesupport
       i18n
     origin (1.1.0)
+    phony (1.9.0)
     polyglot (0.3.3)
     pry (0.9.9.6)
       coderay (~> 1.0.5)
@@ -353,6 +354,7 @@ DEPENDENCIES
   nokogiri
   numbers_and_words
   origin
+  phony
   pry
   pry-nav
   pygments.rb

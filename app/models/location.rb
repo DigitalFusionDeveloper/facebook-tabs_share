@@ -246,17 +246,47 @@ class Location
     end
   end
 
+  def Location.copy_geolocation_fields!
+    Location.all.each do |location|
+      location.copy_geolocation_fields!
+      location.save!
+    end
+  end
+
   def copy_raw_fields!
     location = self
 
     if raw
-      %w(
-        type
-      ).each do |attr|
-        location[attr] = raw[attr]
+      type = raw['type'].to_s
+      unless type.blank?
+        location.type = Slug.for(type)
+      end
+
+      phone = raw['phone'].to_s
+      unless phone.blank?
+        location['phone'] = 
+          begin
+            digits = phone.scan(/\d/).last(10)
+            if digits.size == 10 
+              digits.unshift('1')
+            end
+            raise phone.inspect if digits.size < 11
+            phone = digits.join
+            Phony.formatted(Phony.normalize(phone), :spaces => :-) 
+          rescue
+            nil
+          end
       end
     end
   end
+
+  def Location.copy_raw_fields!
+    Location.all.each do |location|
+      location.copy_raw_fields!
+      location.save!
+    end
+  end
+
 
   def generate_md5!
     location = self

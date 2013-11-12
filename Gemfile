@@ -33,6 +33,8 @@ gem 'aws-sdk'
 
 gem 'threadify'
 
+gem 'phony'
+
 
 # Gems used only for assets and not required
 # in production environments by default.
