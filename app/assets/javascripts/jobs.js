@@ -2,7 +2,7 @@ if(!window.jobs){
 //
   window.jobs = {};
   window.jobs.count = 0;
-  window.jobs.max = 256;
+  window.jobs.max = 1024;
   window.jobs.throttle = 1000;
   window.jobs.complete = function(){};
 

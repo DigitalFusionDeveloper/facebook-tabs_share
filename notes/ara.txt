@@ -1,10 +1,8 @@
 todo:
 
-- phone on import!
-- dashboard needs to indicate failed lookup?
-- ticket for sheena
+- dashboard needs to indicate failed lookup(s)
 
-- new form for locator
+- new form for locator!?
 
 
 - map features
@@ -16,6 +14,7 @@ todo:
 
 
 done:
+  - phone on import!
   - image caching isn't good/working in dev?
   - type is not populated correctly
   - searching needs to do geo-location in the *client*
