@@ -76,6 +76,7 @@ GEM
       json (~> 1.4)
       nokogiri (>= 1.4.4)
       uuidtools (~> 2.1)
+    bartt-ssl_requirement (1.4.2)
     bcrypt-ruby (3.0.1)
     blankslate (2.1.2.4)
     builder (3.0.4)
@@ -323,6 +324,7 @@ PLATFORMS
 DEPENDENCIES
   auto_excerpt
   aws-sdk
+  bartt-ssl_requirement (~> 1.4.0)
   bcrypt-ruby
   cap-ssh
   capistrano

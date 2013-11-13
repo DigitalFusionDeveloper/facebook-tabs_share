@@ -35,6 +35,8 @@ gem 'threadify'
 
 gem 'phony'
 
+gem 'bartt-ssl_requirement', '~>1.4.0', :require => 'ssl_requirement'
+
 
 # Gems used only for assets and not required
 # in production environments by default.
