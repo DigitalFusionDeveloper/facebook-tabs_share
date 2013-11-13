@@ -3,7 +3,7 @@
 
   <%
     address = location.raw_address
-    url = GGeocode.geocode_url_for(:address => address).to_s
+    url = '//' + GGeocode.geocode_url_for(:address => address).to_s.split('//').last
   %>
 
   var address = <%= raw address.to_json %>;

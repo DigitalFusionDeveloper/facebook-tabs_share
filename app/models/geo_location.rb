@@ -56,6 +56,14 @@ class GeoLocation
 #
   before_validation(:on => :create) do |location|
     location.loc = [location.lat, location.lng]
+
+    if location.utc_offset.blank?
+      begin
+        location.calculate_timezone!
+      rescue Object => e
+        raise unless location.from_javascript
+      end
+    end
   end
 
   after_save(:on => :create) do |location|
@@ -86,6 +94,7 @@ class GeoLocation
 ##
 #
   fattr(:pinpoint){ false }
+  fattr(:from_javascript){ false }
 
 ##
 #
@@ -159,6 +168,84 @@ class GeoLocation
       raise e if e.over_query_limit?
       return nil
     end
+  end
+
+  def GeoLocation.from_javascript(*args)
+  #
+    geo_location = self
+    geo_location.from_javascript = true
+
+  #
+    options      = args.extract_options!.to_options!
+
+  #
+    data     = args.shift || options[:data] || {}
+    address  = args.shift || options[:address]
+    pinpoint = args.shift || options[:pinpoint]
+
+  #
+    if data.is_a?(String)
+      data = JSON.parse(data)
+    end
+    raise ArgumentError.new(data.class.name) unless data.is_a?(Hash)
+
+  #
+    if((GeoLocation.normalize_javascript_geo_location_data!(data) rescue false))
+      if address.blank?
+        address = GeoLocation.formatted_addresses_for(data)
+      end
+
+      geo_location.data     = data
+      geo_location.address  = address
+      geo_location.pinpoint = !!pinpoint
+
+      attributes = GeoLocation.parse_data(geo_location.data) || Map.new
+      geo_location.attributes.update(attributes)
+    end
+
+  #
+    geo_location
+  end
+
+  def GeoLocation.from_javascript!(*args)
+    GeoLocation.from_javascript(*args).tap do |geo_location|
+      geo_location.save!
+    end
+  end
+
+  def GeoLocation.normalize_javascript_geo_location_data!(data)
+    data = Map.for(data)
+
+    results = data['results']
+
+    if results.is_a?(Hash)
+      results = results.values
+      data['results'] = results
+    end
+    return false unless results.is_a?(Array)
+
+    results.each do |result|
+      address_components = result['address_components']
+      if address_components.is_a?(Hash)
+        address_components = address_components.values
+        result['address_components'] = address_components
+      end
+      return false unless address_components.is_a?(Array)
+    end
+
+    keys =  []
+    data.depth_first_each.each do |key, val|
+      keys.push(key)
+    end
+
+    keys.each do |key|
+      if %w( lat lng ).include?(key.last.to_s)
+        val = data.get(key)
+        data.set(key, val.to_f)
+      end
+    end
+
+    data
   end
 
   def GeoLocation.pinpoint(string)

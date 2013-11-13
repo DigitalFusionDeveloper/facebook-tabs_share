@@ -4,8 +4,8 @@
 <script>
   jQuery(function(){
     jobs.complete = function(job){
-      document.write('completed job ' + job.id);
-      document.write('<br>');
+      document.write(job.id);
+      document.write('<hr>');
     };
 
     setTimeout(function(){ jobs.start(); }, 1000);

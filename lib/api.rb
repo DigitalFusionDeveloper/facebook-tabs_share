@@ -80,63 +80,16 @@ class Api < Dao::Api
         geo_location = GeoLocation.find_by(:address => address)
 
         unless geo_location
-          if normalize_javascript_geo_location_data!(data)
-            geo_location = GeoLocation.new
+          geo_location = GeoLocation.from_javascript(:data => data, :address => address)
 
-            geo_location.address  = address
-            geo_location.data     = data
-            geo_location.pinpoint = true
-
-            attributes = GeoLocation.parse_data(geo_location.data) || Map.new
-
-            geo_location.attributes.update(attributes)
-
-            if geo_location.save
-              geo_location.calculate_timezone! rescue nil
-            else
-              geo_location = GeoLocation.find_by(:address => address)
-            end
+          unless geo_location.save
+            geo_location = GeoLocation.find_by(:address => address)
           end
         end
 
         data.update('geo_location' => geo_location.try(:id))
       }
     }
-
-    def normalize_javascript_geo_location_data!(data)
-      data = Map.for(data)
-
-      results = data['results']
-
-      if results.is_a?(Hash)
-        results = results.values
-        data['results'] = results
-      end
-      return false unless results.is_a?(Array)
-
-      results.each do |result|
-        address_components = result['address_components']
-        if address_components.is_a?(Hash)
-          address_components = address_components.values
-          result['address_components'] = address_components
-        end
-        return false unless address_components.is_a?(Array)
-      end
-
-      keys =  []
-      data.depth_first_each.each do |key, val|
-        keys.push(key)
-      end
-
-      keys.each do |key|
-        if %w( lat lng ).include?(key.last.to_s)
-          val = data.get(key)
-          data.set(key, val.to_f)
-        end
-      end
-
-      data
-    end
 
 #
   attr_accessor :effective_user
