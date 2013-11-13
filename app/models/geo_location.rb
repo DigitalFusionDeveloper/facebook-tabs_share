@@ -30,7 +30,6 @@ class GeoLocation
 ##
 #
   validates_uniqueness_of :address
-
   validates_presence_of :address
   validates_presence_of :prefix
   validates_presence_of :address
@@ -88,6 +87,10 @@ class GeoLocation
           errors.add(:address, message)
         end
       end
+    end
+
+    if status !~ /^ok$/i
+      errors.add(:geocode, status)
     end
   end
 
@@ -246,6 +249,10 @@ class GeoLocation
     end
 
     data
+  end
+
+  def status
+    (data || Map.new)['status']
   end
 
   def GeoLocation.pinpoint(string)
@@ -432,7 +439,7 @@ class GeoLocation
 
 
   def street_address
-    formatted_address.split(',')[0]
+    formatted_address.to_s.split(',')[0]
   end
 
   def city

@@ -1,4 +1,4 @@
-<%= form @rfi, :url => request.fullpath do |f| %>
+<%= form(@rfi, :url => request.fullpath, :html => {:id => :rfi}) do |f| %>
   <%= f.messages %>
   <%= f.errors %>
 
@@ -24,7 +24,8 @@
   <div class="row-fluid">
     <div class="span5 offset1">
       <%= f.label :address %>
-      <%= f.input :address, :class => 'span12', :placeholder => 'Mailing Address' %>
+      <%= f.input :address, :class => 'span12', :placeholder => 'Mailing Address', :id => :address %>
+      <%= f.input :geo_location, :type => :text, :id => :geo_location %>
     </div>
     <div class="span5">
       <%= f.label :term %>
@@ -52,7 +53,7 @@
 
   <div class="row-fluid contact-form-button">
     <div class="span10 offset1">
-      <%= f.submit :class => 'btn btn-primary' %>
+      <%= f.button :type => :button, :name => :button, :class => 'btn btn-primary' %>
     </div>
   </div>
 
@@ -63,3 +64,28 @@
   </div>
 
 <% end %>
+
+<script>
+  jQuery(function(){
+    var form = jQuery('form#rfi');
+    var button = form.find('[type=button]');
+
+    button.click(function(){
+      var address = form.find('#address');
+      var geo_location = form.find('#geo_location');
+
+      var success = function(data){
+        geo_location.val(JSON.stringify(data));
+        form.submit();
+      };
+
+      var error = function(data){
+        form.submit();
+      };
+
+      Brand.geo_locate({'address' : address.val(), 'async' : false, 'success' : success, 'error' : error});
+
+      return(false);
+    });
+  });
+</script>

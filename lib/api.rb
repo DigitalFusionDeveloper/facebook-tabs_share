@@ -80,7 +80,7 @@ class Api < Dao::Api
         geo_location = GeoLocation.find_by(:address => address)
 
         unless geo_location
-          geo_location = GeoLocation.from_javascript(:data => data, :address => address)
+          geo_location = GeoLocation.from_javascript(:data => data, :pinpoint => true, :address => address)
 
           unless geo_location.save
             geo_location = GeoLocation.find_by(:address => address)

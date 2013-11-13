@@ -55,6 +55,31 @@ if(!window.Brand){
       });
     };
 
+  Brand.geo_locate = function(options){
+    var url = '//maps.google.com/maps/api/geocode/json';
+    var address = options['address'];
+    var async = options['async']==false ? false : true;
+
+    options['success'] = options['success'] || function(){};
+    options['error'] = options['error'] || function(){};
+    options['complete'] = options['complete'] || function(){};
+
+
+    jQuery.ajax({
+      'url'   : url,
+      'type'  : 'GET',
+      'cache' : false,
+      'async' : async,
+
+      'data' : {'sensor' : false, 'address' : address},
+
+      'success'  : options['success'],
+      'error'    : options['error'],
+      'complete' : options['complete']
+    });
+  };
+
+
     window.Brand = Brand;
   })();
 };

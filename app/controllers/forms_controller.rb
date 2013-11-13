@@ -186,18 +186,30 @@ protected
         validates_presence_of(:referral)
         validates_presence_of(:address)
 
-        fullAddress = 
-          unless attributes[:address].blank?
-            GeoLocation.locate(attributes[:address], :pinpoint => true)
-          end
+        unless params[:geo_location].blank?
+          geo_location =
+            begin
+              GeoLocation.from_javascript(:address => params[:address], :data => params[:geo_location], :pinpoint => true)
+            rescue
+              errors.add(:address, 'is invalid')
+              return false
+            end
 
-        if fullAddress and not fullAddress.valid?
+          if !geo_location.valid?
+            if geo_location.status == 'OVER_QUERY_LIMIT'
+              nil
+            else
+              errors.add(:address, 'is invalid')
+
+              geo_location.errors.each do |key, list|
+                message = Array(list).join(', ')
+                errors.add(message)
+              end
+            end
+          end
+        else
           errors.add(:address, 'is invalid')
-
-          fullAddress.errors.each do |key, list|
-            message = Array(list).join(', ')
-            errors.add(message)
-          end
+          return false
         end
 
         return false unless valid?
@@ -210,10 +222,11 @@ protected
         @rfi[:brand] = @brand.slug
         @rfi[:organization] = @brand.organization.try(:slug)
 
-        @rfi[:street_address] = fullAddress.street_address
-        @rfi[:city] = fullAddress.city
-        @rfi[:state] = fullAddress.state
-        @rfi[:postal_code] = fullAddress.postal_code
+        @rfi[:address]        = geo_location.try(:address)
+        @rfi[:street_address] = geo_location.try(:street_address)
+        @rfi[:city]           = geo_location.try(:city)
+        @rfi[:state]          = geo_location.try(:state)
+        @rfi[:postal_code]    = geo_location.try(:postal_code)
 
         if @rfi.save
           if Rails.env.production? or ENV['ILOOP_OPTIN']
