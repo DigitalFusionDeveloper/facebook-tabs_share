@@ -172,7 +172,7 @@ class GeoLocation
 
   def GeoLocation.from_javascript(*args)
   #
-    geo_location = self
+    geo_location = new
     geo_location.from_javascript = true
 
   #
