@@ -1,6 +1,5 @@
 todo:
 
-- dashboard needs to indicate failed lookup(s)
 
 - new form for locator!?
 
@@ -14,6 +13,7 @@ todo:
 
 
 done:
+  - dashboard needs to indicate failed lookup(s)
   - phone on import!
   - image caching isn't good/working in dev?
   - type is not populated correctly

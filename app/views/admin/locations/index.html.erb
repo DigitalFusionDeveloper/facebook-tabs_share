@@ -1,11 +1,16 @@
 <table class='grid' style='width:100%;'>
   <tr>
     <td style='vertical-align:top;'>
-    <%= 
-      #content = raw(@brand ? "Import #{ @brand.slug.inspect } locations &rarr;" : "Import locations &rarr;")
-      content = "Import locations &rarr;"
-      link_to raw(content), url_for(:action => :import), :title => 'Import Locations From CSV', :class => 'btn btn-success' 
-    %>
+      <%= 
+        #content = raw(@brand ? "Import #{ @brand.slug.inspect } locations &rarr;" : "Import locations &rarr;")
+        content = "Import locations &rarr;"
+        link_to raw(content), url_for(:action => :import), :title => 'Import Locations From CSV', :class => 'btn btn-success'
+      %>
+      <br>
+      <br>
+      <%=
+        link_to 'Geolocate!', '/javascript_jobs/runner', :title => 'Geolocate locations in your browser!', :class => 'btn btn-danger', :target => :_blank
+      %>
     </td>
     <td>
       <%= form :method => :get do %>
@@ -18,6 +23,25 @@
             :onChange      => '$this=$(this); url = $this.val() ? "/admin/brands/:brand/locations".replace(":brand", $this.val()) : "/admin/locations"; window.location = url;'
           )
         %>
+        <table>
+          <tr>
+            <td style='text-align:right;padding-right:1em;'>
+              <a href="<%= url_for(:action => :index, :geolocated => true) %>" style="opacity:<%= params[:geolocated]=='true'?'1.0':'0.3' %>;">geolocated</a>
+            </td>
+            <td>
+              <%= @brand_scope.where(:geo_location_id.ne => nil).count %>
+            </td>
+          </tr>
+
+          <tr>
+            <td style='text-align:right;padding-right:1em;'>
+              <a href="<%= url_for(:action => :index, :geolocated => false) %>" style="opacity:<%= params[:geolocated]=='false'?'1.0':'0.3' %>;">not geolocated</a>
+            </td>
+            <td>
+              <%= @brand_scope.where(:geo_location_id => nil).count %>
+            </td>
+          </tr>
+        </table>
       <% end %>
     </td>
     <td style='vertical-align:top;text-align:right;'>
@@ -40,7 +64,7 @@
       MD5
     </th>
     <th>
-      Full Address
+      Address
     </th>
     <th>
       Map
@@ -56,10 +80,14 @@
       <%= location.title %>
     </td>
     <td>
-      <%= location.md5 %>
+      <%= link_to location.md5, url_for(:action => :show, :id => location.md5), :target => :_blank %>
     </td>
     <td>
-      <%= location.loc ? location.formatted_address : "~ #{ location.raw_address }" %>
+      <%= 
+        address = location.loc ? location.formatted_address : location.raw_address
+        url = 'https://maps.google.com/maps?q=%s' % address
+        a_(:href => url, :target => :_blank){ "#{ '~ ' unless location.loc }#{ address }" }
+      %>
     </td>
     <td>
       <%=

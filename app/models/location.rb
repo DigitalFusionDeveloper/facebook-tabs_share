@@ -39,6 +39,9 @@ class Location
 
   index({:type => 1})
 
+  index({:geo_location_id => 1})
+  index({:map_image_id => 1})
+
 #
   validates_presence_of(:md5)
   validates_presence_of(:raw)
@@ -88,50 +91,49 @@ class Location
         1.000
       end
 
-    2.times do
-    # find un-geolocated locations
-    #
-      query = 
-        Location.where(:loc => nil).
-          order_by(:brand => :asc, :title => :asc)
+  # find un-geolocated locations
+  #
+    query = 
+      Location.where(:loc => nil).
+        order_by(:brand => :asc, :title => :asc)
 
-    # nothing to do
-    #
-      return nil if query.count == 0
+  # nothing to do
+  #
+    return nil if query.count == 0
 
-    # run through all locations using local cache only
-    #
+  # run through all locations using local cache only
+  #
+    query.each do |location|
+      location.geolocate!(:cache => :only) unless location.geo_location
+      block.call(location) if block
+    end
+
+  # now submit *javascript* jobs for any missing geo_locations
+  #
+    unless options[:client] == false or options[:javascript] == false
       query.each do |location|
-        location.geolocate!(:cache => :only) unless location.geo_location
+        if forcing or GeoLocation.where(:address => location.raw_address).count == 0
+          if forcing or not location.javascript_geo_location_job?
+            location.create_javascript_geo_location_job
+          end
+        end
+      end
+    end
+
+  # and start doing work in the server - which will eventually BOOM with a
+  # OVER_QUERY_LIMIT error ;-(
+  #
+    unless options[:server] == false or options[:rails] == false
+      query.each do |location|
+        location.reload
+
+        if forcing or not location.geolocated?
+          location.geolocate!
+        end
+
         block.call(location) if block
-      end
 
-    # now submit jobs for any missing geo_locations
-    #
-      unless options[:client] == false or options[:javascript] == false
-        query.each do |location|
-          if forcing or GeoLocation.where(:address => location.raw_address).count == 0
-            if forcing or not location.javascript_geo_location_job?
-              location.create_javascript_geo_location_job
-            end
-          end
-        end
-      end
-
-    # and start doing work in the server...
-    #
-      unless options[:server] == false or options[:rails] == false
-        query.each do |location|
-          location.reload
-
-          if forcing or not location.geolocated?
-            location.geolocate!
-          end
-
-          block.call(location) if block
-
-          sleep(delay) if delay
-        end
+        sleep(delay) if delay
       end
     end
 

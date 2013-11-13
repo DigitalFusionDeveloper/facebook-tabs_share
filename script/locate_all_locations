@@ -55,21 +55,13 @@
 
 # go
 #
-  2.times do
-    begin
-      n = 0
+  n = 0
 
-      Location.locate_all! do |location|
-        p location.full_address => location.loc
-        n += 1
-      end
-
-      exit(0) if n == 0
-    rescue Object => e
-      STDERR.puts "#{ e.message }(#{ e.class })\n#{ Array(e.backtrace).join(10.chr) }"
-      STDERR.puts
-      sleep(rand(120))
-    end
+  Location.locate_all! do |location|
+    p location.full_address => location.loc
+    n += 1
   end
+
+  exit(0) if n == 0
 
 __END__

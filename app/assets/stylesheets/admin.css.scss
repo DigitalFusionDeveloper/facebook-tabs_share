@@ -131,12 +131,16 @@
 // Allow for *temporary* TABLE layouts. :)
 // If nested, still may inherit parent styles.
 //
-  table.grid thead,
-  table.grid tfoot,
-  table.grid tbody,
-  table.grid tr,
-  table.grid th,
-  table.grid td {
+  table.grid > thead,
+  table.grid > tfoot,
+  table.grid > tbody,
+  table.grid > tr,
+  table.grid > tbody > tr > td,
+  table.grid > tr > th,
+  table.grid > tbody > tr > th,
+  table.grid > tbody > tr > td,
+  table.grid > tr > td 
+  {
     margin: 0 !important;
     padding: 0 !important;
     border: 0 !important;

@@ -3,7 +3,7 @@ class Admin::LocationsController < Admin::Controller
 
   before_filter(:setup)
 
-  PER_PAGE = 100
+  PER_PAGE = 10
 
   def index
     @brands    = Brand.all
@@ -31,6 +31,16 @@ class Admin::LocationsController < Admin::Controller
         check <a href="#{ url }" target="_blank">job #{ @job.id }</a> for progress...
       __
     end
+  end
+
+  def show
+    id = params[:id] || params[:md5]
+
+    @location = 
+      Location.any_of(
+        {:_id => id},
+        {:md5 => id}
+      ).first
   end
 
   def job
@@ -69,7 +79,16 @@ protected
         Location.all
       end
 
+    @brand_scope = @scope
+
     @scope = @scope.order_by(:organization => :asc, :brand => :asc, :state => :asc, :city => :asc)
+
+    case params[:geolocated]
+      when 'false'
+        @scope = @scope.where(:geo_location_id => nil)
+      when 'true'
+        @scope = @scope.where(:geo_location_id.ne => nil)
+    end
   end
 
   def search_query_for(query, params)
@@ -78,7 +97,13 @@ protected
       terms = Array(params[:search]).join(' ').strip.split(/\s+/)
       words = terms.map{|term| "\\b#{ term }\\b"}
       re = /#{ words.join('|') }/i
-      conditions = [ {:title => re}, {:slug => re}, {:address => re}, {:brand => re}, {:md5 => re} ]
+      conditions = [ 
+        {:title => re}, 
+        {:slug => re}, 
+        {:address => re}, 
+        {:brand => re}, 
+        {:md5 => re} 
+      ]
       query = query.any_of(conditions)
     else
       query
