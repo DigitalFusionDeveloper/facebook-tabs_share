@@ -52,6 +52,7 @@ protected
   def ssl_required?
     (Rails.env.production? or Rails.env.staging?) and Rails.stage
   end
+
 # layout
 #
   def initialize_layout
