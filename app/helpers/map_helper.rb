@@ -1,7 +1,9 @@
 module MapHelper
-  def map_for_points(points,color = '0x00AEEF')
+  def map_for_points(points,options = {})
     labels = *('A'..'Z')
     markers = []
+
+    color = options.delete(:color) || '0x00AEEF'
 
     points.each do |lat,lng|
       markers << "color:#{color}|label:#{labels.shift}|#{lat},#{lng}"
@@ -12,7 +14,7 @@ module MapHelper
       :scale   => 2,
       :sensor  => false,
       :style   => "saturation:-100"
-    }.to_query
+    }.merge(options).to_query
     "http://maps.googleapis.com/maps/api/staticmap?#{query}&#{format_markers(markers)}" 
   end
 
