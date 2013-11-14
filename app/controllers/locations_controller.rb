@@ -11,7 +11,7 @@ class LocationsController < ApplicationController
     @types           = params[:type]
     @search          = params[:search]
 
-    scope = Location.where(brand: @brand.slug)
+    scope = Location.where(brand: @brand.slug).limit(10)
     # No types provided is the same as all types
 
     unless @types.blank?
@@ -52,14 +52,16 @@ class LocationsController < ApplicationController
     end
 
     @locations = LocationPresenter.collection_for(locations, params)
+    @points = locations.collect {|l| l.loc}
 
     respond_to do |format|
-      format.html
+      format.html { render template: results_template, layout: false }
       format.json { render :xml => @locations.to_json }
     end
   end
 
 protected
+
   def search_query_for(query, search = nil)
     unless search.blank? 
       conditions = []
@@ -73,6 +75,10 @@ protected
       query
     end
   end
+
+  def results_template
+    File.join('brands', @brand.slug, 'location_results')
+    end
 
   class LocationPresenter < Dao::Conducer
     def initialize(location, params = {})
