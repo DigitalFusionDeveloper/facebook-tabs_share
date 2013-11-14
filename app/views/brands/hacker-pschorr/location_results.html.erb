@@ -1,0 +1,5 @@
+<% map_url = map_for_points(@points,:color => '0x00AEEF') %>
+<img src="<%= map_url %>">
+
+<% @labels = *('A'..'Z') %>
+<%= render partial: "brands/hacker-pschorr/location", collection: @locations %>
