@@ -10,10 +10,11 @@
     <th style='padding:0.5em'>Id</th>
     <th style='padding:0.5em'>Object</th>
     <th style='padding:0.5em'>Message</th>
-    <th style='padding:0.5em'>Args</th>
     <th style='padding:0.5em'>Status</th>
+    <th style='padding:0.5em'>Tags</th>
     <th style='padding:0.5em'>Failures</th>
     <th style='padding:0.5em'>UpdatedAt</th>
+    <th style='padding:0.5em'>Args</th>
   </tr>
 
   <% @jobs.each do |job| %>
@@ -28,16 +29,33 @@
         <%= job.message %>
       </td>
       <td style='padding:0.5em 1em;vertical-align:top;'>
-        <%= job.args.inspect %>
-      </td>
-      <td style='padding:0.5em 1em;vertical-align:top;'>
         <%= job.status %>
       </td>
       <td style='padding:0.5em 1em;vertical-align:top;'>
-        <%= Array(job.failures).size %>
+        <%= Array(job.tags).join(', ') %>
+      </td>
+      <td style='padding:0.5em 1em;vertical-align:top;'>
+        <%= 
+          label = Array(job.failures).size
+          id = domid
+          link_to label, "##{ id }", "class" => "lightbox"
+        %>
+        <div style="display:none">
+          <pre id="<%= id %>" style='color:chartreuse;background-color:black;'><%= Array(job.failures).to_yaml -%></pre>
+        </div>
       </td>
       <td style='padding:0.5em 1em;vertical-align:top;'>
         <%= time_ago_in_words job.updated_at %> ago
+      </td>
+      <td style='padding:0.5em 1em;vertical-align:top;'>
+        <%= 
+          label = '[' + job.args.map(&:class).join(', ') + ']'
+          id = domid
+          link_to label, "##{ id }", "class" => "lightbox"
+        %>
+        <div style="display:none">
+          <pre id="<%= id %>" style='color:chartreuse;background-color:black;'><%= Array(job.args).to_yaml -%></pre>
+        </div>
       </td>
     </tr>
   <% end %>
@@ -47,3 +65,9 @@
 <small>
 <%= paginate @jobs %>
 </small>
+
+<script>
+  jq(function(){
+    jq(".lightbox").colorbox({inline:true, rel:'lightbox', transition:"none", width:"80%", height:"80%"});
+  });
+</script>

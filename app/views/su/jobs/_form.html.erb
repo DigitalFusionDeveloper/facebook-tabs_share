@@ -1,7 +1,13 @@
 <h4><%= link_to raw('&larr; Jobs'), su_jobs_path %></h4>
 <br />
 <br />
+<%= 'download: ' unless @job.emails.blank? %>
+<% @job.emails.each_with_index do |email, i| %>
+  <%= link_to "email-#{ i + 1 }", url_for(:action => :show, :email_id => email.id) %>
+<% end %>
 <br />
+<br />
+
 <pre>
   <%= 
     map = @job.to_map

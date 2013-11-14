@@ -31,6 +31,7 @@
     field(:object, :type => String, :default => proc{ 'Scope' })
     field(:message, :type => String, :default => proc{ 'eval' })
     field(:args, :type => Array, :default => proc{ [] })
+    field(:tags, :type => Array, :default => proc{ [] })
 
     field(:status, :type => String, :default => 'pending')
     field(:result)
@@ -44,6 +45,9 @@
     %w( pending running success failure ).each do |status|
       scope(status, where(:status => status))
     end
+
+    GridFS = ::Mongoid::GridFS
+    has_and_belongs_to_many(:emails, :class_name => '::Report::GridFS::File', :dependent => :destroy, :inverse_of => nil)
 
   ##
   #
@@ -235,10 +239,7 @@
         result =
           case
             when object <= ActionMailer::Base
-              mailer = object
-              mail = mailer.send(:new, message, *args).message
-              mail.deliver
-              Array(mail.destinations)
+              deliver_email!
             else
               object.send(message, *args)
           end
@@ -295,6 +296,36 @@
       job.reload
     end
 
+    def deliver_email!
+      job = self
+      object = Job.eval(read_attribute(:object))
+
+      case
+        when object <= ActionMailer::Base
+          mailer = object
+          mail = mailer.send(:new, message, *args).message
+          mail.deliver
+
+          io = StringIO.new(mail.to_s.force_encoding('utf-8'))
+
+          2.times do
+            begin
+              filename = "job-#{ job.id }-#{ message }-#{ mail.message_id || Job.new.id }".gsub(/[^\w]+/, '-') + '.eml'
+              grid_fs_file = GridFS.put(io, :filename => filename)
+              job.emails.push(grid_fs_file)
+              job.save!
+              break
+            rescue Object
+              raise unless Rails.env.production?
+            end
+          end
+
+          Array(mail.destinations)
+        else
+          nil
+      end
+    end
+
     def Job.pod(value)
       pod =
         begin
@@ -346,6 +377,8 @@
         raise SubmitError
       end
 =end
+
+      block.call(job) if block
 
       if Job.background?
         Job.ping
@@ -452,5 +485,17 @@
   ## error classes
   #
     class SubmitError < ::StandardError
+    end
+
+  ##
+  #
+    def tag!(*tags)
+      tags = Coerce.list_of_strings(*tags)
+      tags.tap{|tag| add_to_set(:tags, tag)}
+    end
+
+    def Job.tagged(*tags)
+      tags = Coerce.list_of_strings(*tags)
+      where(:tags.in => tags)
     end
   end

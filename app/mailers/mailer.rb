@@ -7,6 +7,11 @@ class Mailer < ActionMailer::Base
     :from => App.email
   )
 
+  def Mailer.mail_for(which, *args, &block)
+    mailer = new(which, *args, &block)
+    mail = mailer.message
+  end
+
   def test(email)
     mail(:to => email, :subject => 'test')
   end
@@ -23,11 +28,15 @@ class Mailer < ActionMailer::Base
     
     @rfi = args.shift || options.fetch(:rfi)
 
-    @recipients = Coerce.list_of_strings(args.shift || options.fetch(:recipients))
-
     @rfi = @rfi.is_a?(RFI) ? @rfi : RFI.find(@rfi)
 
     @brand = @rfi.brand
+
+    @recipients = Coerce.list_of_strings([args, options[:recipients]])
+
+    if @recipients.blank? and @brand.respond_to?(:rfi_recipients)
+      @recipients = Coerce.list_of_strings((@brand.rfi_recipients rescue nil))
+    end
 
     @subject = ['rfi', @brand.try(:slug), @rfi.id].compact.join(' | ').upcase
 
