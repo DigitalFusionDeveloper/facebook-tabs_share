@@ -18,7 +18,13 @@ class Su::JobsController < Su::Controller
   end
 
   def show
-    redirect_to :action => 'edit'
+    if params[:email_id]
+      email = @job.emails.find(params[:email_id])
+      send_data(email.data, :filename => email.filename, :type => email.content_type)
+      return
+    end
+
+    render :inline => '<%= render "form" %>', :layout => 'application'
   end
 
   def edit
