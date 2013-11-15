@@ -80,7 +80,7 @@ jQuery ->
     findLocation = ->
         if $('#location').val()
             address = $('#location').val()
-            url     = "http://maps.google.com/maps/api/geocode/json"
+            url     = "https://maps.google.com/maps/api/geocode/json"
             params  = {search: address, type: ['a','b']}
 
             $.ajax
