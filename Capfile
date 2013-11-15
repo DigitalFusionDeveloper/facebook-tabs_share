@@ -472,6 +472,7 @@
     desc 'print the deployed-to url out on the console'
     task :console do
       require 'yaml'
+      require 'terminal-notifier'
 
       url         = fetch(:url)
       application = fetch(:application)
@@ -484,6 +485,8 @@
         'user'        => user,
         'deploy_to'   => deploy_to
       }.to_yaml);
+      
+      system "terminal-notifier -title #{ application } -message 'Deploy completed successfully to #{ url }.' -sound default"
     end
   end
   after "deploy", "notify:campfire"

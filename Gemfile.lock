@@ -277,6 +277,7 @@ GEM
     stringex (1.4.0)
     subexec (0.2.2)
     systemu (2.5.1)
+    terminal-notifier (1.5.1)
     terminator (1.0.0)
       fattr (>= 2.2)
     therubyracer (0.10.1)
@@ -375,6 +376,7 @@ DEPENDENCIES
   stringex
   systemu
   tagz!
+  terminal-notifier
   terminator
   therubyracer
   threadify
