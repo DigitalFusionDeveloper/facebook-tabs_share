@@ -38,34 +38,8 @@
         <div class="span12">
           <div id='beer-locator-form'></div>
       	  <div id="locations">
-
-
-            <div class="template" style="display:none;">
-              <span class="name" style="text-transform:uppercase;"></span><br />
-              <span class="address"></span><br />
-              <span class="city"></span>, <span class="state"></span> <span class="zipcode"></span><br />
-              <i><span class="distance"></i>
-              <a href="#" class="viewMap">View Map</a>
-            </div>
-            
             <div id="locator_message" class="alert" style="display: none;"></div>
-            
-            <div id="metaLocationResults"  style="display: none;">
-
-              <div class="load-more">
-        	      <button class="btn btn-primary">
-      		        Load More Results
-        	      </button>
-        	    </div>
-
-              <div id="requestCityBtn">
-                <button class="btn">
-                  Request in Your City!
-                </button>
-              </div>
-
-            </div>
-
+            <div id="location_results"></div>
       	  </div>
         </div>
       </div>
@@ -74,19 +48,6 @@
         <footer class="span12"></footer>
       </div>
 
-      <div id="location_details" class="modal hide fade">
-      	<div class="modal-header">
-        	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        	<h3 class="name"></h3>
-        </div>
-        <div class="modal-body">
-        	<img class="map"/>
-        	<span class="address"/>
-        </div>
-        <div class="modal-footer">
-        	<a href="#"data-dismiss="modal" class="btn">Close</a>
-        </div>
-      </div>
     </div>
 
     <!-- Le javascript

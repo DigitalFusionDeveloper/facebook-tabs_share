@@ -1,5 +1,14 @@
-<% map_url = map_for_points(@points,:color => '0x00AEEF') %>
-<img src="<%= map_url %>">
+<% unless @points.empty? %>
+  <% map_url = map_for_points(@points,:color => '0x00AEEF') %>
+  <img src="<%= map_url %>">
 
-<% @labels = *('A'..'Z') %>
-<%= render partial: "brands/hacker-pschorr/location", collection: @locations %>
+  <% @labels = *('A'..'Z') %>
+  <%= render partial: "brands/hacker-pschorr/location", collection: @locations %>
+<% else %>
+  <div id="locator_message" class="alert alert-info">
+    We were unable to find a location near you.
+  </div>
+  <div id="requestCityBtn">
+    <%= link_to 'Request in Your City!', 'contact', class: 'btn' %>
+  </div>
+<% end %>

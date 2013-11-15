@@ -5,14 +5,25 @@ jQuery ->
         locator_message 'info', 'searching...'
         types = ($(type).val() for type in $("input[name='type']:checked"))
         args['type'] = types
+        switch results_type
+            when 'json' then jsonLoadLocations(args)
+            when 'html' then htmlLoadLocations(args)
+            else console.log 'Invalid results type ' + results_type
+
+    htmlLoadLocations = (args) ->
+        $.get '/' + window.brand + '/locations', args, (locations) ->
+            $('#locator_message').hide()
+            $('#location_results').html(locations)
+
+    jsonLoadLocations = (args) ->
         $.getJSON '/' + window.brand + '/locations', args, (locations) ->
             $('#locator_message').hide()
 
             if locations.length == 0
                 locator_message 'info', 'We were unable to find a location near you.'
                 $('#location').attr 'placeholder', 'Enter zip, city, or state'
+                $('#metaLocationResults').show()
             else
-                $('#metaLocationResults')?.show?()
                 $('.load-more').hide()
                 for location,i in locations
                     $address = $('#locations .template').clone()
@@ -43,19 +54,8 @@ jQuery ->
                         $hidden = $('.location:hidden');
                         $hidden.slice(0,5).show();
                         $('.load-more').hide() if $hidden.length <= 5
-                
-    $('#current_location').click ->
-        $('#location').attr 'placeholder', 'Finding your current location...'
-        locator_message 'info', 'Finding your current location...'
-        $(this).addClass('disabled')
-        if geoPosition.init()   # Geolocation Initialization
-            geoPosition.getCurrentPosition(geo_success,geo_error)
-        else
-            locator_message 'error', 'Unable to find your current location.'
-            $('#location').attr 'placeholder', 'Enter zip, city, or state'
-        false
 
-    $('#requestCityBtn button')?.click ->
+    $('#requestCityBtn button').click ->
         window.location.replace('contact')
 
     geo_success = (p) ->
@@ -77,7 +77,7 @@ jQuery ->
                 if current_location == $('#location').val()
                     $('#location').val(location.city + ', ' + location.state)
 
-    $('.find-location').submit ->
+    findLocation = ->
         if $('#location').val()
             address = $('#location').val()
             url     = "http://maps.google.com/maps/api/geocode/json"
@@ -104,3 +104,21 @@ jQuery ->
         $lm.removeClass('alert-info alert-error').addClass('alert-' + type)
         $lm.html message
         $lm.show()
+
+    results_type = ''
+
+    window.configureLocator = (type) ->
+        results_type = type
+        $('#submitBtn').click ->
+            findLocation()
+            false
+        $('#current_location').click ->
+            $('#location').attr 'placeholder', 'Finding your current location...'
+            locator_message 'info', 'Finding your current location...'
+            $(this).addClass('disabled')
+            if geoPosition.init()   # Geolocation Initialization
+                geoPosition.getCurrentPosition(geo_success,geo_error)
+            else
+                locator_message 'error', 'Unable to find your current location.'
+                $('#location').attr 'placeholder', 'Enter zip, city, or state'
+            false
