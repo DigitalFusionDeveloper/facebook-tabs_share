@@ -48,7 +48,7 @@ module App
       config.action_mailer.delivery_method       = :smtp
 
       if settings[env] and settings[env].email_interceptor?
-        ActionMailer::Base.register_interceptor(EmailInterceptor)
+        ActionMailer::Base.register_interceptor(settings[env].email_interceptor.model.constantize)
       end
 
 config.action_mailer.delivery_method = :smtp
