@@ -7,6 +7,11 @@ secret_token: ec759d3acccb0ce9c7aad88cf0c2319ec3d82723dbbb07ae5ab3d9dec8c8a4b0ad
 
 staging:
   url: https://stagingfbtabs.digitalfusiontesting.com
+  email_interceptor:
+    model: EmailRedirectInterceptor
+    to:
+      - corey.inouye@mobilefusion.com
+      - sheena.collins@mobilefusion.com
 
 production:
   url: https://productionfbtabs.digitalfusiontesting.com
@@ -16,7 +21,7 @@ deploy:
     ip: 198.61.171.226
     deploy_to: /var/www/stagingfbtabs.digitalfusiontesting.com
 
-  production: 
+  production:
     ip: 198.61.171.226
     deploy_to: /var/www/productionfbtabs.digitalfusiontesting.com
 

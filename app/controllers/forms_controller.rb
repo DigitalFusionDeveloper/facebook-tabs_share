@@ -249,17 +249,13 @@ protected
             Rails.logger.info "Mailer.rfi(#{ recipients.inspect })"
           end
 
-          if Rails.stage and !Rails.stage.production?
-            recipients = ['corey.inouye@mobilefusion.com', 'sheena.collins@mobilefusion.com']
-          end
-
           unless recipients.blank?
             Job.submit(Mailer, :rfi, @rfi.id, recipients)
           end
 
         # TODO - iLoop and mail addys here...
 =begin
-          
+
           if Rails.env.production? or ENV['EMAIL_SIGNUP']
             et = ExactTarget::Send.new
             et.send_email(@brand.slug,email)
