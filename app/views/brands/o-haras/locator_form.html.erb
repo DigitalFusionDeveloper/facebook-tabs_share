@@ -11,3 +11,4 @@
 <%= javascript_include_tag 'geoPosition', 'locator' %>
 <%= javascript_tag "window.brand = '#{@brand.slug}'", defer: 'defer' %>
 <%= stylesheet_link_tag("locator") %>
+<%= javascript_tag '$(function() {configureLocator("json");});' %>
