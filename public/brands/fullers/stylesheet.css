@@ -293,3 +293,7 @@ input[type="submit"].btn:hover {
   }
 
 }
+
+p#disclaimer {
+  font-size: 12px;
+}
