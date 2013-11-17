@@ -31,8 +31,13 @@ Report.register(:model) do
   end
 
   def model_names
-    #(App::Document.models - [Report]).map(&:name).sort
-    %w' RFI '
+    model_names = Coerce.list_of_strings(App.settings.get(:reports, :model, :model_names))
+
+    if model_names.blank?
+      (App::Document.models - [Report]).map(&:name).sort
+    else
+      model_names
+    end
   end
 
   def generate

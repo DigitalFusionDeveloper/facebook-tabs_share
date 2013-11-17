@@ -27,3 +27,11 @@ deploy:
 
   notify:
   - dojo4@dojo4.com
+
+
+reports:
+  model:
+    model_names:
+      - RFI
+      - User
+
