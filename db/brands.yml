@@ -3,29 +3,29 @@ brands:
   - title: O'Hara's
     slug: o-haras
     organization: Paulaner
-    rfi_fields: email, first_name, last_name, postal_code, mobile_phone, location
+    rfi_fields: email, first_name, last_name, postal_code, mobile_phone, address, formatted_address, notes, lat, lng
 
   - title: Paulaner
     organization: Paulaner
-    rfi_fields: email, first_name, last_name, postal_code, mobile_phone, location
+    rfi_fields: email, first_name, last_name, postal_code, mobile_phone, address, formatted_address, notes, lat, lng
 
   - title: Dixie
     organization: Paulaner
-    rfi_fields: email, first_name, last_name, postal_code, mobile_phone, location
+    rfi_fields: email, first_name, last_name, postal_code, mobile_phone, address, formatted_address, notes, lat, lng
 
   - title: Fruli
     organization: Paulaner
-    rfi_fields: email, first_name, last_name, postal_code, mobile_phone, location
+    rfi_fields: email, first_name, last_name, postal_code, mobile_phone, address, formatted_address, notes, lat, lng
 
   - title: Fuller's
     slug: fullers
     organization: Paulaner
-    rfi_fields: email, first_name, last_name, postal_code, mobile_phone, location
+    rfi_fields: email, first_name, last_name, postal_code, mobile_phone, address, formatted_address, notes, lat, lng
 
   - title: Hacker-Pschorr
     slug: hacker-pschorr
     organization: Paulaner
-    rfi_fields: email, first_name, last_name, postal_code, mobile_phone, location, requested_location
+    rfi_fields: email, first_name, last_name, postal_code, mobile_phone, address, formatted_address, notes, lat, lng
   -
     title: Colorado Christian University
     slug: cus

@@ -10,7 +10,7 @@ Report.register(:model) do
 
         {
           :label   => [:config, :format, :content => 'Format'],
-          :element => [:select, [:config, :format], :from => %w( json csv )]
+          :element => [:select, [:config, :format], :from => %w( csv json )]
         },
 
         {
@@ -31,7 +31,8 @@ Report.register(:model) do
   end
 
   def model_names
-    (App::Document.models - [Report]).map(&:name).sort
+    #(App::Document.models - [Report]).map(&:name).sort
+    %w' RFI '
   end
 
   def generate

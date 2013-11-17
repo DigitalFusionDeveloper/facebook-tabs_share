@@ -5,7 +5,7 @@ class RFI
   include Brand.able
 
   def RFI.report_fields
-    Coerce.list_of_strings(:brand, :organization, Brand.rfi_fields)
+    %w( id kind organization brand ) + Coerce.list_of_strings(Brand.rfi_fields).sort
   end
 end
 

@@ -164,7 +164,7 @@ class Report
       fields = Coerce.list_of_strings(fields)
 
       eachable.each do |doc|
-        row = fields.map{|field| doc.read_attribute(field)}
+        row = fields.map{|field| (doc.respond_to?(field) ? doc.send(field) : doc.read_attribute(field)).to_s}
         block ? block.call(row) : rows.push(row)
       end
       
