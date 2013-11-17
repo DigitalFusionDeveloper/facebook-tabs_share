@@ -2,7 +2,7 @@ class FormsController < ::ApplicationController
 #
   layout 'forms'
   prepend_view_path 'app/views/brands'
-  before_filter 'set_brand'
+  before_filter 'setup'
 
 #
   def rfi
@@ -28,7 +28,7 @@ class FormsController < ::ApplicationController
           Locator::PaulanerConducer
 
         else
-        raise IndexError.new(@brand.inspect)
+          raise IndexError.new(@brand.inspect)
       end
 
     conducer.render!
@@ -40,6 +40,22 @@ class FormsController < ::ApplicationController
   end
 
 protected
+#
+  def setup
+    @brand = Brand.for(:slug => params[:brand])
+
+    if @brand.nil?
+      render(:text => "brand #{ params[:brand].inspect } not found", :status => 404)
+    end
+
+    @tab = params["tab"] || request.env["HTTP_REFERER"]
+  end
+
+  fattr(:tab)
+  alias_method(:current_tab, :tab)
+  helper_method(:tab)
+  helper_method(:current_tab)
+
 #
   class ::RFI
     class PaulanerConducer < ::Dao::Conducer
@@ -295,6 +311,7 @@ protected
 
 
 
+=begin
   class ::Locator
     class PaulanerConducer < ::Dao::Conducer
       model_name :locator
@@ -305,8 +322,10 @@ protected
       def PaulanerConducer.render!
         controller = Current.controller
         conducer = self
+
         controller.instance_eval do
           @locator = conducer.new(@brand)
+
           render @locator.form_template
         end
       end
@@ -321,6 +340,125 @@ protected
 
       def form_template
         File.join(Rails.root.to_s, 'app/views/brands', @brand.slug, 'locator_form.html.erb')
+      end
+    end
+  end
+=end
+
+  class ::Locator
+
+  #load '/Users/ahoward/git/ahoward/dao/lib/dao/form.rb'
+
+    class PaulanerConducer < ::Dao::Conducer
+      model_name :locator
+
+      fattr :brand
+      fattr :types
+      fattr :locations
+
+      def PaulanerConducer.render!
+        controller = Current.controller
+        conducer = self
+
+        controller.instance_eval do
+          params = Map.for(controller.params)
+
+          @locator = conducer.new(@brand, params[:locator])
+
+          if request.get?
+            render @locator.template_for(:locator)
+            return
+          end
+
+          case params.get(:locator, :submit)
+            when /search/i
+              if @locator.search
+                render @locator.template_for(:search_results)
+              else
+                render @locator.template_for(:locator)
+              end
+              return
+
+            when /request/i
+              if @locator.rfi
+                render @locator.template_for(:rfi_thank_you)
+              else
+                render @locator.template_for(:locator)
+              end
+              return
+
+            else
+              @locator.form.messages.add params.inspect
+              render @locator.template_for(:locator)
+          end
+        end
+      end
+
+      def template_for(which)
+        case which.to_s
+          when "locator"
+            File.join(Rails.root.to_s, "app/views/organizations/paulaner/locator.html.erb")
+          else
+            File.join(Rails.root.to_s, "app/views/organizations/paulaner/#{ which }.html.erb")
+        end
+      end
+
+      def label_for(string)
+        case string.to_s.downcase
+          when /draft/
+            'Restaurant/Bar'
+          when /package/
+            'Store'
+        end
+      end
+
+      def initialize(brand, params = {})
+        @brand = brand
+        @types = Location.where(brand: @brand.slug).types
+
+        update_attributes(
+          params
+        )
+      end
+
+      def search
+        address = params[:address].to_s
+        ll = params[:ll].to_s
+
+        lat, lng = nil
+        begin
+          if !address.blank? and ll.blank?
+            geo_location = GeoLocation.for(address)
+            lat, lng = geo_location.lat, geo_location.lng
+          end
+
+          if !ll.blank?
+            lat, lng = Coerce.list_of_floats(ll).first(2)
+          end
+
+          raise unless(lat && lng)
+        rescue Object
+          lat, lng = nil
+        end
+
+        unless lat and lng
+          errors.add(:address, 'is missing')
+          messages.add('Please supply an address')
+          return false
+        end
+
+        [100, 1000, 10_000, 100_000].each do |miles|
+          @locations = Location.find_all_by_lng_lat(lng, lat, :limit => 5, :miles => miles)
+          return true unless @locations.blank?
+        end
+
+        errors.add(:address, 'was not found')
+        messages.add("Sorry, we didn't find any locations near you!")
+        false
+      end
+
+      def rfi
+        true
       end
     end
   end

@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/ahoward/dao
-  revision: 2e8d9081371c42b79495207d1990cdda612c7910
+  revision: 9ca698932da2101b1fbc04bba565e58deb949882
   specs:
     dao (5.3.0)
       coerce (>= 0.0.3)
@@ -69,7 +69,7 @@ GEM
     akami (1.2.0)
       gyoku (>= 0.4.0)
       nokogiri (>= 1.4.0)
-    arel (3.0.2)
+    arel (3.0.3)
     arrayfields (4.9.0)
     auto_excerpt (0.7.1)
     aws-sdk (1.8.5)

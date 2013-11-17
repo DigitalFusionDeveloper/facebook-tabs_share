@@ -264,6 +264,10 @@ class Hash
     css
   end
 
+  def to_style
+    to_a.map{|k,v| [Slug.for(k), v.to_s].join(':')}.join(';')
+  end
+
   def html_options
     to_a.map{|k,v| "#{ k }=#{ CGI.escapeHTML(v).inspect }"}.join(' ')
   end

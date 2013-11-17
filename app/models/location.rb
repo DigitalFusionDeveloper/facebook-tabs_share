@@ -368,11 +368,26 @@ class Location
     miles = options[:miles] || 100
     max_distance = miles * DEGREES_PER_MILE
 
+    limit = options[:limit] || 10
+
+    lng = Float(lng)
+    lat = Float(lat)
+
     locations = []
 
-    Location.geo_near([Float(lat),Float(lng)]).max_distance(max_distance).each do |location|
+    Location.limit(limit).geo_near(:lat => lat, :lng => lng).max_distance(max_distance).each do |location|
       location['distance'] = Float(location.geo_near_distance) * MILES_PER_DEGREE
       locations.push(location)
+    end
+
+    geo_locations = GeoLocation.where(:_id.in => locations.map(&:geo_location_id))
+
+    geo_locations.each do |geo_location|
+      location = locations.detect{|location| location.geo_location_id == geo_location.id}
+
+      if location
+        location.geo_location = geo_location
+      end
     end
 
     locations

@@ -1,0 +1,219 @@
+<!-- html --> 
+
+<%= form @locator, :url => request.fullpath do |f| %> <div id='locator-form'> 
+    <%= f.messages %>
+
+    <table style='width:100%;'>
+      <tbody id='geo-location-inputs'>
+        <tr>
+          <td style='text-align:right;'>
+            <%= 
+              f.button(
+                :position,
+                :id      => :position,
+                :style   => {font_size: '2.0em', font_weight: 'bold', padding: '0em'}.to_style,
+                :content => raw('&#8982;')
+              )
+            %>
+            <br>
+            <%= f.input :ll, :id => :ll, :type => :hidden %>
+          </td>
+
+          <td>
+            <%= f.input :address, :id => :address, :placeholder => 'address' %>
+          </td>
+        </tr>
+      </tbody>
+
+      <tbody id='search-inputs'>
+        <% if @locator.types.size > 1 %>
+          <% @locator.types.each do |type| %>
+          <tr>
+              <td style='text-align:right;'>
+                <%= f.checkbox :type, type, :checked => :checked %>
+              </td>
+
+              <td>
+                <%= @locator.label_for(type) %>
+              </td>
+          </tr>
+          <% end %>
+        <% end %>
+
+        <tr>
+          <td style='text-align:right;'>
+            <%= f.submit :value => 'Search', :id => 'search-submit' %>
+          </td>
+
+          <td>
+            <a href='#' id='show-rfi-inputs'>Request <%= @locator.brand.title %> at my location<em>!</em></a>
+          </td>
+        </tr>
+      </tbody>
+
+      <tbody id='rfi-inputs' style='display:none;'>
+        <tr>
+          <td style='text-align:right;'>
+            <%= f.label :Email if false %>
+          </td>
+          <td>
+            <%= f.input :email, :id => :email, :placeholder => :email %>
+          </td>
+        </tr>
+
+        <tr>
+          <td style='text-align:right;'>
+            <%= f.label :mobile_phone if false %>
+          </td>
+          <td>
+            <%= f.input :mobile_phone, :placeholder => :mobile_phone %>
+          </td>
+        </tr>
+
+        <tr>
+          <td style='text-align:right;'>
+            <%= f.label :notes if false %>
+          </td>
+          <td>
+            <%= f.input :notes, :placeholder => :notes %>
+          </td>
+        </tr>
+
+        <tr>
+          <td style='text-align:right;'>
+            <%= f.submit :value => 'Request', :id => 'rfi-submit' %>
+          </td>
+          <td>
+            <a href='#' id='show-search-inputs'>Search instead.</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+  <% end %>
+
+<!-- js -->
+
+  <%= javascript_include_tag 'geoPosition' %>
+
+  <script>
+    jQuery(function(){
+    //
+      var locator_form       = jQuery('#locator-form');
+
+      var position_input     = locator_form.find('#position');
+      var address_input      = locator_form.find('#address');
+      var ll_input           = locator_form.find('#ll');
+      var email_input        = locator_form.find('#email');
+
+      var rfi_inputs         = jQuery('#rfi-inputs');
+      var search_inputs      = jQuery('#search-inputs');
+      var show_rfi_inputs    = jQuery('#show-rfi-inputs');
+      var show_search_inputs = jQuery('#show-search-inputs');
+
+      var search_submit      = locator_form.find('#search-submit');
+      var rfi_submit         = locator_form.find('#rfi-submit');
+
+    //
+      show_rfi_inputs.click(function(){
+        search_inputs.hide(function(){ 
+          rfi_inputs.show(function(){
+            email_input.focus();
+          }); 
+        });
+      });
+
+      show_search_inputs.click(function(){
+        rfi_inputs.hide(function(){ search_inputs.show(); });
+        address_input.focus();
+      });
+
+    //
+      address_input.change(function(){
+        
+        Brand.geo_locate({
+          'address' : address_input.val(),
+          'success' : function(data){
+            var loc;
+
+            try {
+              loc = eval('data.results[0].geometry.location') || {};
+            } catch(e) { loc = null };
+
+            if(loc){
+              lat = loc['lat'];
+              lng = loc['lng'];
+              var ll = [lat, lng].join(', ');
+              ll_input.val(ll);
+            }
+          }
+        });
+      });
+
+    //
+      var geo_position_success = [];
+
+      search_submit.click(function(){
+        if(ll_input.val() || address_input.val()){
+          return true;
+        } else {
+          geo_position_success.push( function(){ search_submit.click() });
+          position_input.click();
+          return false;
+        }
+      });
+
+      rfi_submit.click(function(){
+        if(ll_input.val() || address_input.val()){
+          return true;
+        } else {
+          geo_position_success.push( function(){ rfi_submit.click() });
+          position_input.click();
+          return false;
+        }
+      });
+
+    //
+      position_input.click(function(){
+        if(geoPosition.init()){
+          var success = 
+            function(response){
+              var coords = response.coords;
+              var lat = coords['latitude'].round(2);
+              var lng = coords['longitude'].round(2);
+              var ll = [lat, lng].join(', ');
+              ll_input.val(ll);
+
+              Brand.geo_locate({
+                'address' : ll,
+                'success' : function(data){
+                  try {
+                    var parts = data.results[0].formatted_address.split(',');
+                    parts.shift();
+                    var approximate_address = parts.join(', ');
+                    address_input.val(approximate_address);
+                  } catch(e){
+                    address_input.val(ll);
+                  };
+
+                  while(geo_position_success.length > 0){
+                    var cb = geo_position_success.shift();
+                    cb(data);
+                  };
+                }
+              });
+            };
+
+          var error =
+            function(response){
+            };
+
+          geoPosition.getCurrentPosition(success, error);
+        } else {
+        }
+      });
+
+    });
+  </script>

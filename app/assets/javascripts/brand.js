@@ -6,6 +6,7 @@ if(!window.Brand){
     Brand.rfi_form = function(name, selector){
       var url = '/' + name + '/forms/rfi';
       var target = jQuery(selector);
+      var tab = Brand.current_tab();
 
       jQuery.ajax({
         'url' : url,
@@ -16,7 +17,7 @@ if(!window.Brand){
           target.append(html);
 
           target.find('form').each(function(i, form){
-            Brand.ajaxify_form(target, form);
+            Brand.ajaxify_form(tab, target, form);
           });
         }
       });
@@ -27,6 +28,8 @@ if(!window.Brand){
     Brand.locator_form = function(name, selector){
       var url = '/' + name + '/forms/locator';
       var target = jQuery(selector);
+      var tab = Brand.current_tab();
+
       jQuery.ajax({
         'url' : url,
         'type' : 'GET',
@@ -34,13 +37,22 @@ if(!window.Brand){
 
         'success' : function(html){
           target.append(html);
+
+          target.find('form').each(function(i, form){
+            Brand.ajaxify_form(tab, target, form);
+          });
         }
       });
 
       return(true);
     };
 
-    Brand.ajaxify_form = function(target, form){
+    Brand.current_tab = function(){
+      var current_tab = ('' + window.location).replace(/[#].*/, '').replace(/[?].*/, '');
+      return(current_tab);
+    };
+
+    Brand.ajaxify_form = function(tab, target, form){
       form = jQuery(form);
 
       form.ajaxForm({
@@ -49,10 +61,15 @@ if(!window.Brand){
           form.replaceWith(html);
 
           target.find('form').each(function(i, form){
-            Brand.ajaxify_form(target, form);
+            Brand.ajaxify_form(tab, target, form);
           });
         }
       });
+
+      var input = jQuery('<input name="tab" type="hidden"/>');
+      input.val(tab);
+      form.append(input);
+      form.find('a.tab').attr('href', tab);
     };
 
     Brand.geo_locate = function(options){

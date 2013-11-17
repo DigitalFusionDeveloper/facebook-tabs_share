@@ -1,0 +1,64 @@
+<% unless @locator.locations.blank? %>
+  <%
+    locations_points = @locator.locations.map(&:loc)
+    locations_map_url = map_for_points(locations_points, :color => '0x00AEEF', :style => nil)  
+    label = '@'
+  %>
+
+  <table class='search-results'>
+    <caption>
+      <img src="<%= locations_map_url %>">
+    </caption>
+
+    <% 
+     @locator.locations.each do |location|
+      title          = location.title.titleize
+      address        = location.address
+      distance       = location.distance.round(2)
+      map_url        = location.map_url
+      lat            = location.lat
+      lng            = location.lng
+      google_map_url = "http://maps.google.com/maps?q=loc:#{ lat },#{ lng }&amp;gl=us&amp;t=m&amp;z=12" 
+      google_map_url = "http://maps.google.com/maps?q=#{ CGI.escape(address) }".html_safe
+    %>
+
+    <tr>
+      <td>
+        <a href="<%= google_map_url %>" target="_blank" class="location-map-link">
+          <%= label.succ! %>
+        </a>
+      </td>
+      <td>
+        <%= title %>
+      </td>
+      <td>
+        <%= address %>
+      </td>
+      <td>
+        <%= distance %> miles
+      </td>
+    </tr>
+    <tr>
+      <td colspan=4>
+        <figure class="location-map">
+          <img src="<%= map_url %>" />
+
+          <figcaption>
+            <a href="<%= google_map_url %>" target="_blank" class="location-map-link">
+              Google Map &raquo;
+            </a>
+          </figcaption>
+        </figure>
+      </td>
+    </tr>
+
+    <% end %>
+  </table>
+
+<% else %>
+  <h5>
+    Sorry, no locations found.
+  </h5>
+<% end %>
+<hr>
+<%= link_to raw('&larr; Return to Search'), '', :class => 'tab' %>
