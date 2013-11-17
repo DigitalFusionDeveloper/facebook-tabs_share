@@ -29,7 +29,7 @@ module App
     config = args.shift || options[:config] || Rails.application.config
     env = ActiveSupport::StringInquirer.new(env.to_s)
 
-    if env.production? or ENV['RAILS_EMAIL']
+    if env.production? or ENV['RAILS_EMAIL'] or (settings[env] and settings[env].email_interceptor?)
       config.action_mailer.default_url_options   = defined?(DefaultUrlOptions) ? DefaultUrlOptions : {}
       config.action_mailer.perform_deliveries    = true
       config.action_mailer.raise_delivery_errors = true
@@ -46,6 +46,13 @@ module App
       }
 
       config.action_mailer.delivery_method       = :smtp
+
+      if settings[env] and settings[env].email_interceptor?
+        ActionMailer::Base.register_interceptor(settings[env].email_interceptor.model.constantize)
+      end
+
+config.action_mailer.delivery_method = :smtp
+config.action_mailer.smtp_settings = { :address => "localhost", :port => 1025 }
     else
       config.action_mailer.perform_deliveries    = true
       config.action_mailer.raise_delivery_errors = true
@@ -88,7 +95,7 @@ module App
     # Disable Rails's static asset server
     # In production, Apache or nginx will already do this
     config.serve_static_assets = true
-    
+
     # Compress JavaScripts and CSS
     config.assets.compress = true
 
