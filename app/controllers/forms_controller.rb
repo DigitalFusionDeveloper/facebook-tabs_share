@@ -119,7 +119,8 @@ protected
           @rfi[field] = value
         end
 
-        @rfi[:brand] = @brand.slug
+        @rfi[:kind]         = 'default'
+        @rfi[:brand]        = @brand.slug
         @rfi[:organization] = @brand.organization.try(:slug)
 
         if @rfi.save
@@ -265,13 +266,17 @@ protected
             Rails.logger.info "Mailer.rfi(#{ recipients.inspect })"
           end
 
+          if Rails.stage and !Rails.stage.production?
+            recipients = ['corey.inouye@mobilefusion.com', 'sheena.collins@mobilefusion.com']
+          end
+
           unless recipients.blank?
             Job.submit(Mailer, :rfi, @rfi.id, recipients)
           end
 
         # TODO - iLoop and mail addys here...
 =begin
-
+          
           if Rails.env.production? or ENV['EMAIL_SIGNUP']
             et = ExactTarget::Send.new
             et.send_email(@brand.slug,email)
@@ -418,6 +423,69 @@ protected
       end
 
       def search
+        return false unless validate_location
+
+        [100, 1000, 10_000, 100_000].each do |miles|
+          @locations = Location.find_all_by_lng_lat(@lng, @lat, :limit => 5, :miles => miles)
+          return true unless @locations.blank?
+        end
+
+        errors.add(:address, 'was not found')
+        messages.add("Sorry, we didn't find any locations near you!")
+        false
+      end
+
+      def rfi
+        validates_as_email(:email)
+        validates_as_phone(:mobile_phone)
+        validate_location
+
+        return false unless valid?
+
+        has_contact_info = false
+
+        %w( email mobile_phone ).each do |input|
+          if not params[input].blank?
+            has_contact_info = true
+          end
+        end
+
+        unless has_contact_info
+          messages.add "Please provide an email or mobile phone number."
+          errors.add :email, 'is blank'
+          errors.add :mobile_phone, 'is blank'
+          return false
+        end
+
+        @rfi = RFI.new
+
+        @rfi[:kind]              = 'location'
+        @rfi[:brand]             = @brand.slug
+        @rfi[:organization]      = @brand.organization.try(:slug)
+
+        @rfi[:address]           = params[:address].to_s.strip
+        @rfi[:formatted_address] = params[:formatted_address].to_s.strip
+        @rfi[:email]             = params[:email].to_s.strip
+        @rfi[:mobile_phone]      = params[:mobile_phone].to_s.strip
+        @rfi[:notes]             = params[:notes].to_s.strip
+        @rfi[:lat]               = @lat.to_s.strip
+        @rfi[:lng]               = @lng.to_s.strip
+
+        if @rfi.save
+          if Rails.env.production? or ENV['EMAIL_SIGNUP']
+            et = ExactTarget::Send.new
+            et.send_email(@brand.slug, email)
+          else
+            Rails.logger.info "Would signup #{email}"
+          end
+          return true
+        else
+          @errors.relay(@rfi.errors)
+          return false
+        end
+      end
+
+      def validate_location
         address = params[:address].to_s
         ll = params[:ll].to_s
 
@@ -443,19 +511,12 @@ protected
           return false
         end
 
-        [100, 1000, 10_000, 100_000].each do |miles|
-          @locations = Location.find_all_by_lng_lat(lng, lat, :limit => 5, :miles => miles)
-          return true unless @locations.blank?
-        end
-
-        errors.add(:address, 'was not found')
-        messages.add("Sorry, we didn't find any locations near you!")
-        false
+        @lat, @lng = lat, lng
+        return true
       end
 
-      def rfi
-        true
-      end
+      fattr(:search_form){ params[:submit].to_s.blank? or (params[:submit].to_s =~ /search/i) }
+      fattr(:rfi_form){ !search_form? }
     end
   end
 end

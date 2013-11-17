@@ -1,18 +1,8 @@
 todo:
 
+- style task for noaa
 
-- new form for locator!?
-  - rfi werks
-  - filter by type also werks
-  - style task for noaa
-
-
-- map features
-  - request at my location
-  - show all returned locations on a map
-  - filter by types
-
-  - all server side?
+- locator/filter by type also werks
 
 
 done:
