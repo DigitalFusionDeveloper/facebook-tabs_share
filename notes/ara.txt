@@ -2,6 +2,9 @@ todo:
 
 
 - new form for locator!?
+  - rfi werks
+  - filter by type also werks
+  - style task for noaa
 
 
 - map features

@@ -14,8 +14,9 @@
      @locator.locations.each do |location|
       title          = location.title.titleize
       address        = location.address
+      phone          = location.phone.to_s.html_safe
       distance       = location.distance.round(2)
-      map_url        = location.map_url
+      map_url        = location.map_url.html_safe
       lat            = location.lat
       lng            = location.lng
       google_map_url = "http://maps.google.com/maps?q=loc:#{ lat },#{ lng }&amp;gl=us&amp;t=m&amp;z=12" 
@@ -32,14 +33,19 @@
         <%= title %>
       </td>
       <td>
-        <%= address %>
+        <a href="<%= google_map_url %>" target="_blank" class="location-map-link">
+          <%= address %>
+        </a>
+      </td>
+      <td>
+        <a href="tel:<%= phone %>"><%= phone %></a>
       </td>
       <td>
         <%= distance %> miles
       </td>
     </tr>
     <tr>
-      <td colspan=4>
+      <td colspan=5>
         <figure class="location-map">
           <img src="<%= map_url %>" />
 
