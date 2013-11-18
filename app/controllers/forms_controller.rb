@@ -310,46 +310,7 @@ protected
     end
   end
 
-
-
-=begin
   class ::Locator
-    class PaulanerConducer < ::Dao::Conducer
-      model_name :locator
-
-      fattr :brand
-      fattr :types
-
-      def PaulanerConducer.render!
-        controller = Current.controller
-        conducer = self
-
-        controller.instance_eval do
-          @locator = conducer.new(@brand)
-
-          render @locator.form_template
-        end
-      end
-
-      def initialize(brand, params = {})
-        @brand = brand
-        @types = Location.where(brand: @brand.slug).types
-        update_attributes(
-          params
-        )
-      end
-
-      def form_template
-        File.join(Rails.root.to_s, 'app/views/brands', @brand.slug, 'locator_form.html.erb')
-      end
-    end
-  end
-=end
-
-  class ::Locator
-
-  #load '/Users/ahoward/git/ahoward/dao/lib/dao/form.rb'
-
     class PaulanerConducer < ::Dao::Conducer
       model_name :locator
 
@@ -522,38 +483,3 @@ protected
     end
   end
 end
-
-
-
-
-
-
-=begin
-  def normalize!
-    normalize_name!
-  end
-
-  def normalize_name!
-    if self.name.blank?
-      name = [first_name, last_name].join(' ')
-      self.name = name unless name.blank?
-    end
-
-    if self.name.blank?
-      name = email.to_s.split(/@/).first.to_s.scan(/\w+/).map(&:titleize).join(' ')
-      self.name = name unless name.blank?
-    end
-
-    unless self.name.blank?
-      parts = self.name.scan(/\w+/)
-      first_name = parts.shift
-      last_name = parts.pop
-      if self.first_name.blank?
-        self.first_name = first_name unless first_name.blank?
-      end
-      if self.last_name.blank?
-        self.last_name = last_name unless last_name.blank?
-      end
-    end
-  end
-=end
