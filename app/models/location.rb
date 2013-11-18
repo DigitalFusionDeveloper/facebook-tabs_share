@@ -362,23 +362,41 @@ class Location
   DEGREES_PER_MILE = 1 / 69.047
   MILES_PER_DEGREE = 1 / DEGREES_PER_MILE
 
-  def Location.find_all_by_lng_lat(lng, lat, options = {})
-    options.to_options!
+  def Location.find_all_by_lng_lat(*args)
+    options = args.extract_options!.to_options!
+
+    lng = args.shift || options[:lng]
+    lat = args.shift || options[:lat]
 
     miles = options[:miles] || 100
     max_distance = miles * DEGREES_PER_MILE
 
     limit = options[:limit] || 10
+    types = options[:types] || options[:type]
 
     lng = Float(lng)
     lat = Float(lat)
 
     locations = []
 
-    Location.limit(limit).geo_near(:lat => lat, :lng => lng).max_distance(max_distance).each do |location|
-      location['distance'] = Float(location.geo_near_distance) * MILES_PER_DEGREE
-      locations.push(location)
+    query = Location.all
+
+    unless limit.blank?
+      query = query.limit(limit)
     end
+
+    unless types.blank?
+      types = Coerce.list_of_strings(types)
+      query = query.where(:type.in => types)
+    end
+    
+    query.
+      geo_near(:lat => lat, :lng => lng).
+        max_distance(max_distance).
+          each do |location|
+            location['distance'] = Float(location.geo_near_distance) * MILES_PER_DEGREE
+            locations.push(location)
+          end
 
     geo_locations = GeoLocation.where(:_id.in => locations.map(&:geo_location_id))
 
@@ -433,8 +451,10 @@ class Location
     return nil unless loc
 
     begin
-      cache_map! unless map_image
-      map_image.s3_url || map_image.url
+      Timeout.timeout(1.0) do
+        cache_map! unless map_image
+        map_image.s3_url || map_image.url
+      end
     rescue Object => e
       google_url
     end

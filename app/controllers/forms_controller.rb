@@ -425,8 +425,10 @@ protected
       def search
         return false unless validate_location
 
+        types = Coerce.list_of_strings(params.get(:types).select{|k,v| Coerce.boolean(v)}.to_a.map(&:first))
+
         [100, 1000, 10_000, 100_000].each do |miles|
-          @locations = Location.find_all_by_lng_lat(@lng, @lat, :limit => 5, :miles => miles)
+          @locations = Location.find_all_by_lng_lat(@lng, @lat, :limit => 5, :miles => miles, :types => types)
           return true unless @locations.blank?
         end
 
