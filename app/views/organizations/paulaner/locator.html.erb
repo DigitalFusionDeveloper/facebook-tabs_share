@@ -4,11 +4,11 @@
 
     <%= f.messages %>
 
-    <div id="search-inputs" class="container" style='<%= 'display:none;' unless @locator.search_form? %>'>
+    <div id="search-inputs" class="container" style='width:100%;<%= 'display:none;' unless @locator.search_form? %>'>
 
       <!-- search input fields -->
       <div class="row">
-        <div class="span4 offset4">
+        <div class="span4 offset4" style="text-align:center;">
  
           <span>
             <i id="position" class="fa fa-location-arrow" style="font-size:2em"></i>
@@ -32,11 +32,11 @@
       </div>
 
       <!-- filter search & request location -->
-      <div class="row search_options" style="margin-top:10px;">
+      <div class="row search_options" style="margin-top:10px;text-align:center;">
         <% if @locator.types.size > 1 %>
           <span class="span3 offset3">
-            <i class="fa fa-chevron-right"></i>
-            <a href="#" id="filter-search-options">Filter your search</a>
+            <i class="fa fa-chevron-right" style="color:#fff;background-color:#333333;padding:5px;border-radius:5px;margin-right:-10px;"></i>
+            <a href="#" id="filter-search-options" style="color:#fff;background-color:#333333;padding:4px;border-radius:5px;">Filter your search</a>
             
             <div id="filter-options-list" style="display:none;">
               <ul style="list-style-type:none;">
@@ -50,8 +50,8 @@
             </div>
           </span>
           <span class="span5">
-            <i class="fa fa-chevron-right"></i>
-            <a href='#' id='show-rfi-inputs'>Request <%= @locator.brand.title %> at my location!</a>
+            <i class="fa fa-chevron-right" style="color:#fff;background-color:#333333;padding:5px;border-radius:5px;margin-right:-10px;"></i>
+            <a href='#' id='show-rfi-inputs' style="color:#fff;background-color:#333333;padding:4px;border-radius:5px;">Request <%= @locator.brand.title %> at my location!</a>
           </span>
         <% else %>
           <div>
