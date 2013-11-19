@@ -85,6 +85,8 @@
       # Version of your assets, change this if you want to expire all your assets
       config.assets.version = '1.0'
 
+      Dir.glob( Rails.root.join("vendor", "assets", "stylesheets", "**", "**").to_s ).each{|dir| config.assets.paths << dir if test(?d, dir)}
+
       # Bundler.require *Rails.groups(:assets => %w(development test production))
 
       # sometimes vendored gems are saweet
