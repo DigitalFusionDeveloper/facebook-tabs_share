@@ -5,21 +5,47 @@
     label = '@'
   %>
 
-  <table class='search-results' id='search-results'>
-    <caption style='text-align:left;'>
-      <h3><%= @locator.locations.size %> <%= 'location'.pluralize(@locator.locations.size) %></h3>
-      <ul>
-        <% @locator.locations.each do |location| %>
-          <li>
-            <a href="#<%= location.id %>"><%= label.succ! %> &mdash; <%= location.title.titleize %></a>
-          </li>
-        <% end %>
-      </ul>
-      <img src="<%= locations_map_url %>">
-      <br>
-      <br>
-    </caption>
+  <div class="container" id="search-results">
 
+    <!-- link back to search -->
+    <div style="text-align:left;">
+      <%= link_to raw('&larr; Return to Search'), '', :class => 'tab' %>
+    </div>
+    
+    <hr>
+
+    <!-- search criteria -->
+    <div style="text-align:center;">
+      <!-- <h3> @locator.criteria ?? </h3>-->
+    </div>
+
+    <!-- big map with results over view -->
+    <div class="row" style="margin-left:0px;">
+      <div class="span8">
+        <img src="<%= locations_map_url %>">
+      </div>
+
+      <div class="span4" style="text-align:right;">
+        <h3><%= @locator.locations.size %> <%= 'location'.pluralize(@locator.locations.size) %></h3>
+        <ul style="list-style-type:none;">
+          <% @locator.locations.each do |location| %>
+            <li>
+              <a href="#<%= location.id %>"><%= location.title.titleize %> &mdash; <%= label.succ! %></a>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+
+    <!-- request location -->
+    <div class="row" style="text-align:center; margin:15px;">
+      <div>
+        <i class="fa fa-chevron-right"></i>
+        <a href id='request-location-link'>Request <%= @locator.brand.title %> at my location!</a>
+      </div>
+    </div>
+
+    <!-- individual result listings -->
     <% 
      label = '@'
 
@@ -34,59 +60,47 @@
       google_map_url = "http://maps.google.com/maps?q=loc:#{ lat },#{ lng }&amp;gl=us&amp;t=m&amp;z=12" 
       google_map_url = "http://maps.google.com/maps?q=#{ CGI.escape(address) }".html_safe
     %>
+    
+      <div>
+        <div class="span4" style="text-align:left;">
+          <ul style="list-style-type:none;">
+            <li>
+              <a id="<%= location.id %>" href="#search-results">
+                <h5 style="white-space:nowrap;width:6em;">&uarr;<%= label.succ! %></h5>
+              </a>
+            </li>
+            <li>
+              <h4><%= title %> (<%= @locator.label_for(location.type) %>)</h4>
+            </li>
+            <li>
+              <a href="tel:<%= phone %>"><%= phone %></a>
+            </li>
+            <li>
+              <a href="<%= google_map_url %>" target="_blank" class="location-map-link">
+                <%= address %>
+              </a>
+            </li>
+            <li>
+              ~ <%= distance %> miles
+            </li>
+          <ul>
+        </div>
+        
+        <div class="span8" style="text-align:right;">
+          <figure class="location-map" style="padding:0px;margin:0px;">
+            <img src="<%= map_url %>" />
 
-    <tr style='border-top:1px solid #ccc;'>
-      <td>
-        <a id="<%= location.id %>" href="#search-results">
-          <h5 style="white-space:nowrap;width:6em;">&uarr;<%= label.succ! %></h5>
-        </a>
-      </td>
-
-      <td style='text-align:right;'>
-        <h4><%= title %> <em>(<%= @locator.label_for(location.type) %>)</em></h4>
-      </td>
-
-      <td style='text-align:right;'>
-        <a href="tel:<%= phone %>"><%= phone %></a>
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        &nbsp;
-      </td>
-
-      <td style='text-align:right;'>
-        <a href="<%= google_map_url %>" target="_blank" class="location-map-link">
-          <%= address %>
-        </a>
-      </td>
-
-      <td style='text-align:right;'>
-        <em>~ <%= distance %> miles</em>
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        &nbsp;
-      </td>
-
-      <td colspan=2>
-        <figure class="location-map" style="padding:0px;margin:0px;">
-          <img src="<%= map_url %>" />
-
-          <figcaption>
-            <a href="<%= google_map_url %>" target="_blank" class="location-map-link">
-              Google Map &raquo;
-            </a>
-          </figcaption>
-        </figure>
-      </td>
-    </tr>
+            <figcaption>
+              <a href="<%= google_map_url %>" target="_blank" class="location-map-link">
+                Google Map &raquo;
+              </a>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
 
     <% end %>
-  </table>
+  </div>
 
 <% else %>
   <h5>
@@ -95,3 +109,7 @@
 <% end %>
 <hr>
 <%= link_to raw('&larr; Return to Search'), '', :class => 'tab' %>
+
+<!-- css -->
+<%= stylesheet_link_tag("font-awesome") %>
+
