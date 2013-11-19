@@ -4,15 +4,6 @@ body {
   padding: 0;
 }
 
-.container {
-  position: relative;
-  width: 810px;
-  height: 648px;
-  margin: 0 auto;
-  position: relative;
-  background: #000 url('img/ohara-bg.jpg') no-repeat 0 0;
-}
-
 #nav {
   padding: 101px 0 0 10px;
 }
@@ -77,12 +68,12 @@ body {
 
 /* styles for beer forms */
 
-.container {
-  width: 810px;
-}
-.container.fb-tab {
+#fb-tab {
   background: url('img/ohara-bg-2.jpg') no-repeat 0 0 !important;
-  height: auto;
+  position: relative;
+  width: 810px;
+  height: 648px;
+  margin: 0 auto;
 }
 
 #header {margin: 10px 0 10px 0;}
