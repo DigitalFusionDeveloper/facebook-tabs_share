@@ -104,6 +104,8 @@ db_namespace = namespace(:db) do
 
       spawn("tar xvfz data.tar.gz", :report => false)
 
+      `mongod --setParameter textSearchEnabled=true`
+
       begin                                                                                                                                                                     
         Dir.chdir('./data') do                                                                                                                                                  
           spawn("rm -rf system\.*")                                                                                                                                             

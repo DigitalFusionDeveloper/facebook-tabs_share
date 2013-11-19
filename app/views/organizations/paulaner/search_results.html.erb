@@ -5,12 +5,24 @@
     label = '@'
   %>
 
-  <table class='search-results'>
-    <caption>
+  <table class='search-results' id='search-results'>
+    <caption style='text-align:left;'>
+      <h3><%= @locator.locations.size %> <%= 'location'.pluralize(@locator.locations.size) %></h3>
+      <ul>
+        <% @locator.locations.each do |location| %>
+          <li>
+            <a href="#<%= location.id %>"><%= label.succ! %> &mdash; <%= location.title.titleize %></a>
+          </li>
+        <% end %>
+      </ul>
       <img src="<%= locations_map_url %>">
+      <br>
+      <br>
     </caption>
 
     <% 
+     label = '@'
+
      @locator.locations.each do |location|
       title          = location.title.titleize
       address        = location.address
@@ -23,30 +35,45 @@
       google_map_url = "http://maps.google.com/maps?q=#{ CGI.escape(address) }".html_safe
     %>
 
-    <tr>
+    <tr style='border-top:1px solid #ccc;'>
       <td>
-        <a href="<%= google_map_url %>" target="_blank" class="location-map-link">
-          <%= label.succ! %>
+        <a id="<%= location.id %>" href="#search-results">
+          <h5 style="white-space:nowrap;width:6em;">&uarr;<%= label.succ! %></h5>
         </a>
       </td>
-      <td>
-        <%= title %> (<%= @locator.label_for(location.type) %>)
+
+      <td style='text-align:right;'>
+        <h4><%= title %> <em>(<%= @locator.label_for(location.type) %>)</em></h4>
       </td>
+
+      <td style='text-align:right;'>
+        <a href="tel:<%= phone %>"><%= phone %></a>
+      </td>
+    </tr>
+
+    <tr>
       <td>
+        &nbsp;
+      </td>
+
+      <td style='text-align:right;'>
         <a href="<%= google_map_url %>" target="_blank" class="location-map-link">
           <%= address %>
         </a>
       </td>
-      <td>
-        <a href="tel:<%= phone %>"><%= phone %></a>
-      </td>
-      <td>
-        <%= distance %> miles
+
+      <td style='text-align:right;'>
+        <em>~ <%= distance %> miles</em>
       </td>
     </tr>
+
     <tr>
-      <td colspan=5>
-        <figure class="location-map">
+      <td>
+        &nbsp;
+      </td>
+
+      <td colspan=2>
+        <figure class="location-map" style="padding:0px;margin:0px;">
           <img src="<%= map_url %>" />
 
           <figcaption>
