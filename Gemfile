@@ -51,6 +51,8 @@ group :assets do
   gem 'uglifier', '>= 1.0.3'
 end
 
+gem "font-awesome-rails"
+
 gem 'jquery-rails', '~> 2.0.0'
 
 gem 'handlebars'
