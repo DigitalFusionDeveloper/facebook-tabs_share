@@ -39,7 +39,7 @@
             <a href="#" id="filter-search-options" style="color:#fff;background-color:#333333;padding:4px;border-radius:5px;">Filter your search</a>
             
             <div id="filter-options-list" style="display:none;">
-              <ul style="list-style-type:none;">
+              <ul style="list-style-type:none;text-align:left;">
                 <% @locator.types.each do |type| %>
                   <li>
                     <%= f.checkbox :types, type, :checked => :checked %>
