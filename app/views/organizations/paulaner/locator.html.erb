@@ -145,7 +145,7 @@
       });
 
     //
-      address_input.change(function(){
+      address_input_changed = function(callback){
         Brand.geo_locate({
           'address' : address_input.val(),
           'success' : function(data){
@@ -171,8 +171,27 @@
             if(formatted_address){
               formatted_address_input.val(formatted_address);
             }
+
+            callback && callback();
           }
         });
+      };
+
+      address_input.change(function(){
+        address_input_changed();
+      });
+
+    //
+      address_input.keydown(function(event){
+        if(event.keyCode == 13) {
+          event.preventDefault();
+
+          address_input_changed(function(){
+            search_submit.click();
+          });
+
+          return false;
+        }
       });
 
     //
