@@ -106,10 +106,13 @@ protected
       end
 
       def save
+        if not attributes[:mobile_phone].blank?
+          validates_as_phone(:mobile_phone)
+        end
+
         validates_presence_of(:first_name)
         validates_presence_of(:last_name)
         validates_as_email(:email)
-        validates_as_phone(:mobile_phone)
         validates_presence_of(:postal_code)
 
         return false unless valid?
