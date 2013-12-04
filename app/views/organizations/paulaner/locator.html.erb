@@ -22,11 +22,11 @@
 
       <!-- filter search & request location -->
       <div class="row search_options" style="margin-top:10px;">
-        <% if @locator.types.size < 1 %>
+        <% if @locator.types.size > 1 %>
         <div class="span6">
-          <div style="float: right; background-color: #333; text-align: center; border-radius:5px;padding: 5px;">
-            <i class="fa fa-chevron-right" style="color:#fff;background-color:#333333;padding:5px;margin-right:-10px;"></i>
-            <a href="#" id="filter-search-options" style="color:#fff;background-color:#333333;padding:4px;border-radius:5px;">Filter your search</a>
+          <div style="float: right; background-color: #333; text-align: center; border-radius:5px;padding: 5px 10px;">
+            <i class="fa fa-chevron-right" style="color:#fff;"></i>
+            <a href="#" id="filter-search-options" style="color:#fff;">Filter your search</a>
             <div id="filter-options-list" style="display:none;">
               <ul style="list-style-type:none;text-align:left;">
                 <% @locator.types.each do |type| %>
@@ -40,16 +40,16 @@
           </div>
         </div>
         <div class="span6">
-          <div style="float: left; background-color: #333; text-align: center; border-radius:5px;padding: 5px;">
-            <i class="fa fa-chevron-right" style="color:#fff;background-color:#333333;padding:5px;border-radius:5px;margin-right:-10px;"></i>
-            <a href='#' id='show-rfi-inputs' style="color:#fff;background-color:#333333;padding:4px;border-radius:5px;">Request <%= @locator.brand.title %> at my location!</a>
+          <div style="float: left; background-color: #333; text-align: center; border-radius:5px;padding: 5px 10px;">
+            <i class="fa fa-chevron-right" style="color:#fff;"></i>
+            <a href='#' id='show-rfi-inputs' style="color:#fff;">Request <%= @locator.brand.title %> at my location!</a>
           </div>
         </div>
         <% else %>
-          <div class="span12">
-            <div class="span12">
-              <i class="fa fa-chevron-right" style="color:#fff;background-color:#333333;padding:5px;border-radius:5px;margin-right:-10px;"></i>
-              <a href='#' class="text-center" id='show-rfi-inputs' style="color:#fff;background-color:#333333;padding:4px;border-radius:5px;">Request <%= @locator.brand.title %> at my location!</a>
+          <div class="span4 offset4">
+            <div style="float: right;background-color: #333; text-align: center; border-radius:5px;padding: 5px 10px;">
+              <i class="fa fa-chevron-right" style="color:#fff;"></i>
+              <a href='#' class="text-center" id='show-rfi-inputs' style="color:#fff;">Request <%= @locator.brand.title %> at my location!</a>
             </div>
           </div>
         <% end %> 
