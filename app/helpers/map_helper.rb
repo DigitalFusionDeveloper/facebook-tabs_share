@@ -15,7 +15,7 @@ module MapHelper
       :sensor  => false,
       :style   => "saturation:-100"
     }.merge(options).to_query
-    "http://maps.googleapis.com/maps/api/staticmap?#{query}&#{format_markers(markers)}" 
+    "//maps.googleapis.com/maps/api/staticmap?#{query}&#{format_markers(markers)}" 
   end
 
   private
