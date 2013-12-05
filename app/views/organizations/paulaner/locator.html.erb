@@ -28,7 +28,7 @@
             <i class="fa fa-chevron-right" style="color:#fff;"></i>
             <a href="#" id="filter-search-options" style="color:#fff;">Filter your search</a>
             <div id="filter-options-list" style="display:none;">
-              <ul style="list-style-type:none;text-align:left;">
+              <ul style="list-style-type:none;text-align:left;margin-left: 0px;padding: 5px;background-color:#fff;border-radius:5px;margin-top:10px;">
                 <% @locator.types.each do |type| %>
                   <li>
                     <%= f.checkbox :types, type, :checked => :checked %>
