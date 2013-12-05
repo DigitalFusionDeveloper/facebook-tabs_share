@@ -461,7 +461,7 @@ class Location
   end
 
   def google_url
-    url = "http://maps.googleapis.com/maps/api/staticmap?" + query_string
+    url = "//maps.googleapis.com/maps/api/staticmap?" + query_string
   end
 
   def map_data(&block)
