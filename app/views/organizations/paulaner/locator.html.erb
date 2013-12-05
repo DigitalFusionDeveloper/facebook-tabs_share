@@ -8,38 +8,27 @@
 
       <!-- search input fields -->
       <div class="row">
-        <div class="span4 offset4" style="text-align:center;">
- 
-          <span>
-            <i id="position" class="fa fa-location-arrow" style="font-size:2em"></i>
-          </span>
+        <div class="span6 offset4">
+            <i id="position" class="fa fa-location-arrow" style="font-size: 2em; float: left; margin-right: 5px; margin-top: 10px;"></i>
 
-          <span>
-            <%= f.input :address, :id => :address, :placeholder => 'Address (Ex: 2030 17th Street, Boulder, CO)' %>
-          </span>
+            <%= f.input :address, :id => :address, :placeholder => 'Address (Ex: 2030 17th Street, Boulder, CO)', :style => "margin-top: 10px; margin-right: 2px;" %>
           
           <%= f.input :ll, :id => :ll, :type => :hidden %>
           <%= f.input :formatted_address, :id => 'formatted-address', :type => :hidden %>
 
-        </div>
-      </div>
-
-      <!-- search button -->
-      <div class="row">
-        <div class="text-center">
           <%= f.submit :value => 'Search', :id => 'search-submit' %>
         </div>
       </div>
 
       <!-- filter search & request location -->
-      <div class="row search_options" style="margin-top:10px;text-align:center;">
+      <div class="row search_options" style="margin-top:10px;">
         <% if @locator.types.size > 1 %>
-          <span class="span3 offset3">
-            <i class="fa fa-chevron-right" style="color:#fff;background-color:#333333;padding:5px;border-radius:5px;margin-right:-10px;"></i>
-            <a href="#" id="filter-search-options" style="color:#fff;background-color:#333333;padding:4px;border-radius:5px;">Filter your search</a>
-            
+        <div class="span6">
+          <div style="float: right; background-color: #333; text-align: center; border-radius:5px;padding: 5px 10px;">
+            <i class="fa fa-chevron-right" style="color:#fff;"></i>
+            <a href="#" id="filter-search-options" style="color:#fff;">Filter your search</a>
             <div id="filter-options-list" style="display:none;">
-              <ul style="list-style-type:none;text-align:left;">
+              <ul style="list-style-type:none;text-align:left;margin-left: 0px;padding: 5px;background-color:#fff;border-radius:5px;margin-top:10px;">
                 <% @locator.types.each do |type| %>
                   <li>
                     <%= f.checkbox :types, type, :checked => :checked %>
@@ -48,15 +37,20 @@
                 <% end %>
               </ul>
             </div>
-          </span>
-          <span class="span5">
-            <i class="fa fa-chevron-right" style="color:#fff;background-color:#333333;padding:5px;border-radius:5px;margin-right:-10px;"></i>
-            <a href='#' id='show-rfi-inputs' style="color:#fff;background-color:#333333;padding:4px;border-radius:5px;">Request <%= @locator.brand.title %> at my location!</a>
-          </span>
+          </div>
+        </div>
+        <div class="span6">
+          <div style="float: left; background-color: #333; text-align: center; border-radius:5px;padding: 5px 10px;">
+            <i class="fa fa-chevron-right" style="color:#fff;"></i>
+            <a href='#' id='show-rfi-inputs' style="color:#fff;">Request <%= @locator.brand.title %> at my location!</a>
+          </div>
+        </div>
         <% else %>
-          <div>
-            <i class="fa fa-chevron-right"></i>
-            <a href='#' class="text-center" id='show-rfi-inputs' style="display:block;margin:10px auto">Request <%= @locator.brand.title %> at my location!</a>
+          <div class="span4 offset4">
+            <div style="float: right;background-color: #333; text-align: center; border-radius:5px;padding: 5px 10px;">
+              <i class="fa fa-chevron-right" style="color:#fff;"></i>
+              <a href='#' class="text-center" id='show-rfi-inputs' style="color:#fff;">Request <%= @locator.brand.title %> at my location!</a>
+            </div>
           </div>
         <% end %> 
       </div>
