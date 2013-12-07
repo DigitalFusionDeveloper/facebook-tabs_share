@@ -26,7 +26,7 @@
         <img src="<%= locations_map_url %>">
       </div>
 
-      <div class="span4" style="text-align:right;">
+      <div class="span4" style="text-align:left;margin-left:20px;">
         <h3><%= @locator.locations.size %> <%= 'location'.pluralize(@locator.locations.size) %></h3>
         <ul style="list-style-type:none;">
           <% @locator.locations.each do |location| %>
@@ -39,7 +39,7 @@
     </div>
 
     <!-- request location -->
-    <div class="row" style="text-align:center; margin:15px;">
+    <div class="row" style="text-align:left; margin: 15px 0;">
       <div>
         <i class="fa fa-chevron-right"></i>
         <a href id='request-location-link'>Request <%= @locator.brand.title %> at my location!</a>
@@ -62,9 +62,9 @@
       google_map_url = "http://maps.google.com/maps?q=#{ CGI.escape(address) }".html_safe
     %>
     
-      <div>
-        <div class="span4" style="text-align:left;">
-          <ul style="list-style-type:none;">
+      <div class="row-fluid" style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #000;">
+        <div class="span3" style="text-align:left;">
+          <ul style="list-style-type:none;margin-left:0px;">
             <li>
               <a id="<%= location.id %>" href="#search-results">
                 <h5 style="white-space:nowrap;width:6em;">&uarr;<%= label.succ! %></h5>
@@ -91,7 +91,7 @@
           <figure class="location-map" style="padding:0px;margin:0px;">
             <img src="<%= map_url %>" />
 
-            <figcaption>
+            <figcaption style="margin-top: 5px;">
               <a href="<%= google_map_url %>" target="_blank" class="location-map-link">
                 Google Map &raquo;
               </a>
