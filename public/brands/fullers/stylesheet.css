@@ -277,7 +277,11 @@ input[type="submit"].btn:hover {
     font-weight: 500;
     color: #fff;
   }
-
+  
+/* font-awesome */
+.fa-location-arrow:hover {
+  cursor: pointer;
+}
 
 
 

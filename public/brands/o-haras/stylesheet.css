@@ -221,3 +221,8 @@ footer img {
     color: #333;
   }
 
+/* font-awesome */
+.fa-location-arrow:hover {
+  cursor: pointer;
+}
+
