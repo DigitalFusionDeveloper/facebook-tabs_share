@@ -189,7 +189,7 @@
       });
 
     //
-      var geo_position_success = [];
+      var geo_position_complete = [];
 
       search_submit.click(function(){
         if (navigator && !navigator.onLine) {
@@ -199,7 +199,7 @@
         if(ll_input.val() || address_input.val()){
           return true;
         } else {
-          geo_position_success.push( function(){ search_submit.click() });
+          geo_position_complete.push( function(){ search_submit.click() });
           position_input.click();
           return false;
         }
@@ -209,7 +209,7 @@
         if(ll_input.val() || address_input.val()){
           return true;
         } else {
-          geo_position_success.push( function(){ rfi_submit.click() });
+          geo_position_complete.push( function(){ rfi_submit.click() });
           position_input.click();
           return false;
         }
@@ -249,8 +249,8 @@
                     address_input.val(ll);
                   };
 
-                  while(geo_position_success.length > 0){
-                    var cb = geo_position_success.shift();
+                  while(geo_position_complete.length > 0){
+                    var cb = geo_position_complete.shift();
                     cb(data);
                   };
                 }
@@ -259,6 +259,10 @@
 
           var error =
             function(response){
+              while(geo_position_complete.length > 0){
+                var cb = geo_position_complete.shift();
+                cb({});
+              };
             };
 
           geoPosition.getCurrentPosition(success, error);
