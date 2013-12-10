@@ -472,8 +472,8 @@ protected
         end
 
         unless lat and lng
-          errors.add(:address, 'is missing')
-          messages.add('Please supply an address')
+          errors.add(:address, 'lookup failure')
+          messages.add('Sorry, we cannot locate your address at this time.')
           return false
         end
 
