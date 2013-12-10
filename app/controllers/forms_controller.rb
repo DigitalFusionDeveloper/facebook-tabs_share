@@ -467,7 +467,8 @@ protected
           end
 
           raise unless(lat && lng)
-        rescue Object
+        rescue Object => e
+          Rails.logger.error(e)
           lat, lng = nil
         end
 
