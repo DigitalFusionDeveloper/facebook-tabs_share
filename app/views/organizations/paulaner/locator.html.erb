@@ -227,45 +227,45 @@
 
               ll_input.val(ll);
 
+              var complete = function(data){
+                var formatted_address;
+
+                try {
+                  formatted_address = eval('data.results[0].formatted_address') || {};
+                } catch(e) { formatted_address = null };
+
+                if(formatted_address){
+                  formatted_address_input.val(formatted_address);
+                }
+
+                try {
+                  var parts = formatted_address.split(',');
+                  parts.shift();
+                  var approximate_address = parts.join(', ');
+                  address_input.val(approximate_address);
+                } catch(e){
+                  address_input.val(ll);
+                };
+
+                while(geo_position_complete.length > 0){
+                  var cb = geo_position_complete.shift();
+                  cb(data || {});
+                };
+              };
+
               Brand.geo_locate({
                 'address' : ll,
-                'success' : function(data){
-                  var formatted_address;
-
-                  try {
-                    formatted_address = eval('data.results[0].formatted_address') || {};
-                  } catch(e) { formatted_address = null };
-
-                  if(formatted_address){
-                    formatted_address_input.val(formatted_address);
-                  }
-
-                  try {
-                    var parts = formatted_address.split(',');
-                    parts.shift();
-                    var approximate_address = parts.join(', ');
-                    address_input.val(approximate_address);
-                  } catch(e){
-                    address_input.val(ll);
-                  };
-
-                  while(geo_position_complete.length > 0){
-                    var cb = geo_position_complete.shift();
-                    cb(data);
-                  };
-                }
+                'success' : complete
               });
             };
 
-          var error =
-            function(response){
-              while(geo_position_complete.length > 0){
-                var cb = geo_position_complete.shift();
-                cb({});
-              };
-            };
+          var error = complete;
 
-          geoPosition.getCurrentPosition(success, error);
+          try{
+            geoPosition.getCurrentPosition(success, error);
+          } catch(e) {
+            complete();
+          };
         } else {
         }
       });
