@@ -147,6 +147,10 @@ footer img {
     color: #666;
   }
 
+/* font-awesome */
+.fa-location-arrow:hover {
+  cursor: pointer;
+}
 
 /* bootstrap width overrides for FB 810px width */
 
