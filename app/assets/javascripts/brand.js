@@ -73,28 +73,49 @@ if(!window.Brand){
     };
 
     Brand.geo_locate = function(options){
-      var url = '//maps.google.com/maps/api/geocode/json';
       var address = options['address'];
-      var async = options['async']==false ? false : true;
+      var success = options['success'] || function(){};
 
-      options['success'] = options['success'] || function(){};
-      options['error'] = options['error'] || function(){};
-      options['complete'] = options['complete'] || function(){};
-
-
-      jQuery.ajax({
-        'url'   : url,
-        'type'  : 'GET',
-        'cache' : false,
-        'async' : async,
-
-        'data' : {'sensor' : false, 'address' : address},
-
-        'success'  : options['success'],
-        'error'    : options['error'],
-        'complete' : options['complete']
+      window.load_google_maps(function(){
+        var geocoder = new google.maps.Geocoder()
+        geocoder.geocode({'address':address}, success);
       });
     };
+
+    if(!window.load_google_maps){
+      window.load_google_maps = function(cb){
+        if(cb){
+          window.google_maps_callbacks.push(cb);
+        }
+
+        try{
+          google.maps.Geocoder
+          window.google_maps_loaded();
+        } catch(e) {
+          var script = document.createElement('script');
+          script.type = 'text/javascript';
+          script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&' +
+              'callback=google_maps_loaded';
+          document.body.appendChild(script);
+        }
+      };
+
+      window.load_google_maps();
+    };
+
+    if(!window.google_maps_loaded){
+      window.google_maps_loaded = function(){
+        for(var i = 0; i < google_maps_callbacks.length; i++){
+          var cb = google_maps_callbacks[i];
+          try{ cb() } catch(e) {};
+        }
+      };
+    };
+
+    if(!window.google_maps_callbacks){
+      window.google_maps_callbacks = []; 
+    };
+
 
     window.Brand = Brand;
   })();
