@@ -1,6 +1,6 @@
 <!-- html --> 
 
-  <%= form(@locator, :url => request.fullpath, :html => {:id => 'locator-form', :style => 'background-color:white;padding:2em;'}) do |f| %> 
+  <%= form(@locator, :url => request.fullpath, :html => {:id => 'locator-form', :style => 'background-color:white;color:#333;padding:2em;'}) do |f| %> 
 
     <%= f.messages %>
 
@@ -128,13 +128,13 @@
 
     //
       filter_search_options.click(function(){
-        filter_options_list.slideToggle();
+        filter_options_list.toggle();
       });
 
     //
       show_rfi_inputs.click(function(){
-        search_inputs.hide(function(){ 
-          rfi_inputs.show(function(){
+        search_inputs.hide(0, function(){ 
+          rfi_inputs.show(0, function(){
             if(ll_input.val()){
               email_input.focus();
             } else {
@@ -145,7 +145,7 @@
       });
 
       show_search_inputs.click(function(){
-        rfi_inputs.hide(function(){ search_inputs.show(); });
+        rfi_inputs.hide(0, function(){ search_inputs.show(0); });
         address_input.focus();
       });
 
