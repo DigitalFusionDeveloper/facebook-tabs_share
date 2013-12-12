@@ -1,33 +1,22 @@
-
 <br>
 
 <%=
 
-  index = Brand.list.map(&:slug)
-
-  index.unshift('__sample__')
-
   dl_{
-    index.each do |brand|
 
-    dt_{ brand }
+    Brand.all.each do |brand|
 
-    prefix = Rails.root.join('public', 'brands', brand).to_s
+      dt_{ brand.title }
 
-    %w( index contact locator ).each do |page|
-      dd_{ 
-          #prefix = Rails.root.join('public', 'brands', brand.slug, "#{ page }.html").to_s
-          path = File.join(prefix, "#{ page }.html")
-          #path = Rails.root.join('public', 'brands', brand.slug, "#{ page }.html").to_s
-
-          if test(?e, path)
-            a_(:href => "./brands/#{ brand }/#{ page }.html", :target => :_blank){ page } 
-          end
-      } 
+      [brand.index_url, brand.rfi_url, brand.locator_url].each do |url|
+        if url 
+          dd_{
+            a_(:href => "#{ url }", :target => :_blank){ url }
+          }
+        end
+      end
     end
 
-
-  end
   }
 
 %>

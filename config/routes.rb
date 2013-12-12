@@ -101,7 +101,12 @@ Dojo4::Application.routes.draw do
   scope ':brand' do
     match ':controller(/:action)(.:format)', :constraints => Constraints.brand
   end
-  resources :brands
+  resources :brands do
+    #match ':id/locator', :action => 'locator'
+    member do
+      match :locator
+    end
+  end
 
   resources :locations do
     collection do

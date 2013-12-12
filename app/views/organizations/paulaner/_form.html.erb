@@ -1,0 +1,298 @@
+<!-- html --> 
+
+  <%= form(@locator, :url => request.fullpath, :html => {:id => 'locator-form', :style => 'background-color:white;color:#333;padding:2em;'}) do |f| %> 
+
+    <%= f.messages %>
+
+    <div id="search-inputs" class="container" style='width:100%;<%= 'display:none;' unless @locator.search_form? %>'>
+
+      <!-- search input fields -->
+      <div class="row">
+        <div class="span6 offset4">
+            <i id="position" class="fa fa-location-arrow" style="font-size: 2em; float: left; margin-right: 5px; margin-top: 10px;"></i>
+
+            <%= f.input :address, :id => :address, :placeholder => 'Address (Ex: 2030 17th Street, Boulder, CO)', :style => "margin-top: 10px; margin-right: 2px;" %>
+          
+          <%= f.input :ll, :id => :ll, :type => :hidden %>
+          <%= f.input :formatted_address, :id => 'formatted-address', :type => :hidden %>
+
+          <%= f.submit :value => 'Search', :id => 'search-submit' %>
+        </div>
+      </div>
+
+      <!-- filter search & request location -->
+      <div class="row search_options" style="margin-top:10px;">
+        <% if @locator.types.size > 1 %>
+        <div class="span6">
+          <div style="float: right; background-color: #333; text-align: center; border-radius:5px;padding: 5px 10px;">
+            <i class="fa fa-chevron-right" style="color:#fff;"></i>
+            <a href="#" id="filter-search-options" style="color:#fff;">Filter your search</a>
+            <div id="filter-options-list" style="display:none;">
+              <ul style="list-style-type:none;text-align:left;margin-left: 0px;padding: 5px;background-color:#fff;border-radius:5px;margin-top:10px;">
+                <% @locator.types.each do |type| %>
+                  <li>
+                    <%= f.checkbox :types, type, :checked => :checked %>
+                    <%= @locator.label_for(type) %>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="span6">
+          <div style="float: left; background-color: #333; text-align: center; border-radius:5px;padding: 5px 10px;">
+            <i class="fa fa-chevron-right" style="color:#fff;"></i>
+            <a href='#' id='show-rfi-inputs' style="color:#fff;">Request <%= @locator.brand.title %> at my location!</a>
+          </div>
+        </div>
+        <% else %>
+          <div class="span4 offset4">
+            <div style="float: right;background-color: #333; text-align: center; border-radius:5px;padding: 5px 10px;">
+              <i class="fa fa-chevron-right" style="color:#fff;"></i>
+              <a href='#' class="text-center" id='show-rfi-inputs' style="color:#fff;">Request <%= @locator.brand.title %> at my location!</a>
+            </div>
+          </div>
+        <% end %> 
+      </div>
+
+    </div>
+
+    <div class="container" id='rfi-inputs' style='text-align:center;<%= 'display:none;' unless @locator.rfi_form? %>'>
+
+      <div class="row">
+        <%= f.label :Email, :style => 'color:#ccc' %>
+        <br>
+        <%= f.input :email, :id => :email, :placeholder => "Email" %>
+      </div>
+
+      <div class="row">
+        <%= f.label :mobile_phone, :style => 'color:#ccc' %>
+        <br>
+        <%= f.input :mobile_phone, :placeholder => :"Mobile Phone" %>
+      </div>
+
+      <div class="row">
+        <%= f.label :notes, :style => 'color:#ccc;' %>
+        <br>
+        <%= f.textarea :notes, :placeholder => "Requested location" %>
+      </div>
+
+      <div class="row">
+        <%= f.submit :value => 'Request', :id => 'rfi-submit' %>
+      </div>
+
+      <div style="text-align:left;">
+        <i class="fa fa-long-arrow-left" style="color:#0088cc;"></i>
+        <a href='#' id='show-search-inputs'>Search instead.</a>
+      </div>
+
+    </div>
+  <% end %>
+
+<!-- css -->
+<%= stylesheet_link_tag("font-awesome") %>
+
+<!-- js -->
+
+  <%= javascript_include_tag 'geoPosition' %>
+
+
+
+<!--
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?sensor=false">
+    </script>
+    <script>
+
+    </script>
+-->
+
+  <script>
+    jQuery(function(){
+    //
+      var locator_form       = jQuery('#locator-form');
+
+      var position_input          = locator_form.find('#position');
+      var address_input           = locator_form.find('#address');
+      var ll_input                = locator_form.find('#ll');
+      var formatted_address_input = locator_form.find('#formatted-address');
+      var email_input             = locator_form.find('#email');
+
+      var rfi_inputs         = jQuery('#rfi-inputs');
+      var search_inputs      = jQuery('#search-inputs');
+      var show_rfi_inputs    = jQuery('#show-rfi-inputs');
+      var show_search_inputs = jQuery('#show-search-inputs');
+
+      var filter_search_options = jQuery('#filter-search-options');
+      var filter_options_list   = jQuery('#filter-options-list');
+
+      var search_submit      = locator_form.find('#search-submit');
+      var rfi_submit         = locator_form.find('#rfi-submit');
+
+    //
+      filter_search_options.click(function(){
+        filter_options_list.toggle();
+      });
+
+    //
+      show_rfi_inputs.click(function(){
+        search_inputs.hide(0, function(){ 
+          rfi_inputs.show(0, function(){
+            if(ll_input.val()){
+              email_input.focus();
+            } else {
+              address_input.focus();
+            }
+          }); 
+        });
+      });
+
+      show_search_inputs.click(function(){
+        rfi_inputs.hide(0, function(){ search_inputs.show(0); });
+        address_input.focus();
+      });
+
+    //
+      address_input_changed = function(callback){
+        Brand.geo_locate({
+          'address' : address_input.val(),
+          'success' : function(data){
+            var loc;
+
+            try {
+              loc = eval('data.results[0].geometry.location') || {};
+            } catch(e) { loc = null };
+
+            if(loc){
+              lat = loc['lat'];
+              lng = loc['lng'];
+              var ll = [lat, lng].join(', ');
+              ll_input.val(ll);
+            }
+
+            var formatted_address;
+
+            try {
+              formatted_address = eval('data.results[0].formatted_address') || {};
+            } catch(e) { formatted_address = null };
+
+            if(formatted_address){
+              formatted_address_input.val(formatted_address);
+            }
+
+            callback && callback();
+          }
+        });
+      };
+
+      address_input.change(function(){
+        address_input_changed();
+      });
+
+    //
+      address_input.keydown(function(event){
+        if(event.keyCode == 13) {
+          event.preventDefault();
+
+          address_input_changed(function(){
+            search_submit.click();
+          });
+
+          return false;
+        }
+      });
+
+    //
+      var geo_position_complete = [];
+
+      search_submit.click(function(){
+        if (navigator && !navigator.onLine) {
+          alert('Sorry, you need to be online to search for locations.');
+          return false;
+        }
+        if(ll_input.val() || address_input.val()){
+          return true;
+        } else {
+          geo_position_complete.push( function(){ search_submit.click() });
+          position_input.click();
+          return false;
+        }
+      });
+
+      rfi_submit.click(function(){
+        if(ll_input.val() || address_input.val()){
+          return true;
+        } else {
+          geo_position_complete.push( function(){ rfi_submit.click() });
+          position_input.click();
+          return false;
+        }
+      });
+
+    //
+      position_input.click(function(){
+        if(geoPosition.init()){
+        //
+          var complete = function(data){
+//console.log(data);
+//window.data=data;
+            var formatted_address;
+
+            try {
+              formatted_address = eval('data[0].formatted_address') || {};
+            } catch(e) { formatted_address = null };
+
+            if(formatted_address){
+              formatted_address_input.val(formatted_address);
+            }
+
+            try {
+              var parts = formatted_address.split(',');
+              parts.shift();
+              var approximate_address = parts.join(', ');
+              address_input.val(approximate_address);
+            } catch(e){
+              address_input.val(ll);
+            };
+
+            while(geo_position_complete.length > 0){
+              var cb = geo_position_complete.shift();
+              cb(data || {});
+            };
+          };
+
+        //
+          var success = 
+            function(response){
+              var coords = response.coords;
+              var lat = coords['latitude'].round(2);
+              var lng = coords['longitude'].round(2);
+              var ll = [lat, lng].join(', ');
+
+//console.log(ll);
+              ll_input.val(ll);
+
+              Brand.geo_locate({
+                'address' : ll,
+                'success' : complete
+                //'success' : function(){ alert('success') },
+                //'error' : function(){ alert('error') },
+                //'complete' : function(){ window.arguments=arguments; alert('complete') }
+              });
+            };
+
+        //
+          var error = complete;
+
+          try{
+            geoPosition.getCurrentPosition(success, error);
+          } catch(e) {
+            complete();
+          };
+        } else {
+          alert('Sorry, your browser does not support this feature.');
+        }
+      });
+
+    });
+  </script>

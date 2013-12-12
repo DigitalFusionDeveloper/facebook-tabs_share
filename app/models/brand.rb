@@ -38,6 +38,31 @@ class Brand < MapModel
   end
 
 
+  def index_url
+    path = Rails.root.join('public', 'brands', slug, 'index.html').to_s
+
+    if test(?e, path)
+      "/brands/#{ slug }/index.html".html_safe
+    end
+  end
+
+  def rfi_url
+    path = Rails.root.join('public', 'brands', slug, 'contact.html').to_s
+
+    if test(?e, path)
+      "/brands/#{ slug }/contact.html".html_safe
+    end
+  end
+
+  def locator_url
+    case
+      when organization.try(:slug) == 'paulaner'
+        "/brands/#{ slug }/locator.html"
+      else
+        nil
+    end
+  end
+
   module Able
     Code = proc do
       #
@@ -82,4 +107,15 @@ class Brand < MapModel
   end
 end
 
-Brand.reload!
+#
+  Brand.reload!
+
+# dynamically define Brand::Paulaner, Brand::Dixie, etc...
+#
+  class Brand
+    all.each do |brand|
+      const = brand.name.camelize
+      remove_const(const) if const_defined?(const)
+      const_set(const, Module.new)
+    end
+  end
