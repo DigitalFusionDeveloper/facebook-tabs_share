@@ -82,39 +82,45 @@ if(!window.Brand){
       });
     };
 
-    if(!window.load_google_maps){
-      window.load_google_maps = function(cb){
-        if(cb){
-          window.google_maps_callbacks.push(cb);
-        }
+    Brand.initialize_google_maps = function(){
 
-        try{
-          google.maps.Geocoder
-          window.google_maps_loaded();
-        } catch(e) {
-          var script = document.createElement('script');
-          script.type = 'text/javascript';
-          script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&' +
-              'callback=google_maps_loaded';
-          document.body.appendChild(script);
-        }
+      if(!window.load_google_maps){
+        window.load_google_maps = function(cb){
+          if(cb){
+            window.google_maps_callbacks.push(cb);
+          }
+
+          try{
+            google.maps.Geocoder
+            window.google_maps_loaded();
+          } catch(e) {
+            var script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&' +
+                'callback=google_maps_loaded';
+            document.body.appendChild(script);
+          }
+        };
+
+        window.load_google_maps();
       };
 
-      window.load_google_maps();
-    };
-
-    if(!window.google_maps_loaded){
-      window.google_maps_loaded = function(){
-        for(var i = 0; i < google_maps_callbacks.length; i++){
-          var cb = google_maps_callbacks[i];
-          try{ cb() } catch(e) {};
-        }
+      if(!window.google_maps_loaded){
+        window.google_maps_loaded = function(){
+          for(var i = 0; i < google_maps_callbacks.length; i++){
+            var cb = google_maps_callbacks[i];
+            try{ cb() } catch(e) {};
+          }
+        };
       };
+
+      if(!window.google_maps_callbacks){
+        window.google_maps_callbacks = []; 
+      };
+
     };
 
-    if(!window.google_maps_callbacks){
-      window.google_maps_callbacks = []; 
-    };
+    jQuery(function(){ Brand.initialize_google_maps() });
 
 
     window.Brand = Brand;

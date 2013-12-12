@@ -7,6 +7,12 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src='/assets/application.js'></script>
+
     <!-- Le styles -->
     <%= stylesheet_link_tag("bootstrap") %>
 
@@ -31,6 +37,16 @@
         border-top: 14px solid #ccc;
         display: block;
       }
+
+      body,
+      body a,
+      body a:hover {
+        color: #333;
+      }
+      body a:hover {
+        text-decoration: underline;
+      }
+
 
       /* form errors */
 
@@ -95,6 +111,13 @@
         cursor: pointer;
       }
 
+      #beer-locator-form {
+        min-height: 300px; 
+      }
+
+      .search-result {
+        padding-top: 1em;
+      }
 
 
       /* bootstrap width overrides for FB 810px width */
@@ -142,7 +165,7 @@
       <div class="row-fluid">
         <div class="span12">
           <div id='beer-locator-form'>
-            <%= render :partial => 'organizations/paulaner/form' %>
+            <%= yield %>
           </div>
       	  <div id="locations">
             <div id="locator_message" class="alert" style="display: none;"></div>
@@ -157,18 +180,6 @@
 
     </div>
 
-    <!-- Le javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src='/assets/application.js'></script>
-    <script src="js/nav.js"></script>
-    <script>
-      jQuery(function(){
-        //Brand.locator_form("hacker-pschorr", "#beer-locator-form");
-      });
-    </script>
-
     <div id="fb-root"></div>
     <script>(function(d, s, id) {
       var js, fjs = d.getElementsByTagName(s)[0];
@@ -177,5 +188,21 @@
       js.src = "https://connect.facebook.net/en_US/all.js#xfbml=1&appId=497149513650330";
       fjs.parentNode.insertBefore(js, fjs);
       }(document, 'script', 'facebook-jssdk'));</script>
+
+    <script>
+      $(document).ready(function() {
+          $(function() {
+              $('#paulaner_nav img').mouseover(
+                  function() {
+                      var idx = $('#paulaner_nav img').index(this);              
+                      $('#details').html($('#descriptions div').eq(idx).html()).show();
+                      $img = $('#images img').eq(idx);
+                      $('#main_image').attr('src',$img.attr('src'));
+                  }
+              );
+          });
+      });
+    </script>
+
   </body>
 </html>

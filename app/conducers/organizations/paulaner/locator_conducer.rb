@@ -14,43 +14,43 @@ module Organization::Paulaner
         params = Map.for(controller.params)
 
         @locator = conducer.new(@brand, params[:locator])
+        layout = @locator.layout
 
         if request.get?
-          render @locator.template_for(:locator)
+          render :template => @locator.view_for(:locator), :layout => layout
           return
         end
 
         case params.get(:locator, :submit)
           when /search/i
             if @locator.search
-              render :template => @locator.template_for(:search_results), :layout => false
+              render :template => @locator.view_for(:search_results), :layout => layout
             else
-              render :template => @locator.template_for(:locator), :layout => false
+              render :template => @locator.view_for(:locator), :layout => layout
             end
             return
 
           when /request/i
             if @locator.rfi
-              render :template => @locator.template_for(:rfi_thank_you), :layout => false
+              render :template => @locator.view_for(:rfi_thank_you), :layout => layout
             else
-              render :template => @locator.template_for(:locator), :layout => false
+              render :template => @locator.view_for(:locator), :layout => layout
             end
             return
 
           else
             @locator.form.messages.add params.inspect
-            render :template => @locator.template_for(:locator), :layout => false
+            render :template => @locator.view_for(:locator), :layout => layout
         end
       end
     end
 
-    def template_for(which)
-      case which.to_s
-        when "locator"
-          File.join(Rails.root.to_s, "app/views/organizations/paulaner/locator.html.erb")
-        else
-          File.join(Rails.root.to_s, "app/views/organizations/paulaner/#{ which }.html.erb")
-      end
+    def layout
+      "organizations/paulaner/locator"
+    end
+
+    def view_for(which)
+      "organizations/paulaner/locator/#{ which }"
     end
 
     def label_for(string)
