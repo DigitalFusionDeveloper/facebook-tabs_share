@@ -32,7 +32,9 @@ module Organization::Paulaner
 
           when /request/i
             if @locator.rfi
-              render :template => @locator.view_for(:rfi_thank_you), :layout => layout
+              message "Thanks for your interest in #{ @brand.title.html_safe }!", :class => :success
+              redirect_to url_for(:action => :locator)
+              #render :template => @locator.view_for(:rfi_thank_you), :layout => layout
             else
               render :template => @locator.view_for(:locator), :layout => layout
             end
@@ -87,12 +89,6 @@ module Organization::Paulaner
     end
 
     def rfi
-      validates_as_email(:email)
-      validates_as_phone(:mobile_phone)
-      validate_location
-
-      return false unless valid?
-
       has_contact_info = false
 
       %w( email mobile_phone ).each do |input|
@@ -100,6 +96,12 @@ module Organization::Paulaner
           has_contact_info = true
         end
       end
+
+      validates_as_email(:email, :allow_blank => true)
+      validates_as_phone(:mobile_phone, :allow_blank => true)
+      #validate_location
+
+      return false unless valid?
 
       unless has_contact_info
         messages.add "Please provide an email or mobile phone number."
@@ -123,12 +125,21 @@ module Organization::Paulaner
       @rfi[:lng]               = @lng.to_s.strip
 
       if @rfi.save
-        if Rails.env.production? or ENV['EMAIL_SIGNUP']
-          et = ExactTarget::Send.new
-          et.send_email(@brand.slug, email)
-        else
-          Rails.logger.info "Would signup #{email}"
+        unless @rfi.email.blank?
+          email = @rfi.email
+
+          begin
+            if Rails.env.production? or ENV['EMAIL_SIGNUP']
+              et = ExactTarget::Send.new
+              er = et.send_email(@brand.slug, email)
+            else
+              Rails.logger.info "Would signup #{email}"
+            end
+          rescue Object => e
+            Rails.logger.error(e)
+          end
         end
+
         return true
       else
         @errors.relay(@rfi.errors)

@@ -153,12 +153,13 @@
       <header>
         <%= image_tag "#{ @brand.slug }/logo.png", :style => 'max-width:150;max-height:150px;' %>
       </header>
-      
+
       <div class="row-fluid">
         <div class="span12">
           <h2 id="locatorHeader" class="text-center">
             Thirsty? Find <%= @brand.title %> below.
           </h2>
+          <%= render :partial => 'shared/flash' %>
         </div>
       </div>
 
@@ -203,6 +204,11 @@
           });
       });
     </script>
+
+    <%= render :partial => 'shared/server_info' %>
+    <%= render :partial => 'shared/google_analytics' %>
+    <%= render :partial => 'shared/templates' %>
+    <%= render :partial => 'shared/scripts' %>
 
   </body>
 </html>
