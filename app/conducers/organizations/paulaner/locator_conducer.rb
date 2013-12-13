@@ -41,7 +41,7 @@ module Organization::Paulaner
             return
 
           else
-            @locator.form.messages.add params.inspect
+            #@locator.form.messages.add params.inspect
             render :template => @locator.view_for(:locator), :layout => layout
         end
       end

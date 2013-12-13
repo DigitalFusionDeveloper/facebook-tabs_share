@@ -399,8 +399,8 @@
 
 ##
 #
-  #after 'deploy', 'db:mongoid:create_indexes'
-  after 'deploy', 'suggest:db:mongoid:create_indexes'
+  after 'deploy', 'db:mongoid:create_indexes'
+  #after 'deploy', 'suggest:db:mongoid:create_indexes'
   namespace :deploy do
     task :indexes do
       deploy
