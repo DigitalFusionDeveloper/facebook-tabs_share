@@ -32,7 +32,7 @@ module Organization::Paulaner
 
           when /request/i
             if @locator.rfi
-              message "Thanks for your interest in #{ @brand.title.html_safe }!", :class => :success
+              message "Thanks for requesting #{ @brand.title.html_safe } at your location!", :class => :success
               redirect_to url_for(:action => :locator)
               #render :template => @locator.view_for(:rfi_thank_you), :layout => layout
             else
@@ -129,12 +129,17 @@ module Organization::Paulaner
           email = @rfi.email
 
           begin
+            if Rails.env.production? or ENV['RAILS_EMAIL']
+              #@rfi.fwd
+            end
+=begin
             if Rails.env.production? or ENV['EMAIL_SIGNUP']
               et = ExactTarget::Send.new
               er = et.send_email(@brand.slug, email)
             else
               Rails.logger.info "Would signup #{email}"
             end
+=end
           rescue Object => e
             Rails.logger.error(e)
           end

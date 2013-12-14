@@ -68,7 +68,7 @@ class ::RFI
       @rfi[:organization] = @brand.organization.try(:slug)
 
       if @rfi.save
-        if Rails.env.production? or ENV['EMAIL_SIGNUP']
+        if Rails.env.production? or ENV['RAILS_EMAIL']
           et = ExactTarget::Send.new
           et.send_email(@brand.slug, email)
         else

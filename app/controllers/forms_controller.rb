@@ -21,24 +21,6 @@ class FormsController < ::ApplicationController
     conducer.render!
   end
 
-  def locator
-    conducer =
-      case @brand.organization.slug
-        when 'paulaner'
-          Locator::PaulanerConducer
-
-        else
-          raise IndexError.new(@brand.inspect)
-      end
-
-    conducer.render!
-   end
-#
-  rpc(:geo_location) do |params|
-    geo_location = GeoLocation.for(params[:address] || params[:geo_location])
-    geo_location.as_document
-  end
-
 protected
 #
   def setup
