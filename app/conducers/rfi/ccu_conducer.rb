@@ -54,30 +54,15 @@ class ::RFI
       validates_presence_of(:referral)
       validates_presence_of(:address)
 
+      geo_location = nil
+
       unless params[:geo_location].blank?
         geo_location =
           begin
             GeoLocation.from_javascript(:address => params[:address], :data => params[:geo_location], :pinpoint => true)
           rescue
-            errors.add(:address, 'is invalid')
-            return false
-          end
-
-        if !geo_location.valid?
-          if geo_location.status == 'OVER_QUERY_LIMIT'
             nil
-          else
-            errors.add(:address, 'is invalid')
-
-            geo_location.errors.each do |key, list|
-              message = Array(list).join(', ')
-              errors.add(message)
-            end
           end
-        end
-      else
-        errors.add(:address, 'is invalid')
-        return false
       end
 
       return false unless valid?
