@@ -51,8 +51,6 @@ module App
         ActionMailer::Base.register_interceptor(settings[env].email_interceptor.model.constantize)
       end
 
-config.action_mailer.delivery_method = :smtp
-config.action_mailer.smtp_settings = { :address => "localhost", :port => 1025 }
     else
       config.action_mailer.perform_deliveries    = true
       config.action_mailer.raise_delivery_errors = true
