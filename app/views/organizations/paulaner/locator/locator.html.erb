@@ -164,6 +164,7 @@
 
             var results = data ? (data['results'] || data) : [];
 
+//console.dir(results);
             try {
               loc = results[0].geometry.location;
             } catch(e) { loc = null };
@@ -173,6 +174,9 @@
                 lat = loc.lat(); //['lat']||loc['nb'];
                 lng = loc.lng(); //['lng']||loc['ob'];
                 var ll = [lat, lng].join(', ');
+                ll_input.val(ll);
+//console.log(ll);
+//console.log(ll_input.val());
               } catch(e) { };
             }
 
@@ -194,7 +198,7 @@
       address_input.keydown(function(event){
         if(event.keyCode == 13) {
           event.preventDefault();
-          //search_submit.click();
+          search_submit.click();
           return false;
         }
       });
@@ -211,15 +215,17 @@
         var address = address_input.val();
 
         if( address && (ll_input.data('address') != address) ){
+//console.log('========');
+//console.log(address);
+//console.log(ll_input.data('address'));
           ll_input.data('address', address);
           geo_locate(address, function(){ search_submit.click() });
           return false;
         }
 
-//console.log(ll_input.val());
 //return false;
 
-        if(ll_input.val() || address_input.val()){
+        if( address_input.val() || ll_input.val() ){
           return true;
         } else {
           geo_position_complete.push( function(){ search_submit.click() });
@@ -228,7 +234,19 @@
         }
       });
 
+// TODO
       rfi_submit.click(function(){
+        var address = address_input.val();
+
+        if( address && (ll_input.data('address') != address) ){
+//console.log('========');
+//console.log(address);
+//console.log(ll_input.data('address'));
+          ll_input.data('address', address);
+          geo_locate(address, function(){ rfi_submit.click() });
+          return false;
+        }
+
         if(ll_input.val() || address_input.val()){
           return true;
         } else {
@@ -243,8 +261,6 @@
         if(geoPosition.init()){
         //
           var complete = function(data){
-//console.log(data);
-//window.data=data;
             var formatted_address;
 
             var results = data ? (data['results'] || data) : [];
@@ -259,11 +275,15 @@
 
             try {
               var parts = formatted_address.split(',');
-              parts.shift();
+              while(parts.length > 3){
+                parts.shift();
+              };
               var approximate_address = parts.join(', ');
               address_input.val(approximate_address);
+              ll_input.data('address', approximate_address);
             } catch(e){
               address_input.val(ll);
+              ll_input.data('address', ll);
             };
 
             while(geo_position_complete.length > 0){
@@ -280,15 +300,13 @@
               var lng = coords['longitude'].round(2);
               var ll = [lat, lng].join(', ');
 
-//console.log(ll);
               ll_input.val(ll);
+//console.log(ll);
+//console.log(ll_input.val());
 
               Brand.geo_locate({
                 'address' : ll,
                 'complete' : complete
-                //'success' : function(){ alert('success') },
-                //'error' : function(){ alert('error') },
-                //'complete' : function(){ window.arguments=arguments; alert('complete') }
               });
             };
 
