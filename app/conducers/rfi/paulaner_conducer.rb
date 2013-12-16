@@ -26,11 +26,11 @@ class ::RFI
         end
 
         if @rfi.save
-          #redirect_to url_for(:saved => :true)
+          ### redirect_to url_for(:saved => :true)
           url = "/brands/#{ @brand.slug }/thanks.html"
 
-          if test(?e, Rails.root.join("public", url).to_s)
-            redirect_to(url)
+          if test(?e, File.join(Rails.root.to_s, "public", url))
+            render :text => "<script>window.location = '/brands/#{ @brand.slug }/thanks.html'; </script>"
           else
             render :text => "<br><br><h3>Thank you!</h3>"
           end
