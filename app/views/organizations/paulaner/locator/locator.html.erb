@@ -79,8 +79,7 @@
       </div>
 
       <div style="text-align:left;">
-        <i class="fa fa-long-arrow-left" style="color:#0088cc;"></i>
-        <a href='#' id='show-search-inputs'>Search instead.</a>
+        <a href='<%= url_for(:action => :locator) %>' id=''>&larr; Search instead.</a>
       </div>
 
     </div>
@@ -139,6 +138,13 @@
 
     //
       show_rfi_inputs.click(function(){
+        var address = address_input.val();
+
+        if( !address ){
+          //App.flash("Please supply an address!", {'class' : 'alert-error'});
+          //return false;
+        }
+
         search_inputs.hide(0, function(){ 
           rfi_inputs.show(0, function(){
             if(ll_input.val()){
