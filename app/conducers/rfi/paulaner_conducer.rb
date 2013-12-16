@@ -26,7 +26,14 @@ class ::RFI
         end
 
         if @rfi.save
-          redirect_to url_for(:saved => :true)
+          #redirect_to url_for(:saved => :true)
+          url = "/brands/#{ @brand.slug }/thanks.html"
+
+          if test(?e, Rails.root.join("public", url).to_s)
+            redirect_to(url)
+          else
+            render :text => "<br><br><h3>Thank you!</h3>"
+          end
         else
           render @rfi.form_template
         end
