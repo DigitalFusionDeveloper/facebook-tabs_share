@@ -156,27 +156,29 @@
       });
 
     //
-      address_input_changed = function(callback){
+      geo_locate = function(address, callback){
         Brand.geo_locate({
-          'address' : address_input.val(),
-          'success' : function(data){
+          'address' : address,
+          'complete' : function(data){
             var loc;
 
+            var results = data ? (data['results'] || data) : [];
+
             try {
-              loc = eval('data.results[0].geometry.location') || {};
+              loc = results[0].geometry.location;
             } catch(e) { loc = null };
 
             if(loc){
-              lat = loc['lat'];
-              lng = loc['lng'];
-              var ll = [lat, lng].join(', ');
-              ll_input.val(ll);
+              try {
+                lat = loc.lat(); //['lat']||loc['nb'];
+                lng = loc.lng(); //['lng']||loc['ob'];
+                var ll = [lat, lng].join(', ');
+              } catch(e) { };
             }
 
             var formatted_address;
-
             try {
-              formatted_address = eval('data.results[0].formatted_address') || {};
+              formatted_address = eval('results[0].formatted_address') || {};
             } catch(e) { formatted_address = null };
 
             if(formatted_address){
@@ -188,19 +190,11 @@
         });
       };
 
-      address_input.change(function(){
-        address_input_changed();
-      });
-
     //
       address_input.keydown(function(event){
         if(event.keyCode == 13) {
           event.preventDefault();
-
-          address_input_changed(function(){
-            search_submit.click();
-          });
-
+          //search_submit.click();
           return false;
         }
       });
@@ -213,6 +207,18 @@
           alert('Sorry, you need to be online to search for locations.');
           return false;
         }
+
+        var address = address_input.val();
+
+        if( address && (ll_input.data('address') != address) ){
+          ll_input.data('address', address);
+          geo_locate(address, function(){ search_submit.click() });
+          return false;
+        }
+
+//console.log(ll_input.val());
+//return false;
+
         if(ll_input.val() || address_input.val()){
           return true;
         } else {
@@ -241,8 +247,10 @@
 //window.data=data;
             var formatted_address;
 
+            var results = data ? (data['results'] || data) : [];
+
             try {
-              formatted_address = eval('data[0].formatted_address') || {};
+              formatted_address = results[0].formatted_address;
             } catch(e) { formatted_address = null };
 
             if(formatted_address){
@@ -277,7 +285,7 @@
 
               Brand.geo_locate({
                 'address' : ll,
-                'success' : complete
+                'complete' : complete
                 //'success' : function(){ alert('success') },
                 //'error' : function(){ alert('error') },
                 //'complete' : function(){ window.arguments=arguments; alert('complete') }

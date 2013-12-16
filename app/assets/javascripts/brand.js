@@ -75,10 +75,34 @@ if(!window.Brand){
     Brand.geo_locate = function(options){
       var address = options['address'];
       var success = options['success'] || function(){};
+      var error = options['error'] || function(){};
+      var complete = options['complete'] || function(){};
 
       window.load_google_maps(function(){
         var geocoder = new google.maps.Geocoder()
-        geocoder.geocode({'address':address}, success);
+
+        geocoder.geocode(
+          {'address': address},
+
+          function (results, status) {
+//console.dir(results);
+//console.dir(status);
+//console.dir(google.maps.GeocoderStatus.OK);
+//console.dir(status == google.maps.GeocoderStatus.OK);
+            if (status == google.maps.GeocoderStatus.OK) {
+              if (results[0]) {
+//alert('complete yo!');
+                complete(results);
+                success(results);
+              } else {
+                complete(results);
+              }
+            } else {
+              error(status);
+              complete(null);
+            }
+          }
+        )
       });
     };
 
@@ -107,8 +131,8 @@ if(!window.Brand){
 
       if(!window.google_maps_loaded){
         window.google_maps_loaded = function(){
-          for(var i = 0; i < google_maps_callbacks.length; i++){
-            var cb = google_maps_callbacks[i];
+          var cb;
+          while(( cb = google_maps_callbacks.shift() )){
             try{ cb() } catch(e) {};
           }
         };
