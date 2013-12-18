@@ -47,12 +47,42 @@ module Organization::Paulaner
       end
     end
 
+    def layout_root
+      File.join(Rails.root.to_s, 'app', 'views', 'layouts')
+    end
+
+    def view_root
+      File.join(Rails.root.to_s, 'app', 'views')
+    end
+
     def layout
-      "organizations/paulaner/locator"
+      candidates = [
+        "organizations/paulaner/locator/#{ @brand.slug }",
+        "organizations/paulaner/locator"
+      ]
+
+      candidates.each do |candidate|
+        if Dir.glob(File.join(layout_root, "#{ candidate }.*")).first
+          return candidate
+        end
+      end
+
+      nil
     end
 
     def view_for(which)
-      "organizations/paulaner/locator/#{ which }"
+      candidates = [
+        "organizations/paulaner/locator/#{ @brand.slug }/#{ which }",
+        "organizations/paulaner/locator/#{ which }"
+      ]
+
+      candidates.each do |candidate|
+        if Dir.glob(File.join(view_root, "#{ candidate }.*")).first
+          return candidate
+        end
+      end
+
+      nil
     end
 
     def label_for(string)
