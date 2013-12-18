@@ -4,162 +4,76 @@
 
     <%= f.messages %>
 
-    <div id="search-inputs" class="container" style='width:100%;<%= 'display:none;' unless @locator.search_form? %>'>
+    <table style='width:100%;'>
+      <tr>
+        <td>
+          <h3 style='color:#999;'>
+            Thirsty? Find <%= @brand.title %> below.
+          </h3>
+        </td>
+      </tr>
 
       <!-- search input fields -->
-      <div class="row">
-        <div class="span6 offset4">
-            <i id="position" class="fa fa-location-arrow" style="font-size: 2em; float: left; margin-right: 5px; margin-top: 10px;"></i>
+      <tr>
+        <td>
 
-            <%= f.input :address, :id => :address, :placeholder => 'Address (Ex: 2030 17th Street, Boulder, CO)', :style => "margin-top: 10px; margin-right: 2px;" %>
+          <%= f.label :address %>
+          <%= f.textarea :address, :id => :address, :style => 'width:50%;height:4em;', :autofocus => :autofocus %>
           
           <%= f.input :ll, :id => :ll, :type => :hidden %>
           <%= f.input :formatted_address, :id => 'formatted-address', :type => :hidden %>
 
-          <%= f.submit :value => 'Search', :id => 'search-submit' %>
-        </div>
-      </div>
+          <br>
+          <%= f.submit :value => 'Search', :id => 'search-submit', :title => 'click to search or to use your current location' %>
+        </td>
+      </tr>
 
-      <!-- filter search & request location -->
-      <div class="row search_options" style="margin-top:10px;">
-        <% if @locator.types.size > 1 %>
-        <div class="span6">
-          <div style="float: right; background-color: #333; text-align: center; border-radius:5px;padding: 5px 10px;">
-            <i class="fa fa-chevron-right" style="color:#fff;"></i>
-            <a href="#" id="filter-search-options" style="color:#fff;">Filter your search</a>
-            <div id="filter-options-list" style="display:none;">
-              <ul style="list-style-type:none;text-align:left;margin-left: 0px;padding: 5px;background-color:#fff;border-radius:5px;margin-top:10px;">
-                <% @locator.types.each do |type| %>
-                  <li>
-                    <%= f.checkbox :types, type, :checked => :checked %>
-                    <%= @locator.label_for(type) %>
-                  </li>
-                <% end %>
-              </ul>
-            </div>
+      <% if @locator.types.size > 1 %>
+
+      <tr>
+        <td>
+
+          <br>
+          <% @locator.types.each do |type| %>
+            <%= f.checkbox :types, type, :checked => :checked %>
+            <%= f.label(:types, type, :style => 'display:inline'){ 'Include ' + @locator.label_for(type) } %>
+            <br>
+          <% end %>
+
+        </td>
+      </tr>
+
+      <% end %> 
+
+      <tr>
+        <td>
+          <br>
+          <div style='font-style:italic;color:#999;'>
+            * Inventories can fluctuate. We recommend you contact the retailer to ensure stock of the beer
           </div>
-        </div>
-        <div class="span6">
-          <div style="float: left; background-color: #333; text-align: center; border-radius:5px;padding: 5px 10px;">
-            <i class="fa fa-chevron-right" style="color:#fff;"></i>
-            <a href='#' id='show-rfi-inputs' style="color:#fff;">Request <%= @locator.brand.title %> at my location!</a>
-          </div>
-        </div>
-        <% else %>
-          <div class="span4 offset4">
-            <div style="float: right;background-color: #333; text-align: center; border-radius:5px;padding: 5px 10px;">
-              <i class="fa fa-chevron-right" style="color:#fff;"></i>
-              <a href='#' class="text-center" id='show-rfi-inputs' style="color:#fff;">Request <%= @locator.brand.title %> at my location!</a>
-            </div>
-          </div>
-        <% end %> 
-      </div>
+        </td>
+      </tr>
+    </table>
 
-    </div>
-
-    <div class="container" id='rfi-inputs' style='text-align:center;<%= 'display:none;' unless @locator.rfi_form? %>'>
-
-      <div class="row">
-        <%= f.label :Email, :style => 'color:#ccc' %>
-        <%= f.input :email, :id => :email %>
-      </div>
-
-      <div class="row">
-        <%= f.label :mobile_phone, :style => 'color:#ccc' %>
-        <%= f.input :mobile_phone %>
-      </div>
-
-      <div class="row">
-        <%= f.label :notes, :style => 'color:#ccc;' %>
-        <%= f.textarea :notes %>
-      </div>
-
-      <div class="row">
-        <%= f.submit :value => 'Request', :id => 'rfi-submit' %>
-      </div>
-
-      <div style="text-align:left;">
-        <a href='<%= url_for(:action => :locator) %>' id=''>&larr; Search instead.</a>
-      </div>
-
-    </div>
-    <br>
-    <br>
-    <div style='text-align:center;font-style:italic;color:#999;'>
-      * Inventories can fluctuate. We recommend you contact the retailer to ensure stock of the beer
-    </div>
 
   <% end %>
 
-<!-- css -->
-<%= stylesheet_link_tag("font-awesome") %>
 
 <!-- js -->
 
   <%= javascript_include_tag 'geoPosition' %>
-
-
-
-<!--
-    <script type="text/javascript"
-      src="https://maps.googleapis.com/maps/api/js?sensor=false">
-    </script>
-    <script>
-
-    </script>
--->
 
   <script>
     jQuery(function(){
     //
       var locator_form       = jQuery('#locator-form');
 
-      var position_input          = locator_form.find('#position');
       var address_input           = locator_form.find('#address');
       var ll_input                = locator_form.find('#ll');
       var formatted_address_input = locator_form.find('#formatted-address');
       var email_input             = locator_form.find('#email');
 
-      var rfi_inputs         = jQuery('#rfi-inputs');
-      var search_inputs      = jQuery('#search-inputs');
-      var show_rfi_inputs    = jQuery('#show-rfi-inputs');
-      var show_search_inputs = jQuery('#show-search-inputs');
-
-      var filter_search_options = jQuery('#filter-search-options');
-      var filter_options_list   = jQuery('#filter-options-list');
-
       var search_submit      = locator_form.find('#search-submit');
-      var rfi_submit         = locator_form.find('#rfi-submit');
-
-    //
-      filter_search_options.click(function(){
-        filter_options_list.toggle();
-      });
-
-    //
-      show_rfi_inputs.click(function(){
-        var address = address_input.val();
-
-        if( !address ){
-          //App.flash("Please supply an address!", {'class' : 'alert-error'});
-          //return false;
-        }
-
-        search_inputs.hide(0, function(){ 
-          rfi_inputs.show(0, function(){
-            if(ll_input.val()){
-              email_input.focus();
-            } else {
-              address_input.focus();
-            }
-          }); 
-        });
-      });
-
-      show_search_inputs.click(function(){
-        rfi_inputs.hide(0, function(){ search_inputs.show(0); });
-        address_input.focus();
-      });
 
     //
       geo_locate = function(address, callback){
@@ -203,21 +117,15 @@
     //
       address_input.keydown(function(event){
         if(event.keyCode == 13) {
-          event.preventDefault();
-          search_submit.click();
-          return false;
+          //event.preventDefault();
+          //search_submit.click();
+          //return false;
         }
+        true;
       });
 
     //
-      var geo_position_complete = [];
-
       search_submit.click(function(){
-        if (navigator && !navigator.onLine) {
-          alert('Sorry, you need to be online to search for locations.');
-          return false;
-        }
-
         var address = address_input.val();
 
         if( address && (ll_input.data('address') != address) ){
@@ -234,36 +142,19 @@
         if( address_input.val() || ll_input.val() ){
           return true;
         } else {
-          geo_position_complete.push( function(){ search_submit.click() });
-          position_input.click();
-          return false;
-        }
-      });
-
-// TODO
-      rfi_submit.click(function(){
-        var address = address_input.val();
-
-        if( address && (ll_input.data('address') != address) ){
-//console.log('========');
-//console.log(address);
-//console.log(ll_input.data('address'));
-          ll_input.data('address', address);
-          geo_locate(address, function(){ rfi_submit.click() });
-          return false;
-        }
-
-        if(ll_input.val() || address_input.val()){
-          return true;
-        } else {
-          geo_position_complete.push( function(){ rfi_submit.click() });
-          position_input.click();
+          //geo_position.callbacks.push( function(){ setTimeout( function(){ search_submit.click() }, 1000) });
+          geo_position.callbacks.push( 
+            function(){
+              App.flash("<em>Click 'Search' again if the auto-detected location seems correct!</em>", {'class' : 'alert-success'});
+            }
+          );
+          geo_position();
           return false;
         }
       });
 
     //
-      position_input.click(function(){
+      var geo_position = function(){
         if(geoPosition.init()){
         //
           var complete = function(data){
@@ -292,8 +183,8 @@
               ll_input.data('address', ll);
             };
 
-            while(geo_position_complete.length > 0){
-              var cb = geo_position_complete.shift();
+            while(geo_position.callbacks.length > 0){
+              var cb = geo_position.callbacks.shift();
               cb(data || {});
             };
           };
@@ -327,7 +218,8 @@
         } else {
           alert('Sorry, your browser does not support this feature.');
         }
-      });
+      };
+      geo_position.callbacks = [];
 
     });
   </script>

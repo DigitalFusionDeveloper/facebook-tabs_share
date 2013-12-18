@@ -156,9 +156,6 @@
 
       <div class="row-fluid">
         <div class="span12">
-          <h2 id="locatorHeader" class="text-center">
-            Thirsty? Find <%= @brand.title %> below.
-          </h2>
           <%= render :partial => 'shared/flash' %>
         </div>
       </div>
@@ -168,6 +165,7 @@
           <div id='beer-locator-form'>
             <%= yield %>
           </div>
+
       	  <div id="locations">
             <div id="locator_message" class="alert" style="display: none;"></div>
             <div id="location_results"></div>
