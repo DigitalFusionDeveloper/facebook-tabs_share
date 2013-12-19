@@ -47,17 +47,13 @@ class Brand < MapModel
   end
 
   def rfi_url
-    path = Rails.root.join('public', 'brands', slug, 'contact.html').to_s
-
-    if test(?e, path)
-      "/brands/#{ slug }/contact.html".html_safe
-    end
+    "/brands/#{ slug }/contact.html".html_safe
   end
 
   def locator_url
     case
       when organization.try(:slug) == 'paulaner'
-        "/brands/#{ slug }/locator.html"
+        "/brands/#{ slug }/locator.html".html_safe
       else
         nil
     end
