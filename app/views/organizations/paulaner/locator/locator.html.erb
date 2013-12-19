@@ -33,7 +33,7 @@
           <%= f.input :formatted_address, :id => 'formatted-address', :type => :hidden %>
 
           <br>
-          <%= f.submit :value => 'Search', :id => 'search-submit', :class => 'btn btn-inverse', :title => 'click to search or to use your current location' %>
+          <%= f.submit :value => 'Search', :id => 'search-submit', :class => 'btn btn-inverse' %>
         </td>
       </tr>
 
@@ -96,6 +96,8 @@
         geo_position.callbacks.push( 
           function(){
             //App.flash("<em>Click 'Search' if it this location seems correct!</em>", {'class' : 'alert-success'});
+            search_submit.removeClass('btn-inverse');
+            search_submit.addClass('btn-primary');
           }
         );
         geo_position();
@@ -165,6 +167,8 @@
             function(){
               App.flash("<em>Click 'Search' again if the auto-detected location seems correct!</em>", {'class' : 'alert-info'});
               address_input.focus();
+              search_submit.removeClass('btn-inverse');
+              search_submit.addClass('btn-primary');
             }
           );
           geo_position();

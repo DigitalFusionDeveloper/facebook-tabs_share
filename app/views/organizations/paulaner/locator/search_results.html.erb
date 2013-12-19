@@ -8,19 +8,22 @@
   <div class="container" id="search-results" style="max-width: 790px;">
   <div style="background-color:white;">
 
-    <!-- link back to search -->
-    <div style="text-align:left;">
-      <%= link_to raw('&larr; Return to Search'), url_for(:action => 'locator') %>
-    </div>
-    
-    <hr>
+  <!-- search criteria -->
 
-    <!-- search criteria -->
-    <div style="text-align:center;">
-      <!-- <h3> @locator.criteria ?? </h3>-->
-    </div>
+    <% if @locator.search_criteria.present? %>
+      <div>
+        <h3>
+          <%= @brand.title %> locations near
 
-    <!-- big map with results over view -->
+          <span style="color:#999;font-style:italic;">
+            &ldquo;<%= @locator.search_criteria %>&rdquo;
+          </span>
+        </h3>
+      </div>
+    <% end %>
+
+  <!-- big map with results over view -->
+
     <div class="row" style="margin-left:0px;">
       <div class="span8">
         <img src="<%= locations_map_url %>">
@@ -41,7 +44,58 @@
       </div>
     </div>
 
-    <!-- individual result listings -->
+  <!-- link back to search -->
+
+    <div style="text-align:left;">
+      <h5>Didn't find what you where looking for?</h5>
+      <%= link_to raw('Search Again'), url_for(:action => 'locator'), :class => 'btn btn-inverse' %>
+      &mdash; or &mdash;
+      <%= link_to raw("Request #{ @brand.title } at your location<em>!</em>"), 'javascript:$("#rfb-form").toggle().find("#email").focus()', :id => :rfb, :class => 'btn btn-primary' %>
+    </div>
+    <hr>
+
+    <%= form(@locator, :url => request.fullpath, :html => {:id => 'rfb-form', :style => 'display:none;background-color:white;color:#333;padding:2em;'}) do |f| %> 
+      <%= f.label :email, :style => 'color:#333', :autofocus => :autofocus %>
+      <%= f.input :email, :id => :email %>
+
+      <%= f.label :mobile_phone, :style => 'color:#333' %>
+      <%= f.input :mobile_phone %>
+
+      <%= f.label :notes, :style => 'color:#333;' %>
+      <%= f.textarea :notes, :style => 'width:42em;height:4em;' %>
+
+      <br>
+      <hr>
+      <%= f.submit :value => 'Request', :id => 'rfi-submit', :class => 'btn btn-primary' %>
+
+      <%= f.input :address, :type => :hidden %>
+      <%= f.input :formatted_address, :type => :hidden %>
+      <%= f.input :lat, :type => :hidden %>
+      <%= f.input :lng, :type => :hidden %>
+      <%= f.input :ll, :type => :hidden %>
+    <% end %>
+
+    <script>
+      jQuery(function(){
+        var rfb_form = $("#rfb-form");
+
+        rfb_form.ajaxForm({
+          'success' : function(){
+            App.flash("Thanks for your request for <%= @brand.title %>!", {"class" : "alert-success"});
+            rfb_form.toggle();
+          },
+          'error' : function(){
+            App.flash("Sorry, please provide a valid email and/or mobile phone # in your request", {"class" : "alert-error"});
+          },
+          'complete' : function(){
+            jQuery("html, body").animate({ scrollTop: 0 }, "fast");
+          }
+        });
+      });
+    </script>
+
+  <!-- individual result listings -->
+
     <% 
      label = '@'
 

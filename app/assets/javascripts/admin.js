@@ -1,6 +1,7 @@
 //= require 'jquery'
 //= require 'jquery_ujs'
 //= require 'jquery.json-2.3.min.js'
+//= require 'jquery.validate'
 //= require 'handlebars-1.0.0.beta.6.js'
 //= require 'underscore-min.js'
 //= require 'sprintf'

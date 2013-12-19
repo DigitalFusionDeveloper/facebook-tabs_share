@@ -4,28 +4,34 @@ brands:
     slug: o-haras
     organization: Paulaner
     rfi_fields: email, first_name, last_name, postal_code, mobile_phone, address, formatted_address, notes, lat, lng
+    rfi_recipients: sheena.collins@mobilefusion.com
 
   - title: Paulaner
     organization: Paulaner
     rfi_fields: email, first_name, last_name, postal_code, mobile_phone, address, formatted_address, notes, lat, lng
+    rfi_recipients: sheena.collins@mobilefusion.com
 
   - title: Dixie
     organization: Paulaner
     rfi_fields: email, first_name, last_name, postal_code, mobile_phone, address, formatted_address, notes, lat, lng
+    rfi_recipients: sheena.collins@mobilefusion.com
 
   - title: Fruli
     organization: Paulaner
     rfi_fields: email, first_name, last_name, postal_code, mobile_phone, address, formatted_address, notes, lat, lng
+    rfi_recipients: sheena.collins@mobilefusion.com
 
   - title: Fuller's
     slug: fullers
     organization: Paulaner
     rfi_fields: email, first_name, last_name, postal_code, mobile_phone, address, formatted_address, notes, lat, lng
+    rfi_recipients: sheena.collins@mobilefusion.com
 
   - title: Hacker-Pschorr
     slug: hacker-pschorr
     organization: Paulaner
     rfi_fields: email, first_name, last_name, postal_code, mobile_phone, address, formatted_address, notes, lat, lng
+    rfi_recipients: sheena.collins@mobilefusion.com
   -
     title: Colorado Christian University
     slug: cus

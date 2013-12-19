@@ -34,7 +34,6 @@ module Organization::Paulaner
             if @locator.rfi
               message "Thanks for requesting #{ @brand.title.html_safe } at your location!", :class => :success
               redirect_to url_for(:action => :locator)
-              #render :template => @locator.view_for(:rfi_thank_you), :layout => layout
             else
               render :template => @locator.view_for(:locator), :layout => layout
             end
@@ -103,6 +102,12 @@ module Organization::Paulaner
       end
     end
 
+    def search_criteria
+      if params[:address].present?
+        params[:address].to_s.strip
+      end
+    end
+
     def initialize(brand, params = {})
       @brand = brand
       @types = Location.where(brand: @brand.slug).types
@@ -128,60 +133,37 @@ module Organization::Paulaner
     end
 
     def rfi
-      has_contact_info = false
+      @rfi = RFI.new
 
-      %w( email mobile_phone ).each do |input|
-        if not params[input].blank?
-          has_contact_info = true
-        end
-      end
-
+    # FIXME - this just barfs now because the form is ajax submit.  messages
+    # are dealt with in the client...
+    #
+      #ok = %w( email mobile_phone ).map{|attr| params[attr].present?}.any?
       validates_as_email(:email, :allow_blank => true)
       validates_as_phone(:mobile_phone, :allow_blank => true)
-      #validate_location
-
-      return false unless valid?
-
-      unless has_contact_info
-        messages.add "Please provide an email or mobile phone number."
-        errors.add :email, 'is blank'
-        errors.add :mobile_phone, 'is blank'
-        return false
-      end
-
-      @rfi = RFI.new
+      raise unless valid?
 
       @rfi[:kind]              = 'location'
       @rfi[:brand]             = @brand.slug
       @rfi[:organization]      = @brand.organization.try(:slug)
 
-      @rfi[:address]           = params[:address].to_s.strip
-      @rfi[:formatted_address] = params[:formatted_address].to_s.strip
       @rfi[:email]             = params[:email].to_s.strip
       @rfi[:mobile_phone]      = params[:mobile_phone].to_s.strip
       @rfi[:notes]             = params[:notes].to_s.strip
-      @rfi[:lat]               = @lat.to_s.strip
-      @rfi[:lng]               = @lng.to_s.strip
+      @rfi[:address]           = params[:address].to_s.strip
+      @rfi[:formatted_address] = params[:formatted_address].to_s.strip
+      @rfi[:lat]               = params[:lat].to_s.strip
+      @rfi[:lng]               = params[:lng].to_s.strip
+      @rfi[:ll]                = params[:ll].to_s.strip
 
       if @rfi.save
-        unless @rfi.email.blank?
-          email = @rfi.email
-
-          begin
-            if Rails.env.production? or ENV['RAILS_EMAIL']
-              #@rfi.fwd
-            end
-=begin
-            if Rails.env.production? or ENV['EMAIL_SIGNUP']
-              et = ExactTarget::Send.new
-              er = et.send_email(@brand.slug, email)
-            else
-              Rails.logger.info "Would signup #{email}"
-            end
-=end
-          rescue Object => e
-            Rails.logger.error(e)
+        begin
+          if Rails.env.production? or ENV['RAILS_EMAIL']
+          # TODO
+            #@rfi.fwd
           end
+        rescue Object => e
+          Rails.logger.error(e)
         end
 
         return true
@@ -219,6 +201,10 @@ module Organization::Paulaner
       end
 
       @lat, @lng = lat, lng
+
+      attributes[:lat] = @lat
+      attributes[:lng] = @lng
+
       return true
     end
 
