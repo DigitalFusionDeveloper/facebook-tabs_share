@@ -50,7 +50,7 @@
       <h5>Didn't find what you where looking for?</h5>
       <%= link_to raw('Search Again'), url_for(:action => 'locator'), :class => 'btn btn-inverse' %>
       &mdash; or &mdash;
-      <%= link_to raw("Request #{ @brand.title } at your location<em>!</em>"), 'javascript:$("#rfb-form").toggle().find("#email").focus()', :id => :rfb, :class => 'btn btn-primary' %>
+      <%= link_to raw("Request #{ @brand.title } at your location<em>!</em>"), 'javascript:$("#rfb-form").toggle().find("#email").focus();void(0);', :id => :rfb, :class => 'btn btn-primary' %>
     </div>
     <hr>
 
