@@ -35,7 +35,7 @@ module Organization::Paulaner
               render :template => @rfi.view_for(:contact), :layout => layout
             end
           else
-            :nothing
+            render :template => @rfi.view_for(:contact), :layout => layout
         end
       end
     end
