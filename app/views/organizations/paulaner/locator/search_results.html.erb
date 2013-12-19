@@ -31,7 +31,10 @@
         <ul style="list-style-type:none;">
           <% @locator.locations.each do |location| %>
             <li>
-              <a href="#<%= location.id %>"><%= label.succ! %> &mdash; <%= location.title.titleize %></a>
+              <a href="#<%= location.id %>">
+                <%= label.succ! %> &mdash; <%= location.title.titleize %>
+                (<%= @locator.singular_label_for(location.type) %>)
+              </a>
             </li>
           <% end %>
         </ul>
@@ -63,7 +66,7 @@
               </a>
             </li>
             <li>
-              <h4><%= title %> (<%= @locator.label_for(location.type) %>)</h4>
+              <h4><%= title %></h4>
             </li>
             <li>
               <a href="tel:<%= phone %>"><%= phone %></a>
@@ -75,6 +78,9 @@
             </li>
             <li>
               ~ <%= distance %> miles
+            </li>
+            <li>
+              <em>(<%= @locator.singular_label_for(location.type) %>)</em>
             </li>
           <ul>
         </div>
