@@ -27,7 +27,7 @@
 
           <%= f.label(:address, :class => '', :style => 'display:inline-block;'){ 'Or enter any address, zipcode, state, etc.' } %>
           <br>
-          <%= f.textarea :address, :id => :address, :style => 'width:50%;height:4em;', :autofocus => :autofocus %>
+          <%= f.input :address, :id => :address, :autofocus => :autofocus %>
           
           <%= f.input :ll, :id => :ll, :type => :hidden %>
           <%= f.input :formatted_address, :id => 'formatted-address', :type => :hidden %>

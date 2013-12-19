@@ -26,11 +26,16 @@ module Organization::Paulaner
           render :template => @rfi.view_for(:contact), :layout => layout
           return
         end
-        
-        if @rfi.save
-          render :template => @rfi.view_for(:thanks), :layout => layout
-        else
-          render :template => @rfi.view_for(:contact), :layout => layout
+
+        case params.get(:contact, :submit)
+          when /submit/i
+            if @rfi.save
+              render :template => @rfi.view_for(:thanks), :layout => layout
+            else
+              render :template => @rfi.view_for(:contact), :layout => layout
+            end
+          else
+            :nothing
         end
       end
     end
