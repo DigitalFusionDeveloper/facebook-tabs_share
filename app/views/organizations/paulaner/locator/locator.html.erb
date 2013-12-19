@@ -7,7 +7,7 @@
     <table style='width:100%;'>
       <tr>
         <td>
-          <h3 style='color:#999;'>
+          <h3 style='color:#999;border-bottom:1px solid #999;'>
             Thirsty? Find <%= @brand.title %> below.
           </h3>
         </td>
@@ -17,14 +17,23 @@
       <tr>
         <td>
 
-          <%= f.label :address %>
+          <label for='position' style='display:inline-block;'>
+            Click the 
+            <i id="position" class="fa fa-location-arrow" style="font-size: 1.2em;color:#3369f2;"></i>
+            to use your current location.
+          </label>
+
+          <br>
+
+          <%= f.label(:address, :class => '', :style => 'display:inline-block;'){ 'Or enter any address, zipcode, state, etc.' } %>
+          <br>
           <%= f.textarea :address, :id => :address, :style => 'width:50%;height:4em;', :autofocus => :autofocus %>
           
           <%= f.input :ll, :id => :ll, :type => :hidden %>
           <%= f.input :formatted_address, :id => 'formatted-address', :type => :hidden %>
 
           <br>
-          <%= f.submit :value => 'Search', :id => 'search-submit', :title => 'click to search or to use your current location' %>
+          <%= f.submit :value => 'Search', :id => 'search-submit', :class => 'btn btn-inverse', :title => 'click to search or to use your current location' %>
         </td>
       </tr>
 
@@ -34,11 +43,13 @@
         <td>
 
           <br>
+          <div style="background-color: #333; color:#fff; display:inline-block; border-radius:5px;padding: 7px 10px;">
           <% @locator.types.each do |type| %>
-            <%= f.checkbox :types, type, :checked => :checked %>
-            <%= f.label(:types, type, :style => 'display:inline'){ 'Include ' + @locator.label_for(type) } %>
+            <%= f.checkbox :types, type, :checked => :checked, :style => 'margin:0px;' %>
+            <%= f.label(:types, type, :style => 'display:inline;color:#fff;'){ 'Include ' + @locator.label_for(type) } %>
             <br>
           <% end %>
+          </div>
 
         </td>
       </tr>
@@ -59,6 +70,10 @@
   <% end %>
 
 
+<!-- css -->
+  <%= stylesheet_link_tag("font-awesome") %>
+
+
 <!-- js -->
 
   <%= javascript_include_tag 'geoPosition' %>
@@ -68,12 +83,23 @@
     //
       var locator_form       = jQuery('#locator-form');
 
+      var position_input          = locator_form.find('#position');
       var address_input           = locator_form.find('#address');
       var ll_input                = locator_form.find('#ll');
       var formatted_address_input = locator_form.find('#formatted-address');
       var email_input             = locator_form.find('#email');
 
       var search_submit      = locator_form.find('#search-submit');
+
+    //
+      position_input.click(function(){
+        geo_position.callbacks.push( 
+          function(){
+            //App.flash("<em>Click 'Search' if it this location seems correct!</em>", {'class' : 'alert-success'});
+          }
+        );
+        geo_position();
+      });
 
     //
       geo_locate = function(address, callback){
@@ -84,7 +110,6 @@
 
             var results = data ? (data['results'] || data) : [];
 
-//console.dir(results);
             try {
               loc = results[0].geometry.location;
             } catch(e) { loc = null };
@@ -95,8 +120,6 @@
                 lng = loc.lng(); //['lng']||loc['ob'];
                 var ll = [lat, lng].join(', ');
                 ll_input.val(ll);
-//console.log(ll);
-//console.log(ll_input.val());
               } catch(e) { };
             }
 
@@ -129,15 +152,10 @@
         var address = address_input.val();
 
         if( address && (ll_input.data('address') != address) ){
-//console.log('========');
-//console.log(address);
-//console.log(ll_input.data('address'));
           ll_input.data('address', address);
           geo_locate(address, function(){ search_submit.click() });
           return false;
         }
-
-//return false;
 
         if( address_input.val() || ll_input.val() ){
           return true;
@@ -145,7 +163,8 @@
           //geo_position.callbacks.push( function(){ setTimeout( function(){ search_submit.click() }, 1000) });
           geo_position.callbacks.push( 
             function(){
-              App.flash("<em>Click 'Search' again if the auto-detected location seems correct!</em>", {'class' : 'alert-success'});
+              App.flash("<em>Click 'Search' again if the auto-detected location seems correct!</em>", {'class' : 'alert-info'});
+              address_input.focus();
             }
           );
           geo_position();
@@ -198,8 +217,6 @@
               var ll = [lat, lng].join(', ');
 
               ll_input.val(ll);
-//console.log(ll);
-//console.log(ll_input.val());
 
               Brand.geo_locate({
                 'address' : ll,
