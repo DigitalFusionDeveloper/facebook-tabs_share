@@ -1,6 +1,6 @@
 <!-- html --> 
 
-  <%= form(@locator, :url => request.fullpath, :html => {:id => 'locator-form', :style => 'background-color:white;color:#333;padding:2em;'}) do |f| %> 
+  <%= form(@locator, :url => request.fullpath, :html => {:id => 'locator-form', :style => 'text-align:center;background-color:white;color:#333;padding:2em;'}) do |f| %> 
 
     <%= f.messages %>
 
@@ -43,7 +43,7 @@
         <td>
 
           <br>
-          <div style="background-color: #333; color:#fff; display:inline-block; border-radius:5px;padding: 7px 10px;">
+          <div style="text-align:left; background-color: #333; color:#fff; display:inline-block; border-radius:5px;padding: 7px 10px;">
           <% @locator.types.each do |type| %>
             <%= f.checkbox :types, type, :checked => :checked, :style => 'margin:0px;' %>
             <%= f.label(:types, type, :style => 'display:inline;color:#fff;'){ 'Include ' + @locator.label_for(type) } %>
