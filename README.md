@@ -1,3 +1,10 @@
+TODO
+====
+
+The contact forms still depend on styles and images stored in
+*public/brands/whatever*. These need to be moved under assets and
+public cleaned out.
+
 Brands
 ======
 
