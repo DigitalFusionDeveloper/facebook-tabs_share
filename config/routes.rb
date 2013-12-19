@@ -105,6 +105,7 @@ Dojo4::Application.routes.draw do
     #match ':id/locator', :action => 'locator'
     member do
       match :locator
+      match :contact
     end
   end
 

@@ -27,18 +27,9 @@
   <body>
     <div class="container">
       <header>
-        <img src="img/hacker-email-header.png">
+        <img src="img/<%= @brand.slug %>-email-header.png" id="header">
       </header>
-      <div class="row-fluid">
-        <div class="form_wrapper span12">
-          <div id='brand-rfi-form'></div>
-          <div class="row-fluid">
-              <div class="span10 offset1">
-                <p>Disclaimer: By entering my email I agree to receive Hacker-Pschorr emails with exclusive offers and news. By entering my mobile number I agree to receive Hacker-Pschorr text messages, with up to 6/month with exclusive offers and news. Message and data rates may apply. Text HELP for more information. Text STOP HP to 777555 to end.</p>
-              </div>
-            </div>
-        </div>
-      </div>
+      <%= yield %>
       <div class="row-fluid">
         <footer class="span12"></footer>
       <div>
@@ -53,14 +44,6 @@
     <script src='../assets/application.js'></script>
     <script src="js/nav.js"></script>
 -->
-    <script>
-  jQuery(function(){
-
-    Brand.rfi_form("hacker-pschorr", "#brand-rfi-form");
-
-  });
-    </script>
-
     <div id="fb-root"></div>
     <script>(function(d, s, id) {
       var js, fjs = d.getElementsByTagName(s)[0];

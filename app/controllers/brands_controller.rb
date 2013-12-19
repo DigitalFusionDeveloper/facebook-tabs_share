@@ -36,6 +36,17 @@ class BrandsController < ::ApplicationController
     end
   end
 
+  def contact
+    begin
+      slug = @brand.organization.slug
+      require_dependency "app/conducers/organizations/#{slug}/contact_conducer.rb"
+      conducer = "Organization::#{slug.classify}::ContactConducer".constantize
+      conducer.render!
+    rescue LoadError
+      render(:nothing => true, :status => 404)
+    end
+  end
+
 protected
   def setup
     unless params[:id].blank?
