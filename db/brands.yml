@@ -37,4 +37,4 @@ brands:
     slug: cus
     organization: ccu
     rfi_fields: email, first_name, last_name, term, street_address, city, state, postal_code, mobile_phone, referral
-    rfi_recipients: ccuadmissions@ccu.edu, arlynch@ccu.edu, jomartin@ccu.edu, sheena.collins@mobilefusion.com
+    rfi_recipients: CCUFBLeads@mobilefusion.com
