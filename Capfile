@@ -472,7 +472,6 @@
     desc 'print the deployed-to url out on the console'
     task :console do
       require 'yaml'
-      require 'terminal-notifier'
 
       url         = fetch(:url)
       application = fetch(:application)
@@ -485,13 +484,24 @@
         'user'        => user,
         'deploy_to'   => deploy_to
       }.to_yaml);
-      
-      system "terminal-notifier -title #{ application } -message 'Deploy completed successfully to #{ url }.' -sound default"
+    end
+
+    desc 'use terminal notifier if in > osx 10.8 to use a user alert'
+    task :terminal do
+      begin
+        require 'terminal-notifier'
+        url         = fetch(:url)
+        application = fetch(:application)
+        system "terminal-notifier -title #{ application } -message 'Deploy completed successfully to #{ url }.' -sound default"
+      rescue LoadError
+        warn "You're probably not on os x 10.8, so not using terminal notifier. If you are, use gem install terminal-notifier to use some sweet user notifications."
+      end
     end
   end
   after "deploy", "notify:campfire"
   after "deploy", "notify:email"
   after "deploy", "notify:console"
+  after "deploy", "notify:terminal"
 
   #after "deploy", "deploy:cleanup"
 
