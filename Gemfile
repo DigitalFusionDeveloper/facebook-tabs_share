@@ -37,9 +37,7 @@ gem 'phony'
 
 gem 'bartt-ssl_requirement', '~>1.4.0', :require => 'ssl_requirement'
 
-if RUBY_PLATFORM =~ /darwin/i && `sw_vers -productVersion` >= '10.8'
-  gem 'terminal-notifier'
-end
+gem 'terminal-notifier'
 
 # Gems used only for assets and not required
 # in production environments by default.
