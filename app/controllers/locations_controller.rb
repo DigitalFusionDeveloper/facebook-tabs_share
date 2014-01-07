@@ -63,7 +63,7 @@ class LocationsController < ApplicationController
 protected
 
   def search_query_for(query, search = nil)
-    unless search.blank? 
+    unless search.blank?
       conditions = []
       #terms = Array(search).join(' ').strip.split(/\s+/)
       terms = Array(search).join(' ').strip.scan(/\w+/)

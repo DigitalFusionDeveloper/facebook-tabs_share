@@ -1,7 +1,7 @@
 <% unless @locator.locations.blank? %>
   <%
     locations_points = @locator.locations.map(&:loc)
-    locations_map_url = map_for_points(locations_points, :color => '0x00AEEF', :style => nil)  
+    locations_map_url = map_for_points(locations_points, :color => '0x00AEEF', :style => nil)
     label = '@'
   %>
 
@@ -54,7 +54,7 @@
     </div>
     <hr>
 
-    <%= form(@locator, :url => request.fullpath, :html => {:id => 'rfb-form', :style => 'display:none;background-color:white;color:#333;padding:2em;'}) do |f| %> 
+    <%= form(@locator, :url => request.fullpath, :html => {:id => 'rfb-form', :style => 'display:none;background-color:white;color:#333;padding:2em;'}) do |f| %>
       <%= f.label :email, :style => 'color:#333', :autofocus => :autofocus %>
       <%= f.input :email, :id => :email %>
 
@@ -92,25 +92,31 @@
           }
         });
       });
+
+      var showMap = function(num, map_url) {
+        jQuery('#showmap_' + num).hide()
+        jQuery('figure img', '#map_' + num).attr('src', map_url)
+        jQuery('#map_' + num).show()
+      };
     </script>
 
   <!-- individual result listings -->
 
-    <% 
-     label = '@'
+    <%
+      label = '@'
 
-     @locator.locations.each do |location|
-      title          = location.title.titleize
-      address        = location.address
-      phone          = location.phone.to_s.html_safe
-      distance       = location.distance.round(2)
-      map_url        = location.map_url.html_safe
-      lat            = location.lat
-      lng            = location.lng
-      google_map_url = "http://maps.google.com/maps?q=loc:#{ lat },#{ lng }&amp;gl=us&amp;t=m&amp;z=12" 
-      google_map_url = "http://maps.google.com/maps?q=#{ CGI.escape(address) }".html_safe
+      @locator.locations.each_with_index do |location, idx|
+        title          = location.title.titleize
+        address        = location.address
+        phone          = location.phone.to_s.html_safe
+        distance       = location.distance.round(2)
+        map_url        = location.map_url.html_safe
+        lat            = location.lat
+        lng            = location.lng
+        google_map_url = "http://maps.google.com/maps?q=loc:#{ lat },#{ lng }  &amp;gl=us&amp;t=m&amp;z=12"
+        google_map_url = "http://maps.google.com/maps?q=#{ CGI.escape(address) }".html_safe
     %>
-    
+
       <div class="row-fluid search-result" style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #000; max-width: 790px;">
         <div class="span3" style="text-align:left;">
           <ul style="list-style-type:none;margin-left:0px;">
@@ -138,10 +144,19 @@
             </li>
           <ul>
         </div>
-        
-        <div class="span8" style="text-align:right;">
+
+        <%
+          live_map = true
+          if idx > 2
+            live_map = false
+        %>
+          <div id="showmap_<%= idx %>" class="span8" style="text-align:right;">
+            <a href="javascript:showMap('<%= idx %>', '<%= map_url %>')">View map</a>
+          </div>
+        <% end %>
+        <div id="map_<%= idx %>" class="span8" style="text-align:right;<%= 'display:none;' unless live_map %>">
           <figure class="location-map" style="padding:0px;margin:0px;">
-            <img src="<%= map_url %>" />
+            <%= image_tag live_map ? map_url : 'loading.gif' %>
 
             <figcaption style="margin-top: 5px;">
               <a href="<%= google_map_url %>" target="_blank" class="location-map-link">
