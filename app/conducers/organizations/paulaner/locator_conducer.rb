@@ -5,6 +5,7 @@ module Organization::Paulaner
     fattr :brand
     fattr :types
     fattr :locations
+    fattr :secondary_locations
 
     def self.render!
       controller = Current.controller
@@ -124,6 +125,8 @@ module Organization::Paulaner
 
       [100, 1000, 10_000, 100_000].each do |miles|
         @locations = Location.find_all_by_lng_lat(@lng, @lat, :limit => 100, :miles => miles, :types => types)
+        @secondary_locations = @locations[5,100]
+        @locations = @locations[0,5]
         return true unless @locations.blank?
       end
 
