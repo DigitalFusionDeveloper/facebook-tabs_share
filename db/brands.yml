@@ -5,33 +5,40 @@ brands:
     organization: Paulaner
     rfi_fields: email, first_name, last_name, postal_code, mobile_phone, address, formatted_address, notes, lat, lng
     rfi_recipients: PaulanerFBLeads@mobilefusion.com
+    contact_analytics: UA-39864062-16
 
   - title: Paulaner
     organization: Paulaner
     rfi_fields: email, first_name, last_name, postal_code, mobile_phone, address, formatted_address, notes, lat, lng
     rfi_recipients: PaulanerFBLeads@mobilefusion.com
+    contact_analytics: UA-39864062-11
 
   - title: Dixie
     organization: Paulaner
     rfi_fields: email, first_name, last_name, postal_code, mobile_phone, address, formatted_address, notes, lat, lng
     rfi_recipients: PaulanerFBLeads@mobilefusion.com
+    contact_analytics: UA-39864062-12
 
   - title: Fruli
     organization: Paulaner
     rfi_fields: email, first_name, last_name, postal_code, mobile_phone, address, formatted_address, notes, lat, lng
     rfi_recipients: PaulanerFBLeads@mobilefusion.com
+    contact_analytics: UA-39864062-14
 
   - title: Fuller's
     slug: fullers
     organization: Paulaner
     rfi_fields: email, first_name, last_name, postal_code, mobile_phone, address, formatted_address, notes, lat, lng
     rfi_recipients: PaulanerFBLeads@mobilefusion.com
+    contact_analytics: UA-39864062-13
 
   - title: Hacker-Pschorr
     slug: hacker-pschorr
     organization: Paulaner
     rfi_fields: email, first_name, last_name, postal_code, mobile_phone, address, formatted_address, notes, lat, lng
     rfi_recipients: PaulanerFBLeads@mobilefusion.com
+    contact_analytics: UA-39864062-15
+
   -
     title: Colorado Christian University
     slug: cus
