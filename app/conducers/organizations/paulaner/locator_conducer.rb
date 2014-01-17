@@ -86,18 +86,18 @@ module Organization::Paulaner
 
     def label_for(string)
       case string.to_s.downcase
-        when /draft/
+        when /draft/, /on/
           'Restaurants and Bars'
-        when /package/
+        when /package/, /off/
           'Stores'
       end
     end
 
     def singular_label_for(string)
       case string.to_s.downcase
-        when /draft/
+        when /draft/, /on/
           'Restaurant/Bar'
-        when /package/
+        when /package/, /off/
           'Store'
       end
     end
