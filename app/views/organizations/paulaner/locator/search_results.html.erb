@@ -161,7 +161,7 @@
     <% end %>
 
     <%
-      @locator.secondary_locations.each_with_index do |location, idx|
+      Array(@locator.secondary_locations).each_with_index do |location, idx|
         title          = location.title.titleize
         address        = location.address
         phone          = location.phone.to_s.html_safe
