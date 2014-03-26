@@ -70,7 +70,10 @@ gem 'auto_excerpt'
 # gem 'unicorn'
 
 
-gem 'whenever', :require => false
+gem 'whenever'
+ #:git => 'git@github.com:dojo4/whenever.git',
+ #:ref => '2824718',
+ #:require => false
 
 
 # To use debugger
