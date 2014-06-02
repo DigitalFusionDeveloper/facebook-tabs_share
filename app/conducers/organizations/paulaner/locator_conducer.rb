@@ -89,7 +89,9 @@ module Organization::Paulaner
       case string.to_s.downcase
         when /draft/i, /on/i
           'Restaurants and Bars'
-        when /package/i, /off/i, /retail/i
+        when /retail/i
+          'Retail'
+        when /package/i, /off/i
           'Stores'
         when /wholesale/i
           'Wholesale'
@@ -102,7 +104,9 @@ module Organization::Paulaner
       case string.to_s.downcase
         when /draft/i, /on/i
           'Restaurant/Bar'
-        when /package/i, /off/i, /retail/i
+        when /retail/i
+          'Retail'
+        when /package/i, /off/i
           'Store'
         when /wholesale/i
           'Wholesale'
