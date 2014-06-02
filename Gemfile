@@ -70,7 +70,8 @@ gem 'auto_excerpt'
 # gem 'unicorn'
 
 
-gem 'whenever', :require => false
+# ref: https://github.com/javan/whenever/pull/440
+gem 'whenever', :git => 'git@github.com:ahoward/whenever.git', :require => false
 
 
 # To use debugger

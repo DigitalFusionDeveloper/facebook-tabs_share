@@ -210,12 +210,11 @@
 				m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 				})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-       ga('create', '<%= @brand.locator_analytics %>', 'facebook.com');
+       ga('create', '<%= @brand.locator_analytics %>', 'digitalfusiontesting.com');
        ga('send', 'pageview');
       </script>
     <% end %>
     <%= render :partial => 'shared/server_info' %>
-    <%= render :partial => 'shared/google_analytics' %>
     <%= render :partial => 'shared/templates' %>
     <%= render :partial => 'shared/scripts' %>
 
