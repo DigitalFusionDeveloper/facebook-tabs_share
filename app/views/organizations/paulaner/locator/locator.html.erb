@@ -44,7 +44,6 @@
 
           <br>
           <div style="text-align:left; background-color: #333; color:#fff; display:inline-block; border-radius:5px;padding: 7px 10px;">
-          <% binding.pry %>
           <% @locator.types.each do |type| %>
             <%= f.checkbox :types, type, :checked => :checked, :style => 'margin:0px;' %>
             <%= f.label(:types, type, :style => 'display:inline;color:#fff;'){ 'Include ' + @locator.label_for(type) } %>
