@@ -410,11 +410,12 @@
 
 ## whenever setup
 #
-  set :whenever_command, "bundle exec whenever"
+  require 'whenever'
+  set :whenever_command, 'bundle exec whenever'
   #set :whenever_environment, defer { stage }
   set :whenever_identifier, defer { "#{ application }_#{ stage }" }
-  require "whenever/capistrano"
-  #require 'whenever/capistrano/recipes'
+  #require "whenever/capistrano"
+  require 'whenever/capistrano/v2/recipes'
   after 'deploy:create_symlink', 'whenever:update_crontab'
   after 'deploy:rollback', 'whenever:update_crontab'
   # ref: https://github.com/javan/whenever/pull/273
