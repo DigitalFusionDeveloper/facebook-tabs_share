@@ -83,7 +83,7 @@ gem 'whenever', :git => 'git@github.com:ahoward/whenever.git', :require => false
 
 gem 'multi_json'
 
-gem 'bcrypt-ruby'
+gem 'bcrypt'
 
 gem 'yajl-ruby'
 
