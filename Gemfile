@@ -138,7 +138,8 @@ gem 'pry'
 gem 'pry-nav'
 
 group :development do
-  gem 'tinder'
+  #gem 'tinder'
+  gem 'flowdock'
   gem 'capistrano'
   gem 'capistrano_colors'
   gem 'rvm-capistrano'

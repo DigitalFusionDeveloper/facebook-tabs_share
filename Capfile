@@ -424,8 +424,8 @@
 ## notify
 #
   namespace :notify do
-    desc 'alert campfire of a deploy'
-    task :campfire do
+    desc 'alert flowdock of a deploy'
+    task :flowdock do
       user = `git config --global --get user.name 2>/dev/null`.strip
       if user.empty?
         user = ENV['USER']
@@ -434,17 +434,25 @@
       application = fetch(:application)
       stage = fetch(:stage)
 
-      domain = 'dojo4'
-      token = 'f9831e567f7237563baa64b90e65a135f223100f'
-      room = "Roboto's House of Wonders"
-
       begin
-        require 'tinder'
-        campfire = Tinder::Campfire.new(domain, :token => token)
-        room = campfire.rooms.detect{|_| _.name == room}
-        room.speak("#{ user } deployed #{ application } to #{ stage } @ #{ git_rev }")
+        require 'flowdock'
+        # create a new Flow object with target flow's api token and sender information
+        flow = Flowdock::Flow.new(
+                  api_token: "7e1c8271ffb6351a6405237d73b83383",
+                  source: "Capistrano deployment",
+                  project: application,
+                  from: {name: "Mr. Roboto", address: "dojo4@dojo4.com"}
+               )
+
+        # send message to the flow
+        flow.push_to_team_inbox(
+          format: "html", 
+          subject: "#{ application } deployed to #{ stage }",
+          content: "#{ user } deployed #{ application } to #{ stage } @ #{ git_rev }", 
+          tags: ["deploy", application]
+        )
       rescue LoadError
-        warn "gem install tinder # to notify #{ domain }/#{ room } campfire..."
+        warn "gem install flowdock # to notify dojo4 flowdock..."
       end
     end
 
@@ -499,10 +507,10 @@
       end
     end
   end
-  after "deploy", "notify:campfire"
+  after "deploy", "notify:flowdock"
   after "deploy", "notify:email"
   after "deploy", "notify:console"
-  after "deploy", "notify:terminal"
+  #after "deploy", "notify:terminal"
 
   #after "deploy", "deploy:cleanup"
 
