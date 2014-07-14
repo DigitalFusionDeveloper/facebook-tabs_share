@@ -144,4 +144,6 @@ group :development do
   gem 'capistrano_colors'
   gem 'rvm-capistrano'
   gem 'cap-ssh', :require => false
+  gem 'better_errors'
+  gem "binding_of_caller"
 end
