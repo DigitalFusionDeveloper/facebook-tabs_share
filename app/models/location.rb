@@ -553,15 +553,17 @@ class Location
 
     def sanitize_csv!
       return unless @csv
+      csv = @csv.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
 
       clean_csv = [].tap do |lines|
-        @csv.split("\n").each do |line|
+        csv.split("\n").each do |line|
           lines << line.strip.gsub(/,\Z/, '')
         end
       end
 
       @csv = clean_csv.join("\n")
     end
+
   # brand, title, street_address, city, state, country, postal_code, type
   #
     def parse
