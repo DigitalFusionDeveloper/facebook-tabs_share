@@ -93,7 +93,7 @@ class Location
 
   # find un-geolocated locations
   #
-    query = 
+    query =
       Location.where(:loc => nil).
         order_by(:brand => :asc, :title => :asc)
 
@@ -245,7 +245,7 @@ class Location
           end
 
           unless zipcode.blank?
-            geo_location = geo_location_for[zipcode] 
+            geo_location = geo_location_for[zipcode]
           end
         end
       end
@@ -295,15 +295,15 @@ class Location
 
       phone = raw['phone'].to_s
       unless phone.blank?
-        location['phone'] = 
+        location['phone'] =
           begin
             digits = phone.scan(/\d/).last(10)
-            if digits.size == 10 
+            if digits.size == 10
               digits.unshift('1')
             end
             raise phone.inspect if digits.size < 11
             phone = digits.join
-            Phony.formatted(Phony.normalize(phone), :spaces => :-) 
+            Phony.formatted(Phony.normalize(phone), :spaces => :-)
           rescue
             nil
           end
@@ -389,7 +389,7 @@ class Location
       types = Coerce.list_of_strings(types)
       query = query.where(:type.in => types)
     end
-    
+
     query.
       geo_near(:lat => lat, :lng => lng).
         max_distance(max_distance).
@@ -551,9 +551,23 @@ class Location
       end
     end
 
+    def sanitize_csv!
+      return unless @csv
+
+      clean_csv = [].tap do |lines|
+        @csv.split("\n").each do |line|
+          lines << line.strip.gsub(/,\Z/, '')
+        end
+      end
+
+      @csv = clean_csv.join("\n")
+    end
   # brand, title, street_address, city, state, country, postal_code, type
   #
     def parse
+    #
+      sanitize_csv!
+
     #
       @rows = CSV.parse(@csv, headers: :first_row, header_converters: :symbol)
 
@@ -583,7 +597,7 @@ class Location
 
     #
       @to_import = []
-      
+
       @rows.each_with_index do |row, index|
         brand =
           if row[:brand].blank?
@@ -719,7 +733,7 @@ end
 
 __END__
 =begin
-        _address = 
+        _address =
           %w( address street_address city state postal_code zipcode zip_code country ).map do |field|
             row[field] || row[field.to_sym]
           end.select{|cell| not cell.blank?}.join(', ')
