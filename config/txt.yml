@@ -1,0 +1,21 @@
+
+uri        : http://xmlapi.iloopmobile.com/platform/group.ex?
+web_uri	   : http://webapi.iloopmobile.com/saturn/gateway/webin/https?
+report_uri : http://xmlapi.iloopmobile.com/platform/reportApi/groupMessageDetails?
+user_token : 65FC345618310986E0C37635B76AD2CF
+short_code : 333222
+keyword    : REWARDS
+account_id : 26
+group_id   : 12831
+
+exact_target :
+  udis:
+    short_code: 69979
+    in: UDISGF
+    out: STOP UDISGF
+    template_message_id: xxxxxxxx
+  ccu :
+    short_code: 69979
+    in: CCU
+    out: STOP CCU
+    template_message_id: xxxxxxxx

@@ -82,18 +82,21 @@ class ::RFI
       @rfi[:postal_code]    = geo_location.try(:postal_code)
 
       if @rfi.save
+        ExactTarget::Rest.configure do |config|
+          config.client = :ccu
+        end
         if Rails.env.production? or ENV['ILOOP_OPTIN']
           begin
-            il = ILoop::MFinity.new
-            il.opt_in(@rfi[:mobile_phone])
+            q = ExactTarget::QueueMO.new
+            q.opt_in(@rfi[:mobile_phone])
           rescue
             nil
           end
         end
 
         if Rails.env.development?
-          il = ILoop::MFinity.new
-          il.opt_in("2075145450") # Sheena's number to test with.
+          # q = ExactTarget::QueueMO.new
+          # q.opt_in("2075145450") # Sheena's number to test with.
         end
 
         recipients = Coerce.list_of_strings(@brand[:rfi_recipients])
@@ -112,7 +115,7 @@ class ::RFI
 
       # TODO - iLoop and mail addys here...
 =begin
-        
+
         if Rails.env.production? or ENV['EMAIL_SIGNUP']
           et = ExactTarget::Send.new
           et.send_email(@brand.slug,email)
@@ -137,7 +140,7 @@ class ::RFI
     end
 
     def options_for_term
-      return ['Spring 2013', 'Fall 2013', 'Spring 2014', 'Fall 2014', 'Spring 2015', 'Fall 2015']
+      return ['Fall 2014', 'Spring 2015', 'Fall 2015', 'Spring 2016', 'Fall 2016', 'Spring 2017',]
     end
 
     def options_for_hear_how

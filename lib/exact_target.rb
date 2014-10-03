@@ -1,4 +1,4 @@
-class ExactTarget
+module ExactTarget
   class Auth
     def Auth.for(brand)
       config = App.sekrets.exact_target[brand.organization.slug]
@@ -10,7 +10,7 @@ class ExactTarget
       }
     end
   end
-  
+
   class Client
     @client = {}
     def Client.for(brand)
@@ -44,8 +44,8 @@ class ExactTarget
       end
     end
   end
-  
-  class Subscription < ExactTarget
+
+  class Subscription
     def self.subscribe!(brand,email)
       brand = Brand.for(brand)
       client = Client.for(brand)
@@ -57,7 +57,7 @@ class ExactTarget
     end
   end
 
-  class Send < ExactTarget
+  class Send
     def self.send_email(slug,email)
       brand = Brand.for(slug)
       client = Client.for(brand)
@@ -85,5 +85,3 @@ class ExactTarget
     end
   end
 end
-
-
